@@ -46,4 +46,5 @@ def get_saved_tracks_as_dataframe():
     return pd.DataFrame(tracks)
 
 # Get the DataFrame
-df_tracks = get_saved_tracks_as_dataframe()
+users_saved_tracks = get_saved_tracks_as_dataframe()
+users_saved_tracks.to_csv('users_saved_tracks.csv', index=False)

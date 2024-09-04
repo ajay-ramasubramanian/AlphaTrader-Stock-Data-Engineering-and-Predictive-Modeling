@@ -1,2 +1,2 @@
-# StockInsight: Real-Time Stock Data Engineering & ML
+# Spotify Insight: Real-Time Stock Data Engineering & ML
 

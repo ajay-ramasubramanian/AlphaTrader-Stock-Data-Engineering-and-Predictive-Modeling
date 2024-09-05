@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# Local files
+.csv
+.ipynb
+
+# Local folders
+
 # Distribution / packaging
 .Python
 build/
@@ -129,6 +135,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+spotify-de/
 
 # Spyder project settings
 .spyderproject

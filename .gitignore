@@ -129,6 +129,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+spotify_insight_venv/
 
 # Spyder project settings
 .spyderproject

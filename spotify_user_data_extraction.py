@@ -80,5 +80,5 @@ def get_user_followed_artists():
 user_followed_artists = get_user_followed_artists()
 users_saved_tracks = get_saved_tracks_as_dataframe()
 
-user_followed_artists.to_csv("user_followed_artists.csv", index=False)
-users_saved_tracks.to_csv('users_saved_tracks.csv', index=False)
+user_followed_artists.to_json("user_followed_artists.json", orient="records")
+users_saved_tracks.to_json('users_saved_tracks.json', orient="records")

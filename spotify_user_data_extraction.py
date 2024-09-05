@@ -11,7 +11,7 @@ redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-scope = "user-library-read"
+scope = "user-library-read user-follow-read"
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
@@ -45,6 +45,40 @@ def get_saved_tracks_as_dataframe():
 
     return pd.DataFrame(tracks)
 
+def get_user_followed_artists():
+    artists = []
+    after = None
+    limit = 50  # Maximum allowed by the API
+
+    while True:
+        results = sp.current_user_followed_artists(limit=limit, after=after)
+        
+        # Process each artist
+        for item in results['artists']['items']:
+            artists.append({
+                'name': item['name'],
+                'id': item['id'],
+                'uri': item['uri'],
+                'popularity': item['popularity'],
+                'genres': ', '.join(item['genres']),
+                'followers': item['followers']['total']
+            })
+        
+        
+        if results['artists']['next']:
+            after = results['artists']['cursors']['after']
+        else:
+            break
+        
+        print(f"Retrieved {len(artists)} artists so far...")
+
+    # Convert to DataFrame
+    df_artists = pd.DataFrame(artists)
+    
+    return df_artists
 # Get the DataFrame
+user_followed_artists = get_user_followed_artists()
 users_saved_tracks = get_saved_tracks_as_dataframe()
+
+user_followed_artists.to_csv("user_followed_artists.csv", index=False)
 users_saved_tracks.to_csv('users_saved_tracks.csv', index=False)

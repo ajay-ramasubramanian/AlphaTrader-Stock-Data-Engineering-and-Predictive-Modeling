@@ -9,7 +9,7 @@ import pandas as pd
 # clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 # redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 
-scope = "user-library-read user-follow-read"
+scope = "user-library-read user-follow-read user-library-modify user-read-recently-played"
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
@@ -76,10 +76,86 @@ def get_user_followed_artists():
     return df_artists
 
 
+def current_user_playlists():
+    playlists = []
+    limit = 50  # Maximum allowed by the API
+    results = sp.current_user_playlists(limit=limit)
+    results.to_json('temp.json')
+    # while True:
+    #     results = sp.current_user_playlists(limit=limit)
+        
+        # Process each artist
+        # for item in results['artists']['items']:
+        #     artists.append({
+        #         'name': item['name'],
+        #         'id': item['id'],
+        #         'uri': item['uri'],
+        #         'popularity': item['popularity'],
+        #         'genres': ', '.join(item['genres']),
+        #         'followers': item['followers']['total']
+        #     })
+        
+        
+        # if results['artists']['next']:
+        #     after = results['artists']['cursors']['after']
+        # else:
+        #     break
+        
+        # print(f"Retrieved {len(artists)} artists so far...")
+
+    # Convert to DataFrame
+    # df_artists = pd.DataFrame(artists)
+    
+    # return df_artists
+
+
+def current_user_recently_played():
+    tracks = []
+    after = None
+    limit = 50  # Maximum allowed by the API
+    results = sp.current_user_recently_played(limit=limit, after=after)
+    print(results)
+    # while True:
+    #     results = sp.current_user_followed_artists(limit=limit, after=after)
+        
+    #     # Process each artist
+    #     for item in results['artists']['items']:
+    #         tracks.append({
+    #             'name': item['name'],
+    #             'id': item['id'],
+    #             'uri': item['uri'],
+    #             'popularity': item['popularity'],
+    #             'genres': ', '.join(item['genres']),
+    #             'followers': item['followers']['total']
+    #         })
+        
+        
+    #     if results['artists']['next']:
+    #         after = results['artists']['cursors']['after']
+    #     else:
+    #         break
+        
+    #     print(f"Retrieved {len(artists)} artists so far...")
+
+    # Convert to DataFrame
+    # results.
+    
+    # return df_artists
+
+tracks = current_user_recently_played()
+# tracks.to_csv("current_user_recently_played.csv", index=False)
+
+def current_user():
+    results = sp.current_user()    
+    return pd.DataFrame(results)
+
+
+
 
 # Get the DataFrame
-user_followed_artists = get_user_followed_artists()
-users_saved_tracks = get_saved_tracks_as_dataframe()
+# user_followed_artists = get_user_followed_artists()
+# users_saved_tracks = get_saved_tracks_as_dataframe()
+# user = current_user()
 
-user_followed_artists.to_csv("user_followed_artists.csv", index=False)
-users_saved_tracks.to_csv('users_saved_tracks.csv', index=False)
+# user_followed_artists.to_csv("user_followed_artists.csv", index=False)
+# users_saved_tracks.to_csv('users_saved_tracks.csv', index=False)

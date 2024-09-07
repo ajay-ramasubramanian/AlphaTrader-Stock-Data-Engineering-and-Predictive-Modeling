@@ -1,2 +1,2 @@
-# Spotify Insight: Real-Time Stock Data Engineering & ML
+# Spotify Insight: End-to-End Data Engineering & ML pipeline
 

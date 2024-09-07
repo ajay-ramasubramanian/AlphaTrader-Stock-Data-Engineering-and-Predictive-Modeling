@@ -125,12 +125,10 @@ def get_user_recently_played_tracks():
     return df_tracks
 
 
-recently_played_tracks = get_user_recently_played_tracks()
+# recently_played_tracks = get_user_recently_played_tracks()
 
-user_followed_artists = get_user_followed_artists()
+# user_followed_artists = get_user_followed_artists()
 
 users_saved_tracks = get_saved_tracks_as_dataframe()
 
 print("-----DONE------")
-
-sp.current_user_recently_played(limit=50, after=None)

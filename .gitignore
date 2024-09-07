@@ -7,8 +7,8 @@ __pycache__/
 *.so
 
 # Local files
-.csv
-.ipynb
+*.csv
+*.ipynb
 
 # Local folders
 

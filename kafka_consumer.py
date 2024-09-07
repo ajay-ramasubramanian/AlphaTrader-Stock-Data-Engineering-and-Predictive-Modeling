@@ -5,7 +5,7 @@ from kafka import KafkaConsumer, KafkaProducer
 
 # from spotify_user_data_extraction import users_saved_tracks
 
-def consumer(topic='quickstart-events', bootstrap_servers=['localhost:9092'], 
+def consumer(topic='datafram-topic', bootstrap_servers=['localhost:9092'], 
                group_id='dataframe_consumer_group'):
     # Create a Kafka consumer
     kafka_consumer = KafkaConsumer(

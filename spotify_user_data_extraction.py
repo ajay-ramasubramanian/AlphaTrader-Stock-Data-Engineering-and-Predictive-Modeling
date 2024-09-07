@@ -3,14 +3,15 @@ import spotipy
 from dotenv import load_dotenv
 import os
 import pandas as pd
+from spotipy.oauth2 import SpotifyOAuth
+
 
 load_dotenv()
 clientID= os.getenv("SPOTIPY_CLIENT_ID")
 clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
 
+pip
 scope = "user-library-read user-follow-read"
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
@@ -77,8 +78,9 @@ def get_user_followed_artists():
     
     return df_artists
 # Get the DataFrame
+
 user_followed_artists = get_user_followed_artists()
+
 users_saved_tracks = get_saved_tracks_as_dataframe()
 
-user_followed_artists.to_json("user_followed_artists.json", orient="records")
-users_saved_tracks.to_json('users_saved_tracks.json', orient="records")
+print("-----DONE------")

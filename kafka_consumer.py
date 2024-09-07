@@ -1,6 +1,8 @@
-from kafka import KafkaConsumer, KafkaProducer
-import pandas as pd
 import json
+
+import pandas as pd
+from kafka import KafkaConsumer, KafkaProducer
+
 # from spotify_user_data_extraction import users_saved_tracks
 
 def consumer(topic='quickstart-events', bootstrap_servers=['localhost:9092'], 
@@ -16,7 +18,8 @@ def consumer(topic='quickstart-events', bootstrap_servers=['localhost:9092'],
     )
     def process_dataframe(df):
         print("Received DataFrame:")
-        print(df)
+        print("writing the file to a CSV file")
+        df.to_csv("user_saved_tracks.csv", index = False)
         print("------------------------")
     try:
             for message in kafka_consumer:

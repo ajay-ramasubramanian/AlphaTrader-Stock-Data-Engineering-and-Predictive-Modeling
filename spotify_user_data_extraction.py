@@ -76,10 +76,63 @@ def get_user_followed_artists():
     df_artists = pd.DataFrame(artists)
     
     return df_artists
-# Get the DataFrame
+
+
+import pandas as pd
+from datetime import datetime
+
+def get_user_recently_played_tracks():
+    tracks = []
+    after = None
+    limit = 50  # Maximum allowed by the API
+
+    while True:
+        results = sp.current_user_recently_played(limit=limit, after=after)
+        
+        if not results['items']:
+            break
+
+        # Process each track
+        for item in results['items']:
+            track = item['track']
+            played_at = datetime.strptime(item['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            
+            tracks.append({
+                'track_name': track['name'],
+                'track_id': track['id'],
+                'track_uri': track['uri'],
+                'artist_name': track['artists'][0]['name'],
+                'artist_id': track['artists'][0]['id'],
+                'album_name': track['album']['name'],
+                'album_id': track['album']['id'],
+                'played_at': played_at,
+                'duration_ms': track['duration_ms'],
+                'popularity': track['popularity']
+            })
+        
+        # Update the 'after' parameter for the next request
+        after = int(played_at.timestamp() * 1000)
+        
+        print(f"Retrieved {len(tracks)} recently played tracks so far...")
+
+        # Spotify only allows retrieval of the last 50 tracks, so we'll stop after one iteration
+        break
+
+    # Convert to DataFrame
+    df_tracks = pd.DataFrame(tracks)
+    
+    # Sort by played_at in descending order (most recent first)
+    df_tracks = df_tracks.sort_values('played_at', ascending=False)
+    
+    return df_tracks
+
+
+recently_played_tracks = get_user_recently_played_tracks()
 
 user_followed_artists = get_user_followed_artists()
 
 users_saved_tracks = get_saved_tracks_as_dataframe()
 
 print("-----DONE------")
+
+sp.current_user_recently_played(limit=50, after=None)

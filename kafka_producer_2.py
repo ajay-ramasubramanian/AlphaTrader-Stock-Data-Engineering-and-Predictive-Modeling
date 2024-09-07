@@ -17,7 +17,7 @@ def producer(df, topic):
     data = df.to_dict(orient='records')
     
     # Send the data as a message
-    future = kafka_producer.send(topic, key='ajay', value=data)
+    future = kafka_producer.send(topic, key=b'ajay', value=data, partition=0)
     
     try:
         record_metadata = future.get(timeout=10)
@@ -26,8 +26,8 @@ def producer(df, topic):
         print(f"Error sending message: {e}")
 
 
-send_df = producer()
+
 # change topic name
-send_df(users_saved_tracks, 'quickstart-events')
+producer(users_saved_tracks, 'datafram-topic')
 kafka_producer.flush()
 kafka_producer.close()

@@ -11,7 +11,6 @@ clientID= os.getenv("SPOTIPY_CLIENT_ID")
 clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 
-pip
 scope = "user-library-read user-follow-read"
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))

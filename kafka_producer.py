@@ -1,14 +1,15 @@
-from kafka import KafkaProducer, KafkaConsumer
-import pandas as pd
 import json
-from spotify_user_data_extraction import *
 
+import pandas as pd
+from kafka import KafkaConsumer, KafkaProducer
+
+from spotify_user_data_extraction import users_saved_tracks
 
 # Create a Kafka producer
-producer = KafkaProducer(
+kafka_producer = KafkaProducer(
         bootstrap_servers='localhost:9092',
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
-    ) 
+    )
 
 def producer():
     
@@ -18,7 +19,7 @@ def producer():
         data = df.to_dict(orient='records')
         
         # Send the data as a message
-        future = producer.send(topic, value=data)
+        future = kafka_producer.send(topic, value=data)
         
         try:
             record_metadata = future.get(timeout=10)
@@ -32,5 +33,5 @@ def producer():
 
 send_df = producer()
 send_df(users_saved_tracks, 'quickstart-events')
-producer.flush()
-producer.close()
+kafka_producer.flush()
+kafka_producer.close()

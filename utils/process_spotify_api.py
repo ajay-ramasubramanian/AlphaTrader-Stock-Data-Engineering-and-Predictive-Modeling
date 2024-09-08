@@ -276,7 +276,7 @@ user_top_tracks = get_user_top_tracks()
 
 user_top_artists = get_user_top_artists()
 
-user_playlist = get_user_playlists()
+user_playlist = get_user_playlists()git
 
 recently_played_tracks = get_user_recently_played_tracks()
 

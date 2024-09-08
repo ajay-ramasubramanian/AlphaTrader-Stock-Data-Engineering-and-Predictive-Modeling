@@ -1,13 +1,14 @@
 import json
+
 import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
 
-from utils.process_spotify_api import get_saved_tracks_as_dataframe
+from utils.process_spotify_api import (recently_played_tracks,
+                                       users_saved_tracks)
 
 # Create a Kafka producer
 kafka_producer = KafkaProducer(
-        bootstrap_servers='localhost:9092',
-        api_version=(0, 10, 1),
+        bootstrap_servers='localhost:9093',
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
 
@@ -31,6 +32,6 @@ def producer(fun, topic):
 
 
 # change topic name
-producer(get_saved_tracks_as_dataframe, 'datafram-topic')
+producer(users_saved_tracks, 'dataframe-topic')
 kafka_producer.flush()
 kafka_producer.close()

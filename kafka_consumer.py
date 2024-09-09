@@ -1,4 +1,5 @@
 import json
+from utils import load_schema
 import avro.schema
 from avro.io import DatumReader
 import io
@@ -6,7 +7,20 @@ import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
 
 # from spotify_user_data_extraction import users_saved_tracks
-schema = avro.schema.parse(open("schemas/following_artists.avsc", "rb").read())
+schemas = {
+            'following_artists': load_schema("schemas/following_artists.avsc"),
+            'liked_songs': load_schema("schemas/liked_songs.avsc"),
+            'recent_plays': load_schema("schemas/recent_plays.avsc"),
+            'saved_playlists': load_schema("schemas/saved_playlists.avsc"),
+            'top_artists': load_schema("schemas/top_artists.avsc"),
+            'top_songs': load_schema("schemas/top_songs.avsc")
+        }
+
+def avro_deserializer(avro_bytes, schema):
+    reader = DatumReader(schema)
+    bytes_reader = io.BytesIO(avro_bytes)
+    decoder = avro.io.BinaryDecoder(bytes_reader)
+    return reader.read(decoder)
 
 def process_dataframe(df, topic_name, partition, offset):
 
@@ -14,12 +28,6 @@ def process_dataframe(df, topic_name, partition, offset):
         print("writing the file to a CSV file")
         df.to_csv(f"{topic_name}_{partition}_{offset}.csv", index = False)
         print("------------------------")
-
-def avro_deserializer(avro_bytes, schema):
-    reader = DatumReader(schema)
-    bytes_reader = io.BytesIO(avro_bytes)
-    decoder = avro.io.BinaryDecoder(bytes_reader)
-    return reader.read(decoder)
     
 
 def consumer(topic='spotify_following_artists', bootstrap_servers=['localhost:9093'], 

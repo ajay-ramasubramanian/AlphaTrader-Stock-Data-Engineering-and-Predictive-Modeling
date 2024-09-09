@@ -1,5 +1,5 @@
 import json
-from utils import load_schema
+from utils import schemas, TOPICS
 import avro.schema
 from avro.io import DatumReader
 import io
@@ -7,14 +7,7 @@ import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
 
 # from spotify_user_data_extraction import users_saved_tracks
-schemas = {
-            'following_artists': load_schema("schemas/following_artists.avsc"),
-            'liked_songs': load_schema("schemas/liked_songs.avsc"),
-            'recent_plays': load_schema("schemas/recent_plays.avsc"),
-            'saved_playlists': load_schema("schemas/saved_playlists.avsc"),
-            'top_artists': load_schema("schemas/top_artists.avsc"),
-            'top_songs': load_schema("schemas/top_songs.avsc")
-        }
+
 
 def avro_deserializer(avro_bytes, schema):
     reader = DatumReader(schema)
@@ -30,45 +23,43 @@ def process_dataframe(df, topic_name, partition, offset):
         print("------------------------")
     
 
-def consumer(topic='spotify_following_artists', bootstrap_servers=['localhost:9093'], 
-               group_id='dataframe_consumer_group'):
+def consumer(bootstrap_servers=['localhost:9093'], 
+               group_id='spotify_consumer_group'):
+    
     # Create a Kafka consumer
     kafka_consumer = KafkaConsumer(
-        topic,
         bootstrap_servers=bootstrap_servers,
         auto_offset_reset='earliest',
         enable_auto_commit=True,
         group_id=group_id,
-        # value_deserializer=lambda x: x.decode('utf-8')
     )
 
+    kafka_consumer.subscribe(TOPICS.values())
     print("Started Consumer")
 
 # Avro deserializer
 
     try:
-            c = 0
-            for message in kafka_consumer:
-                # print(f"Received raw message: {message.value}")
-                try:
-                    # Try to parse the message as JSON
-                    c = c+1
-                    print(c)
-                    data = avro_deserializer(message.value, schema)
-                    print(f"data: {data}")
-                    print(f"message: {message}")
-                    print("------------------------------------------------------------------------------------------------------------------------------------")
-                    # topic_name, partition, offset = message.topic, message.partition, message.offset
-                    # data = json.loads(message.value)
-                    # # Convert the message value (list of dicts) back to a DataFrame
-                    # df = pd.DataFrame(data)
-                    # # Process the DataFrame
-                    # process_dataframe(df, topic_name, partition, offset)
-                except json.JSONDecodeError as e:
-                    print(f"Error decoding JSON: {e}")
-                    print(f"Problematic message: {message.value[:100]}...")  # Print first 100 chars of the message
-                except Exception as e:
-                    print(f"Error processing message: {e}")
+        # Try to parse the message as JSON
+        while True:
+            message = kafka_consumer.poll(timeout_ms=1000)
+            if message:
+                # print(f"data: {data}")
+                print(f"message: {message}")
+                # topic, user = message.topic, message.key
+                # data = avro_deserializer(message.value, schemas["spotify_"+str(topic)])
+                print("------------------------------------------------------------------------------------------------------------------------------------")
+                # topic_name, partition, offset = message.topic, message.partition, message.offset
+                # data = json.loads(message.value)
+                # # Convert the message value (list of dicts) back to a DataFrame
+                # df = pd.DataFrame(data)
+                # # Process the DataFrame
+                # process_dataframe(df, topic_name, partition, offset)
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        print(f"Problematic message: {message.value[:100]}...")  # Print first 100 chars of the message
+    except Exception as e:
+        print(f"Error processing message: {e}")
 
     except KeyboardInterrupt:
         print("Consumer stopped")

@@ -2,7 +2,7 @@ import json
 import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
 
-from utils.process_spotify_api import users_saved_tracks
+from temp.process_spotify_api import users_saved_tracks
 
 # Create a Kafka producer
 kafka_producer = KafkaProducer(

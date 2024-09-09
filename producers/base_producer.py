@@ -1,5 +1,5 @@
 from kafka import KafkaProducer
-from utils import load_schema
+from utils import schemas, TOPICS
 import json
 import io
 import avro.schema
@@ -7,15 +7,6 @@ from avro.io import DatumWriter
 from concurrent.futures import ThreadPoolExecutor
 
 KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
-
-TOPICS = {
-    'following_artists': 'spotify_following_artists',
-    'liked_songs': 'spotify_liked_songs',
-    'recent_plays': 'spotify_recent_plays',
-    'saved_playlists': 'spotify_saved_playlists',
-    'top_artists': 'spotify_top_artists',
-    'top_songs': 'spotify_top_songs'
-}
 
 class SpotifyKafkaProducer:
     def __init__(self):
@@ -27,16 +18,6 @@ class SpotifyKafkaProducer:
             compression_type='gzip'
         )
         self.executor = ThreadPoolExecutor(max_workers=5)  # Adjust based on your needs
-
-        self.schemas = {
-            'following_artists': load_schema("schemas/following_artists.avsc"),
-            'liked_songs': load_schema("schemas/liked_songs.avsc"),
-            'recent_plays': load_schema("schemas/recent_plays.avsc"),
-            'saved_playlists': load_schema("schemas/saved_playlists.avsc"),
-            'top_artists': load_schema("schemas/top_artists.avsc"),
-            'top_songs': load_schema("schemas/top_songs.avsc")
-        }
-
 
     def avro_serializer(self, data, schema):
         writer = DatumWriter(schema)
@@ -50,7 +31,7 @@ class SpotifyKafkaProducer:
             raise ValueError(f"Invalid topic: {topic_key}")
         
         topic = TOPICS[topic_key]
-        schema = self.schemas[topic_key]
+        schema = schemas[topic_key]
         avro_data = self.avro_serializer(data, schema)
         future = self.producer.send(topic, key=user_id, value=avro_data)
         return future

@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from kafka import KafkaProducer
 
-from utils.process_spotify_api import (get_saved_tracks_as_dataframe,
+from temp.process_spotify_api import (get_saved_tracks_as_dataframe,
                                        get_user_followed_artists,
                                        get_user_playlists,
                                        get_user_recently_played_tracks,

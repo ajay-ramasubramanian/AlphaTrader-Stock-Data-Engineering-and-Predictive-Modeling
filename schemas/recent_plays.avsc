@@ -1,0 +1,105 @@
+{
+  "type": "record",
+  "name": "RecentlyPlayedTracks",
+  "fields": [
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "PlayedTrack",
+          "fields": [
+            {
+              "name": "track",
+              "type": {
+                "type": "record",
+                "name": "Track",
+                "fields": [
+                  {
+                    "name": "album",
+                    "type": {
+                      "type": "record",
+                      "name": "Album",
+                      "fields": [
+                        {"name": "album_type", "type": "string"},
+                        {
+                          "name": "artists",
+                          "type": {
+                            "type": "array",
+                            "items": {
+                              "type": "record",
+                              "name": "Artist",
+                              "fields": [
+                                {"name": "id", "type": "string"},
+                                {"name": "name", "type": "string"},
+                                {"name": "type", "type": "string"},
+                                {"name": "uri", "type": "string"}
+                              ]
+                            }
+                          }
+                        },
+                        {"name": "available_markets", "type": {"type": "array", "items": "string"}},
+                        {"name": "id", "type": "string"},
+                        {
+                          "name": "images",
+                          "type": {
+                            "type": "array",
+                            "items": {
+                              "type": "record",
+                              "name": "Image",
+                              "fields": [
+                                {"name": "height", "type": "int"},
+                                {"name": "width", "type": "int"},
+                                {"name": "url", "type": "string"}
+                              ]
+                            }
+                          }
+                        },
+                        {"name": "name", "type": "string"},
+                        {"name": "release_date", "type": "string"},
+                        {"name": "release_date_precision", "type": "string"},
+                        {"name": "total_tracks", "type": "int"},
+                        {"name": "type", "type": "string"},
+                        {"name": "uri", "type": "string"}
+                      ]
+                    }
+                  },
+                  {"name": "artists", "type": {"type": "array", "items": "Artist"}},
+                  {"name": "available_markets", "type": {"type": "array", "items": "string"}},
+                  {"name": "disc_number", "type": "int"},
+                  {"name": "duration_ms", "type": "long"},
+                  {"name": "explicit", "type": "boolean"},
+                  {"name": "external_ids", "type": {"type": "record", "name": "ExternalIds", "fields": [{"name": "isrc", "type": "string"}]}},
+                  {"name": "id", "type": "string"},
+                  {"name": "name", "type": "string"},
+                  {"name": "popularity", "type": "int"},
+                  {"name": "preview_url", "type": ["null", "string"]},
+                  {"name": "track_number", "type": "int"},
+                  {"name": "type", "type": "string"},
+                  {"name": "uri", "type": "string"}
+                ]
+              }
+            },
+            {"name": "played_at", "type": "string"},
+            {"name": "context", "type": ["null", "string"]}
+          ]
+        }
+      }
+    },
+    {"name": "next", "type": "string"},
+    {
+      "name": "cursors",
+      "type": {
+        "type": "record",
+        "name": "Cursors",
+        "fields": [
+          {"name": "after", "type": "string"},
+          {"name": "before", "type": "string"}
+        ]
+      }
+    },
+    {"name": "limit", "type": "int"},
+    {"name": "href", "type": "string"}
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "type": "record",
+  "name": "TopArtists",
+  "fields": [
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Artist",
+          "fields": [
+            {
+              "name": "external_urls",
+              "type": {
+                "type": "record",
+                "name": "ExternalUrls",
+                "fields": [
+                  {"name": "spotify", "type": "string"}
+                ]
+              }
+            },
+            {
+              "name": "followers",
+              "type": {
+                "type": "record",
+                "name": "Followers",
+                "fields": [
+                  {"name": "href", "type": ["null", "string"]},
+                  {"name": "total", "type": "int"}
+                ]
+              }
+            },
+            {"name": "genres", "type": {"type": "array", "items": "string"}},
+            {"name": "href", "type": "string"},
+            {"name": "id", "type": "string"},
+            {
+              "name": "images",
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "Image",
+                  "fields": [
+                    {"name": "height", "type": "int"},
+                    {"name": "url", "type": "string"},
+                    {"name": "width", "type": "int"}
+                  ]
+                }
+              }
+            },
+            {"name": "name", "type": "string"},
+            {"name": "popularity", "type": "int"},
+            {"name": "type", "type": "string"},
+            {"name": "uri", "type": "string"}
+          ]
+        }
+      }
+    },
+    {"name": "total", "type": "int"},
+    {"name": "limit", "type": "int"},
+    {"name": "offset", "type": "int"},
+    {"name": "href", "type": "string"},
+    {"name": "next", "type": ["null", "string"]},
+    {"name": "previous", "type": ["null", "string"]}
+  ]
+}

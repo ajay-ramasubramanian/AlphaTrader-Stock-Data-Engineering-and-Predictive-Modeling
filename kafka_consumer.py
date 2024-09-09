@@ -5,14 +5,14 @@ from kafka import KafkaConsumer, KafkaProducer
 
 # from spotify_user_data_extraction import users_saved_tracks
 
-def process_dataframe(df):
+def process_dataframe(df, topic_name, partition, offset):
 
         print("Received DataFrame:")
         print("writing the file to a CSV file")
-        df.to_csv("user_saved_tracks.csv", index = False)
+        df.to_csv(f"{topic_name}_{partition}_{offset}.csv", index = False)
         print("------------------------")
 
-def consumer(topic='dataframe-topic', bootstrap_servers=['localhost:9093'], 
+def consumer(topic='spotify_following_artists', bootstrap_servers=['localhost:9093'], 
                group_id='dataframe_consumer_group'):
     # Create a Kafka consumer
     kafka_consumer = KafkaConsumer(
@@ -27,16 +27,21 @@ def consumer(topic='dataframe-topic', bootstrap_servers=['localhost:9093'],
     print("Started Consumer")
     
     try:
+            c = 0
             for message in kafka_consumer:
                 # print(f"Received raw message: {message.value}")
                 try:
                     # Try to parse the message as JSON
-                    # print(message.keys())
-                    data = json.loads(message.value)
-                    # Convert the message value (list of dicts) back to a DataFrame
-                    df = pd.DataFrame(data)
-                    # Process the DataFrame
-                    process_dataframe(df)
+                    c = c+1
+                    print(c)
+                    print(f"message: {message}")
+                    print("------------------------------------------------------------------------------------------------------------------------------------")
+                    # topic_name, partition, offset = message.topic, message.partition, message.offset
+                    # data = json.loads(message.value)
+                    # # Convert the message value (list of dicts) back to a DataFrame
+                    # df = pd.DataFrame(data)
+                    # # Process the DataFrame
+                    # process_dataframe(df, topic_name, partition, offset)
                 except json.JSONDecodeError as e:
                     print(f"Error decoding JSON: {e}")
                     print(f"Problematic message: {message.value[:100]}...")  # Print first 100 chars of the message

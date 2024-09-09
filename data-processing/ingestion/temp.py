@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-import time
+
 import pandas as pd
 import spotipy
 from dotenv import load_dotenv
@@ -28,24 +28,32 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 def get_saved_tracks_as_dataframe():
     tracks = []
     offset = 0
-    limit = 1 #50  # Maximum allowed by the API
+    limit = 50  # Maximum allowed by the API
 
     while True:
         results = sp.current_user_saved_tracks(limit=limit, offset=offset)
-        tracks.append(results)
-        # print("--------------------------------------------------------------------------------------------------------------------------------")
-        # print(results)
-        # print("--------------------------------------------------------------------------------------------------------------------------------")
-
-
+        
+        for item in results['items']:
+            track = item['track']
+            tracks.append({
+                'name': track['name'], # string
+                'artist': track['artists'][0]['name'], # string
+                'album': track['album']['name'], #string
+                'release_date': track['album']['release_date'], 
+                'duration_ms': track['duration_ms'],
+                'popularity': track['popularity'],
+                'id': track['id'],
+                'uri': track['uri'],
+                'added_at': item['added_at']
+            })
+        
         if len(results['items']) < limit:
             break
         
         offset += limit
         print(f"Retrieved {offset} tracks so far...")
-    print(tracks[-1])
 
-    return tracks
+    return pd.DataFrame(tracks)
 
 def get_user_followed_artists():
     artists = []

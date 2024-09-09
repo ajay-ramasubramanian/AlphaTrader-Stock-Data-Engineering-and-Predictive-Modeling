@@ -27,7 +27,7 @@ def process_spotify_data(user_id):
 
         while True:
             
-            result = sp.current_user_top_tracks( limit=limit, after=after)
+            result = sp.current_user_recently_played( limit=limit, after=after)
             
             if not result['items']:
                 break

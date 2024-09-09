@@ -28,13 +28,13 @@ def process_spotify_data(user_id):
         while True:
             
             result = sp.current_user_saved_tracks(limit=limit,offset=offset)
-            
+            print("..")
             if not result['items']:
                 break
             # Send to Kafka as soon as we have the data
             future = producer.produce_following_artists(user_id, result)
             futures.append(future)
-
+            
             offset += limit
         
         print("Sent all the data")

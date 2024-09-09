@@ -1,5 +1,5 @@
 from kafka import KafkaProducer
-from producer_class import SpotifyKafkaProducer
+from producers.base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
 from utils.utilites import scope
@@ -20,20 +20,33 @@ def process_spotify_data(user_id):
     futures = []
 
     try:
-        after = None
-        limit = 1  # Maximum allowed by the API
+        # after = None
+        # limit = 1  # Maximum allowed by the API
+
+        # while True:
+        #     result = sp.current_user_followed_artists(limit=limit, after=after)
+
+        #     # Send to Kafka as soon as we have the data
+        #     future = producer.produce_following_artists(user_id, result)
+        #     futures.append(future)
+
+        #     if result['artists']['next']:
+        #         after = result['artists']['cursors']['after']
+        #     else:
+        #         break
+
+        tracks = []
+        offset = 0
+        limit = 1 #50  # Maximum allowed by the API
 
         while True:
-            result = sp.current_user_followed_artists(limit=limit, after=after)
-
-            # Send to Kafka as soon as we have the data
-            future = producer.produce_following_artists(user_id, result)
-            futures.append(future)
-
-            if result['artists']['next']:
-                after = result['artists']['cursors']['after']
-            else:
+            results = sp.current_user_saved_tracks(limit=limit, offset=offset)
+            tracks.append(results)
+    
+            if len(results['items']) < limit:
                 break
+            
+            offset += limit
         
         print("Sent all the data")
             

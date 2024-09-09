@@ -33,11 +33,7 @@ def get_saved_tracks_as_dataframe():
     while True:
         results = sp.current_user_saved_tracks(limit=limit, offset=offset)
         tracks.append(results)
-        # print("--------------------------------------------------------------------------------------------------------------------------------")
-        # print(results)
-        # print("--------------------------------------------------------------------------------------------------------------------------------")
-
-
+ 
         if len(results['items']) < limit:
             break
         

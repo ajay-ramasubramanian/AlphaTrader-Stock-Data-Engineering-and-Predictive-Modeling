@@ -20,14 +20,26 @@ class SpotifyKafkaProducer:
     def __init__(self):
         self.producer = KafkaProducer(
             bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-            # value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             key_serializer=str.encode,
             batch_size=16384,
             linger_ms=100,
             compression_type='gzip'
         )
-        self.schema = avro.schema.parse(open("schemas/following_artists.avsc", "rb").read())
         self.executor = ThreadPoolExecutor(max_workers=5)  # Adjust based on your needs
+
+        self.schemas = {
+            'following_artists': self.load_schema("schemas/following_artists.avsc"),
+            'liked_songs': self.load_schema("schemas/liked_songs.avsc"),
+            'recent_plays': self.load_schema("schemas/recent_plays.avsc"),
+            'saved_playlists': self.load_schema("schemas/saved_playlists.avsc"),
+            'top_artists': self.load_schema("schemas/top_artists.avsc"),
+            'top_songs': self.load_schema("schemas/top_songs.avsc")
+        }
+
+    def load_schema(self, schema_path):
+        with open(schema_path, "rb") as schema_file:
+            return avro.schema.parse(schema_file.read())
+
 
     def avro_serializer(self, data, schema):
         writer = DatumWriter(schema)
@@ -41,7 +53,8 @@ class SpotifyKafkaProducer:
             raise ValueError(f"Invalid topic: {topic_key}")
         
         topic = TOPICS[topic_key]
-        avro_data = self.avro_serializer(data, self.schema)
+        schema = self.schemas[topic_key]
+        avro_data = self.avro_serializer(data, schema)
         future = self.producer.send(topic, key=user_id, value=avro_data)
         return future
 

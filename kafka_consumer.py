@@ -1,5 +1,5 @@
 import json
-from utils import schemas, TOPICS
+from producers.utils import schemas, TOPICS
 import avro.schema
 from avro.io import DatumReader
 import io
@@ -45,6 +45,7 @@ def consumer(bootstrap_servers=['localhost:9093'],
             message = kafka_consumer.poll(timeout_ms=1000)
             if message:
                 # print(f"data: {data}")
+                print(f"message type: {type(message)}")
                 print(f"message: {message}")
                 # topic, user = message.topic, message.key
                 # data = avro_deserializer(message.value, schemas["spotify_"+str(topic)])

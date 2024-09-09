@@ -1,4 +1,7 @@
-import avro
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..', 'utils')))
+
+from avro.schema import parse
 
 scope = "user-library-read \
          user-follow-read \
@@ -23,8 +26,8 @@ TOPICS = {
 
 
 def load_schema(schema_path):
-        with open(schema_path, "rb") as schema_file:
-            return avro.schema.parse(schema_file.read())
+    with open(schema_path, "rb") as schema_file:
+        return parse(schema_file.read())
 
 schemas = {
             'following_artists': load_schema("schemas/following_artists.avsc"),

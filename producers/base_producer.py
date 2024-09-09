@@ -39,19 +39,19 @@ class SpotifyKafkaProducer:
     def produce_following_artists(self, user_id, track_data):
         return self.executor.submit(self.produce_message, 'following_artists', user_id, track_data)
 
-    def produce_album(self, user_id, album_data):
+    def produce_liked_songs(self, user_id, album_data):
         return self.executor.submit(self.produce_message, 'liked_songs', user_id, album_data)
 
-    def produce_artist(self, user_id, artist_data):
+    def produce_recent_plays(self, user_id, artist_data):
         return self.executor.submit(self.produce_message, 'recent_plays', user_id, artist_data)
 
-    def produce_playlist(self, user_id, playlist_data):
+    def produce_saved_playlists(self, user_id, playlist_data):
         return self.executor.submit(self.produce_message, 'saved_playlists', user_id, playlist_data)
 
-    def produce_user_profile(self, user_id, profile_data):
+    def produce_top_artists(self, user_id, profile_data):
         return self.executor.submit(self.produce_message, 'top_artists', user_id, profile_data)
 
-    def produce_listening_history(self, user_id, history_data):
+    def produce_top_songs(self, user_id, history_data):
         return self.executor.submit(self.produce_message, 'top_songs', user_id, history_data)
 
     def close(self):

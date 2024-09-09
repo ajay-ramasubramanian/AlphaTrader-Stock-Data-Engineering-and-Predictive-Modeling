@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from kafka import KafkaProducer
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
-from producers.base_producer import SpotifyKafkaProducer
+from base_producer import SpotifyKafkaProducer
 from utils import scope
 
 # load_dotenv()
@@ -23,7 +23,7 @@ def process_spotify_data(user_id):
 
     try:
         offset = 0
-        time_range= "medium_term"
+        time_range= "short_term"
         limit = 1
 
         while True:
@@ -33,7 +33,7 @@ def process_spotify_data(user_id):
             if not result['items']:
                 break
             # Send to Kafka as soon as we have the data
-            future = producer.produce_following_artists(user_id, result)
+            future = producer.produce_top_songs(user_id, result)
             futures.append(future)
 
             offset+=limit

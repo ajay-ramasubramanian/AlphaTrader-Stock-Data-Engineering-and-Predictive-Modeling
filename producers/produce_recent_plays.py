@@ -4,10 +4,9 @@ from datetime import datetime
 import pandas as pd
 import spotipy
 from dotenv import load_dotenv
-from kafka import KafkaProducer
-from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth
 
-from producers.base_producer import SpotifyKafkaProducer
+from base_producer import SpotifyKafkaProducer
 from utils import scope
 
 # load_dotenv()
@@ -27,12 +26,12 @@ def process_spotify_data(user_id):
 
         while True:
             
-            result = sp.current_user_recently_played( limit=limit, after=after)
+            result = sp.current_user_recently_played(limit=limit, after=after)
             
             if not result['items']:
                 break
             # Send to Kafka as soon as we have the data
-            future = producer.produce_following_artists(user_id, result)
+            future = producer.produce_recent_plays(user_id, result)
             futures.append(future)
 
             played_at = datetime.strptime( result['item']['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")

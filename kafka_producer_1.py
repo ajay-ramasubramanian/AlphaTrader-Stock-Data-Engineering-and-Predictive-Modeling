@@ -3,8 +3,12 @@ import json
 import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
 
-from utils.process_spotify_api import (recently_played_tracks,
-                                       users_saved_tracks)
+from utils.process_spotify_api import (get_saved_tracks_as_dataframe,
+                                       get_user_followed_artists,
+                                       get_user_playlists,
+                                       get_user_recently_played_tracks,
+                                       get_user_top_artists,
+                                       get_user_top_tracks)
 
 # Create a Kafka producer
 kafka_producer = KafkaProducer(
@@ -29,8 +33,8 @@ def producer(df, topic):
     except Exception as e:
         print(f"Error sending message: {e}")
 
-
+user_top_tracks = get_user_playlists()
 # change topic name
-producer(users_saved_tracks, 'dataframe-topic')
+producer(user_top_tracks, 'dataframe-topic')
 kafka_producer.flush()
 kafka_producer.close()

@@ -29,7 +29,7 @@ def consumer(topic='dataframe-topic', bootstrap_servers=['localhost:9093'],
                 # print(f"Received raw message: {message.value}")
                 try:
                     # Try to parse the message as JSON
-                    print(message.keys())
+                    # print(message.keys())
                     data = json.loads(message.value)
                     # Convert the message value (list of dicts) back to a DataFrame
                     df = pd.DataFrame(data)

@@ -1,11 +1,10 @@
-from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
+import os
+from datetime import datetime
+
+import pandas as pd
 import spotipy
 from dotenv import load_dotenv
-from datetime import datetime
-import os
-import pandas as pd
-from spotipy.oauth2 import SpotifyOAuth
-
+from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
 # load_dotenv()
 # clientID= os.getenv("SPOTIPY_CLIENT_ID")
@@ -157,8 +156,8 @@ def get_user_playlists():
                 'is_collaborative': item['collaborative'],
                 'total_tracks': item['tracks']['total'],
                 'description': item['description'],
-                'snapshot_id': item['snapshot_id'],
-                'created_at': datetime.strptime(item['snapshot_id'].split(':')[0], "%Y%m%dT%H%M%S"),
+            #     'snapshot_id': item['snapshot_id'],
+            #     'created_at': datetime.strptime(item['snapshot_id'].split(':')[0], "%Y%m%dT%H%M%S"),
             })
         
         # Update the offset for the next request
@@ -173,8 +172,8 @@ def get_user_playlists():
     # Convert to DataFrame
     df_playlists = pd.DataFrame(playlists)
     
-    # Sort by created_at in descending order (most recent first)
-    df_playlists = df_playlists.sort_values('created_at', ascending=False)
+    # # Sort by created_at in descending order (most recent first)
+    # df_playlists = df_playlists.sort_values('created_at', ascending=False)
     
     return df_playlists
 
@@ -272,18 +271,17 @@ def get_user_top_tracks(time_range='medium_term'):
     return df_tracks
 
 
-user_top_tracks = get_user_top_tracks()
+# user_top_tracks = get_user_top_tracks()
 
-user_top_artists = get_user_top_artists()
+# user_top_artists = get_user_top_artists()
 
-user_playlist = get_user_playlists()git
+# user_playlist = get_user_playlists()
 
-recently_played_tracks = get_user_recently_played_tracks()
+# recently_played_tracks = get_user_recently_played_tracks()
 
-user_followed_artists = get_user_followed_artists()
+# user_followed_artists = get_user_followed_artists()
 
-users_saved_tracks = get_saved_tracks_as_dataframe()
+# users_saved_tracks = get_saved_tracks_as_dataframe()
 
-print("-----DONE------")
 
-sp.current_user_recently_played(limit=50, after=None)
+# sp.current_user_recently_played(limit=50, after=None)

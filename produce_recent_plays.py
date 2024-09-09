@@ -1,12 +1,14 @@
-from kafka import KafkaProducer
-from producers.base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
-from utils.utilites import scope
+
 import pandas as pd
 import spotipy
 from dotenv import load_dotenv
+from kafka import KafkaProducer
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
+
+from producers.base_producer import SpotifyKafkaProducer
+from utils.utilites import scope
 
 # load_dotenv()
 # clientID= os.getenv("SPOTIPY_CLIENT_ID")
@@ -24,17 +26,23 @@ def process_spotify_data(user_id):
         limit = 1
 
         while True:
-            result = sp.current_user_followed_artists(limit=limit, after=after)
-
+            
+            result = sp.current_user_top_tracks( limit=limit, after=after)
+            
+            if not result['items']:
+                break
             # Send to Kafka as soon as we have the data
             future = producer.produce_following_artists(user_id, result)
             futures.append(future)
 
-            if result['artists']['next']:
-                after = result['artists']['cursors']['after']
-            else:
-                break
+            played_at = datetime.strptime( result['item']['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            # Update the 'after' parameter for the next request
+            after = int(played_at.timestamp() * 1000)
+        
+
+        print("Sent all the data")
             
+        
 
         # Wait for all messages to be sent
         for future in futures:

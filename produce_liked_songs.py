@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from kafka import KafkaProducer
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
-from producer_class import SpotifyKafkaProducer
+from producers.base_producer import SpotifyKafkaProducer
 from utils.utilites import scope
 
 # load_dotenv()
@@ -22,12 +22,12 @@ def process_spotify_data(user_id):
     futures = []
 
     try:
-        after = None
-        limit = 1  # Maximum allowed by the API
+        offset = 0
+        limit = 1
 
         while True:
             
-            result = sp.current_user_saved_tracks(limit=limit, after=after)
+            result = sp.current_user_saved_tracks(limit=limit,offset=offset)
             
             if not result['items']:
                 break

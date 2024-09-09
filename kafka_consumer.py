@@ -23,6 +23,8 @@ def consumer(topic='dataframe-topic', bootstrap_servers=['localhost:9093'],
         group_id=group_id,
         value_deserializer=lambda x: x.decode('utf-8')
     )
+
+    print("Started Consumer")
     
     try:
             for message in kafka_consumer:

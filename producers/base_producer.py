@@ -1,4 +1,5 @@
 from kafka import KafkaProducer
+from utils import load_schema
 import json
 import io
 import avro.schema
@@ -28,17 +29,13 @@ class SpotifyKafkaProducer:
         self.executor = ThreadPoolExecutor(max_workers=5)  # Adjust based on your needs
 
         self.schemas = {
-            'following_artists': self.load_schema("schemas/following_artists.avsc"),
-            'liked_songs': self.load_schema("schemas/liked_songs.avsc"),
-            'recent_plays': self.load_schema("schemas/recent_plays.avsc"),
-            'saved_playlists': self.load_schema("schemas/saved_playlists.avsc"),
-            'top_artists': self.load_schema("schemas/top_artists.avsc"),
-            'top_songs': self.load_schema("schemas/top_songs.avsc")
+            'following_artists': load_schema("schemas/following_artists.avsc"),
+            'liked_songs': load_schema("schemas/liked_songs.avsc"),
+            'recent_plays': load_schema("schemas/recent_plays.avsc"),
+            'saved_playlists': load_schema("schemas/saved_playlists.avsc"),
+            'top_artists': load_schema("schemas/top_artists.avsc"),
+            'top_songs': load_schema("schemas/top_songs.avsc")
         }
-
-    def load_schema(self, schema_path):
-        with open(schema_path, "rb") as schema_file:
-            return avro.schema.parse(schema_file.read())
 
 
     def avro_serializer(self, data, schema):

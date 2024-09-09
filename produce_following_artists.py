@@ -2,7 +2,7 @@ from kafka import KafkaProducer
 from producers.base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
-from utils.utilites import scope
+from utils import scope
 import pandas as pd
 import spotipy
 from dotenv import load_dotenv

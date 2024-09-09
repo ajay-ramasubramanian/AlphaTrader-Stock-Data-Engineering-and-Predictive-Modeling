@@ -1,0 +1,106 @@
+{
+  "type": "record",
+  "name": "UserSavedTracks",
+  "fields": [
+    {"name": "href", "type": "string"},
+    {"name": "limit", "type": "int"},
+    {"name": "next", "type": ["null", "string"]},
+    {"name": "offset", "type": "int"},
+    {"name": "previous", "type": ["null", "string"]},
+    {"name": "total", "type": "int"},
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "SavedTrack",
+          "fields": [
+            {"name": "added_at", "type": "string"},
+            {
+              "name": "track",
+              "type": {
+                "type": "record",
+                "name": "Track",
+                "fields": [
+                  {
+                    "name": "album",
+                    "type": {
+                      "type": "record",
+                      "name": "Album",
+                      "fields": [
+                        {"name": "album_type", "type": "string"},
+                        {"name": "name", "type": "string"},
+                        {"name": "release_date", "type": "string"},
+                        {"name": "release_date_precision", "type": "string"},
+                        {"name": "total_tracks", "type": "int"},
+                        {"name": "type", "type": "string"},
+                        {"name": "uri", "type": "string"},
+                        {
+                          "name": "images",
+                          "type": {
+                            "type": "array",
+                            "items": {
+                              "type": "record",
+                              "name": "Image",
+                              "fields": [
+                                {"name": "height", "type": "int"},
+                                {"name": "width", "type": "int"},
+                                {"name": "url", "type": "string"}
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "artists",
+                          "type": {
+                            "type": "array",
+                            "items": {
+                              "type": "record",
+                              "name": "Artist",
+                              "fields": [
+                                {"name": "id", "type": "string"},
+                                {"name": "name", "type": "string"},
+                                {"name": "type", "type": "string"},
+                                {"name": "uri", "type": "string"}
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {"name": "artists", "type": {"type": "array", "items": "Artist"}},
+                  {"name": "disc_number", "type": "int"},
+                  {"name": "duration_ms", "type": "long"},
+                  {"name": "explicit", "type": "boolean"},
+                  {"name": "id", "type": "string"},
+                  {"name": "name", "type": "string"},
+                  {"name": "popularity", "type": "int"},
+                  {"name": "preview_url", "type": ["null", "string"]},
+                  {"name": "track_number", "type": "int"},
+                  {"name": "type", "type": "string"},
+                  {"name": "uri", "type": "string"},
+                  {
+                    "name": "external_ids",
+                    "type": {
+                      "type": "record",
+                      "name": "ExternalIds",
+                      "fields": [
+                        {"name": "isrc", "type": "string"}
+                      ]
+                    }
+                  },
+                  {
+                    "name": "available_markets",
+                    "type": {"type": "array", "items": "string"}
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

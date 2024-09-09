@@ -1,10 +1,10 @@
 import json
 
 import pandas as pd
-from kafka import KafkaConsumer, KafkaProducer
+from kafka import KafkaProducer
 
-from utils.process_spotify_api import (recently_played_tracks,
-                                       users_saved_tracks)
+from utils.process_spotify_api import (get_saved_tracks_as_dataframe,
+                                       get_user_top_artists)
 
 # Create a Kafka producer
 kafka_producer = KafkaProducer(
@@ -12,14 +12,14 @@ kafka_producer = KafkaProducer(
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
 
-def producer(df, topic):
+def producer(api_call, topic):
     
-    # Function to send DataFrame as a message
+    df = api_call()
     # Convert DataFrame to dictionary
     data = df.to_dict(orient='records')
     
     # Send the data as a message
-    future = kafka_producer.send(topic, key=b'suhaas', value=data, partition=1)
+    future = kafka_producer.send(topic, key=b'suhaas', value=data, partition=3)
     
     try:
         record_metadata = future.get(timeout=10)
@@ -31,6 +31,6 @@ def producer(df, topic):
 
 
 # change topic name
-producer(users_saved_tracks, 'dataframe-topic')
+producer(get_user_top_artists, 'dataframe-topic')
 kafka_producer.flush()
 kafka_producer.close()

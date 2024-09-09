@@ -7,8 +7,8 @@ __pycache__/
 *.so
 
 # Local files
-.csv
-.ipynb
+*.csv
+*.ipynb
 
 # Local folders
 
@@ -137,7 +137,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+<<<<<<< HEAD
+=======
 spotify_insight_venv/
+>>>>>>> main
 spotify-de/
 
 # Spyder project settings

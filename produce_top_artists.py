@@ -8,7 +8,7 @@ from kafka import KafkaProducer
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
 from producers.base_producer import SpotifyKafkaProducer
-from utils.utilites import scope
+from utils import scope
 
 # load_dotenv()
 # clientID= os.getenv("SPOTIPY_CLIENT_ID")

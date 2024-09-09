@@ -1,5 +1,8 @@
 from kafka import KafkaProducer
 import json
+import io
+import avro.schema
+from avro.io import DatumWriter
 from concurrent.futures import ThreadPoolExecutor
 
 KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
@@ -17,20 +20,29 @@ class SpotifyKafkaProducer:
     def __init__(self):
         self.producer = KafkaProducer(
             bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            # value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             key_serializer=str.encode,
             batch_size=16384,
             linger_ms=100,
             compression_type='gzip'
         )
+        self.schema = avro.schema.parse(open("schemas/following_artists.avsc", "rb").read())
         self.executor = ThreadPoolExecutor(max_workers=5)  # Adjust based on your needs
+
+    def avro_serializer(self, data, schema):
+        writer = DatumWriter(schema)
+        bytes_writer = io.BytesIO()
+        encoder = avro.io.BinaryEncoder(bytes_writer)
+        writer.write(data, encoder)
+        return bytes_writer.getvalue()
 
     def produce_message(self, topic_key, user_id, data):
         if topic_key not in TOPICS:
             raise ValueError(f"Invalid topic: {topic_key}")
         
         topic = TOPICS[topic_key]
-        future = self.producer.send(topic, key=user_id, value=data)
+        avro_data = self.avro_serializer(data, self.schema)
+        future = self.producer.send(topic, key=user_id, value=avro_data)
         return future
 
     def produce_following_artists(self, user_id, track_data):

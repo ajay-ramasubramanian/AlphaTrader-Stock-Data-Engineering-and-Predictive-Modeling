@@ -3,6 +3,7 @@ from producers.utils import schemas, TOPICS
 import avro.schema
 from avro.io import DatumReader
 import io
+from minio import Minio
 import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
 
@@ -21,7 +22,27 @@ def process_dataframe(df, topic_name, partition, offset):
         print("writing the file to a CSV file")
         df.to_csv(f"{topic_name}_{partition}_{offset}.csv", index = False)
         print("------------------------")
-    
+
+def minio (message, bucket_name = "spotify_raw_user_data"):
+    minio_client = Minio(
+        "localhost:9000",
+        access_key="minioadmin"
+        secret_key="minioadmin"
+        secure=False
+    )
+
+    data = json.loads(message.value)
+
+    minio_client.put_object(
+        bucket_name, # bucket name
+        f"data - {message.offset}.json",
+        json.dumps(data).encode('utf-8'),
+        length=-1,
+        content_type="application/json"
+    )
+
+    print("------------Object is written to the bucket---------")
+
 
 def consumer(bootstrap_servers=['localhost:9093'], 
                group_id='spotify_consumer_group'):

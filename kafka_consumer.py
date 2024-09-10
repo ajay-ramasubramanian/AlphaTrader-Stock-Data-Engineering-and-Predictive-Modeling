@@ -26,8 +26,8 @@ def process_dataframe(df, topic_name, partition, offset):
 def minio (message, bucket_name = "spotify_raw_user_data"):
     minio_client = Minio(
         "localhost:9000",
-        access_key="minioadmin"
-        secret_key="minioadmin"
+        access_key="minioadmin",
+        secret_key="minioadmin",
         secure=False
     )
 

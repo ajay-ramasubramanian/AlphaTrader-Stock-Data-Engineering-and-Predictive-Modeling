@@ -35,8 +35,8 @@ def minio ( user, topic, file):
         )
 
         source_file = file
-        destination_file = "tracks"
-        bucket_name=f"{user}/{topic}/"
+        destination_file = f"/{topic}/tracks"
+        bucket_name=f"{user}"
         found = minio_client.bucket_exists(bucket_name)
         
         if not found:

@@ -1,5 +1,5 @@
 from kafka import KafkaProducer
-from utils import schemas, TOPICS
+from utils import TOPIC_CONFIG
 import json
 import io
 import avro.schema
@@ -27,11 +27,11 @@ class SpotifyKafkaProducer:
         return bytes_writer.getvalue()
 
     def produce_message(self, topic_key, user_id, data):
-        if topic_key not in TOPICS:
+        if topic_key not in TOPIC_CONFIG:
             raise ValueError(f"Invalid topic: {topic_key}")
         
-        topic = TOPICS[topic_key]
-        schema = schemas[topic_key]
+        topic = TOPIC_CONFIG[topic_key]['topic']
+        schema = TOPIC_CONFIG[topic_key]['schema']
         avro_data = self.avro_serializer(data, schema)
         future = self.producer.send(topic, key=user_id, value=avro_data)
         return future

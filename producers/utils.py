@@ -15,25 +15,37 @@ scope = "user-library-read \
          user-read-email"
 
 
-TOPICS = {
-    'following_artists': 'spotify_following_artists',
-    'liked_songs': 'spotify_liked_songs',
-    'recent_plays': 'spotify_recent_plays',
-    'saved_playlists': 'spotify_saved_playlists',
-    'top_artists': 'spotify_top_artists',
-    'top_songs': 'spotify_top_songs'
-}
-
-
 def load_schema(schema_path):
     with open(schema_path, "rb") as schema_file:
         return parse(schema_file.read())
 
-schemas = {
-            'following_artists': load_schema("schemas/following_artists.avsc"),
-            'liked_songs': load_schema("schemas/liked_songs.avsc"),
-            'recent_plays': load_schema("schemas/recent_plays.avsc"),
-            'saved_playlists': load_schema("schemas/saved_playlists.avsc"),
-            'top_artists': load_schema("schemas/top_artists.avsc"),
-            'top_songs': load_schema("schemas/top_songs.avsc")
-        }
+
+TOPIC_CONFIG = {
+    'following_artists': {
+        'topic': 'spotify_following_artists',
+        'schema': load_schema("schemas/following_artists.avsc")
+    },
+    'liked_songs': {
+        'topic': 'spotify_liked_songs',
+        'schema': load_schema("schemas/liked_songs.avsc")
+    },
+    'recent_plays': {
+        'topic': 'spotify_recent_plays',
+        'schema': load_schema("schemas/recent_plays.avsc")
+    },
+    'saved_playlists': {
+        'topic': 'spotify_saved_playlists',
+        'schema': load_schema("schemas/saved_playlists.avsc")
+    },
+    'top_artists': {
+        'topic': 'spotify_top_artists',
+        'schema': load_schema("schemas/top_artists.avsc")
+    },
+    'top_songs': {
+        'topic': 'spotify_top_songs',
+        'schema': load_schema("schemas/top_songs.avsc")
+    }
+}
+
+# Create reverse mapping for easy lookup by topic name
+TOPIC_TO_KEY = {v['topic']: k for k, v in TOPIC_CONFIG.items()}

@@ -1,5 +1,5 @@
 import json
-from producers.utils import schemas, TOPICS
+from producers.utils import TOPIC_CONFIG, TOPIC_TO_KEY
 import avro.schema
 from avro.io import DatumReader
 import io
@@ -55,7 +55,7 @@ def consumer(bootstrap_servers=['localhost:9093'],
         group_id=group_id,
     )
 
-    kafka_consumer.subscribe(TOPICS.values())
+    kafka_consumer.subscribe([config['topic'] for config in TOPIC_CONFIG.values()])
     print("Started Consumer")
 
 # Avro deserializer
@@ -64,21 +64,12 @@ def consumer(bootstrap_servers=['localhost:9093'],
         while True:
             message = kafka_consumer.poll(timeout_ms=1000)
             if message:
-                # print(f"data: {data}")
-                # print(f"message type: {type(message)}")
-                # print(f"message: {message}")
-                # print("------------------------------------------------------------------------------------------------------------------------------------")
-
-                # print(f"consumer record: {message.values()}")
-                # print("------------------------------------------------------------------------------------------------------------------------------------")
-                # print(f"consumer items: {list(message.values())[0][0]}")
-                # print("------------------------------------------------------------------------------------------------------------------------------------")
                 record = list(message.values())[0][0]
                 topic, user = record.topic, record.key.decode("utf-8")
-                print(topic, user)
-                topic, user = message.topic, message.key
-                # data = avro_deserializer(record, schemas[])
-                # print(f"data: {data}")
+                topic_key = TOPIC_TO_KEY[topic]
+                # print(topic, user)
+                data = avro_deserializer(record.value, TOPIC_CONFIG[topic_key]['schema'])
+                print(f"data: {data}")
                 print("------------------------------------------------------------------------------------------------------------------------------------")
                 # topic_name, partition, offset = message.topic, message.partition, message.offset
                 # data = json.loads(message.value)

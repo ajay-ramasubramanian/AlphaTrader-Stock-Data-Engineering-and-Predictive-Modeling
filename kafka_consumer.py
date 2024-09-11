@@ -4,8 +4,10 @@ import avro.schema
 from avro.io import DatumReader
 import io
 from minio import Minio
+from minio.error import S3Error
 import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
+
 
 # from spotify_user_data_extraction import users_saved_tracks
 
@@ -23,28 +25,38 @@ def process_dataframe(df, topic_name, partition, offset):
         df.to_csv(f"{topic_name}_{partition}_{offset}.csv", index = False)
         print("------------------------")
 
-def minio (message, bucket_name = "spotify_raw_user_data"):
-    minio_client = Minio(
-        "localhost:9000",
-        access_key="minioadmin",
-        secret_key="minioadmin",
-        secure=False
-    )
+def minio ( user, topic, file):
+    try:
+        minio_client = Minio(
+            "localhost:9000",
+            access_key="minioadmin",
+            secret_key="minioadmin",
+            secure=False
+        )
 
-    data = json.loads(message.value)
+        source_file = file
+        destination_file = "tracks"
+        bucket_name=f"{user}/{topic}/"
+        found = minio_client.bucket_exists(bucket_name)
+        
+        if not found:
+            minio_client.make_bucket(bucket_name)
+            print(f"created bucket {bucket_name}")
+        else:
+            print(f"Bucket { bucket_name} already exists " )
 
-    minio_client.put_object(
-        bucket_name, # bucket name
-        f"data - {message.offset}.json",
-        json.dumps(data).encode('utf-8'),
-        length=-1,
-        content_type="application/json"
-    )
+        minio_client.fput_object(
+            bucket_name=bucket_name,
+            object_name=destination_file,
+            file_path=source_file,
+        )
 
-    print("------------Object is written to the bucket---------")
+        print( f"{source_file} is successfully uploaded as object {destination_file} to bucket {bucket_name}")
+    except S3Error as e:
+        print(f"error occured: {e}")
 
 
-def consumer(bootstrap_servers=['localhost:9093'], 
+def consumer(bootstrap_servers=['localhost:9093'],
                group_id='spotify_consumer_group'):
     
     # Create a Kafka consumer

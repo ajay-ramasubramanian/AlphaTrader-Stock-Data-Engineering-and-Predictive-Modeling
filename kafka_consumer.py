@@ -3,10 +3,14 @@ from producers.utils import TOPIC_CONFIG, TOPIC_TO_KEY
 import avro.schema
 from avro.io import DatumReader
 import io
+import time
 from minio import Minio
 from minio.error import S3Error
 import pandas as pd
 from kafka import KafkaConsumer, KafkaProducer
+import pyarrow as pa
+import pyarrow.parquet as pq
+import s3fs
 
 
 # from spotify_user_data_extraction import users_saved_tracks
@@ -25,35 +29,27 @@ def process_dataframe(df, topic_name, partition, offset):
         df.to_csv(f"{topic_name}_{partition}_{offset}.csv", index = False)
         print("------------------------")
 
-def minio ( user, topic, file):
+def minio (user, topic, data, offset):
     try:
-        minio_client = Minio(
-            "localhost:9000",
-            access_key="minioadmin",
-            secret_key="minioadmin",
-            secure=False
+
+        # Set up S3 filesystem (MinIO uses S3 protocol)
+        fs = s3fs.S3FileSystem(
+            endpoint_url="http://localhost:9000",
+            key="minioadmin",
+            secret="minioadmin"
         )
 
-        source_file = file
-        destination_file = f"/{topic}/tracks"
-        bucket_name=f"{user}"
-        found = minio_client.bucket_exists(bucket_name)
+        obj = json.dumps(data)
+
+        with fs.open(f"{user}/{topic}/{offset}.json", 'w') as f:
+            f.write(obj)
         
-        if not found:
-            minio_client.make_bucket(bucket_name)
-            print(f"created bucket {bucket_name}")
-        else:
-            print(f"Bucket { bucket_name} already exists " )
 
-        minio_client.fput_object(
-            bucket_name=bucket_name,
-            object_name=destination_file,
-            file_path=source_file,
-        )
-
-        print( f"{source_file} is successfully uploaded as object {destination_file} to bucket {bucket_name}")
+        print( f"{offset} is successfully uploaded as object {topic}/{offset} to bucket {user}")
     except S3Error as e:
         print(f"error occured: {e}")
+    except Exception as e:
+        print(f"Error in minio function: {e}")
 
 
 def consumer(bootstrap_servers=['localhost:9093'],
@@ -70,25 +66,32 @@ def consumer(bootstrap_servers=['localhost:9093'],
     kafka_consumer.subscribe([config['topic'] for config in TOPIC_CONFIG.values()])
     print("Started Consumer")
 
+    temp = []
+
 # Avro deserializer
     try:
         # Try to parse the message as JSON
         while True:
             message = kafka_consumer.poll(timeout_ms=1000)
             if message:
+                print(message)
+                #TODO: message is a list of records. Right now you are taking only the first one.
+                # change the code
+                
+
                 record = list(message.values())[0][0]
-                topic, user = record.topic, record.key.decode("utf-8")
+                topic, user, offset = record.topic, record.key.decode("utf-8"), record.offset
                 topic_key = TOPIC_TO_KEY[topic]
                 # print(topic, user)
                 data = avro_deserializer(record.value, TOPIC_CONFIG[topic_key]['schema'])
+                temp.append(data)
                 print(f"data: {data}")
                 print("------------------------------------------------------------------------------------------------------------------------------------")
-                # topic_name, partition, offset = message.topic, message.partition, message.offset
-                # data = json.loads(message.value)
-                # # Convert the message value (list of dicts) back to a DataFrame
-                # df = pd.DataFrame(data)
-                # # Process the DataFrame
-                # process_dataframe(df, topic_name, partition, offset)
+                # if len(temp) > 1:
+                # minio(user, topic, data, offset)
+                time.sleep(3)
+        
+        
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON: {e}")
         print(f"Problematic message: {message.value[:100]}...")  # Print first 100 chars of the message

@@ -29,6 +29,7 @@ def process_dataframe(df, topic_name, partition, offset):
         df.to_csv(f"{topic_name}_{partition}_{offset}.csv", index = False)
         print("------------------------")
 
+
 def minio (user, topic, data, offset):
     try:
 
@@ -88,7 +89,7 @@ def consumer(bootstrap_servers=['localhost:9093'],
                 print(f"data: {data}")
                 print("------------------------------------------------------------------------------------------------------------------------------------")
                 # if len(temp) > 1:
-                # minio(user, topic, data, offset)
+                minio(user, topic, data, offset)
                 time.sleep(3)
         
         

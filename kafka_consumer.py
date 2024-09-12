@@ -1,17 +1,18 @@
-import json
-from producers.utils import TOPIC_CONFIG, TOPIC_TO_KEY
-import avro.schema
-from avro.io import DatumReader
 import io
+import json
 import time
-from minio import Minio
-from minio.error import S3Error
+
+import avro.schema
 import pandas as pd
-from kafka import KafkaConsumer, KafkaProducer
 import pyarrow as pa
 import pyarrow.parquet as pq
 import s3fs
+from avro.io import DatumReader
+from kafka import KafkaConsumer, KafkaProducer
+from minio import Minio
+from minio.error import S3Error
 
+from producers.utils import TOPIC_CONFIG, TOPIC_TO_KEY
 
 # from spotify_user_data_extraction import users_saved_tracks
 
@@ -39,6 +40,16 @@ def minio (user, topic, data, offset):
             key="minioadmin",
             secret="minioadmin"
         )
+        # Check if the bucket exists, create it if it doesn't
+        if not fs.exists(user):
+            fs.mkdir(user)
+            print(f"Bucket '{user}' created.")
+
+        # Check if the subfolder exists, create it if it doesn't
+        subfolder_path = f"{user}/{topic}"
+        if not fs.exists(subfolder_path):
+            fs.mkdir(subfolder_path)
+            print(f"Subfolder '{topic}' created in bucket '{user}'.")
 
         obj = json.dumps(data)
 

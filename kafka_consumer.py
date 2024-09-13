@@ -33,7 +33,7 @@ def process_dataframe(df, topic_name, partition, offset):
 
 def minio (user, topic, data, offset):
     try:
-
+        ### IMPORTANT: It is not yet batch processing. We are still uploading each object to lake.  
         # Set up S3 filesystem (MinIO uses S3 protocol)
         fs = s3fs.S3FileSystem(
             endpoint_url="http://localhost:9000",
@@ -86,24 +86,25 @@ def consumer(bootstrap_servers=['localhost:9093'],
         while True:
             message = kafka_consumer.poll(timeout_ms=1000)
             if message:
-                print(message)
+                # print(message)
                 #TODO: message is a list of records. Right now you are taking only the first one.
-                # change the code
+                # TODO: Create 6 consumer groups. A dictionary of users and a batch to upload.
                 
 
-                record = list(message.values())[0][0]
-                topic, user, offset = record.topic, record.key.decode("utf-8"), record.offset
-                topic_key = TOPIC_TO_KEY[topic]
-                # print(topic, user)
-                # print("1")
-                data = avro_deserializer(record.value, TOPIC_CONFIG[topic_key]['schema'])
-                # print("2")
-                temp.append(data)
-                print(f"data: {data}")
+                records = list(message.values())[0]
+                print("length of records: ", len(records))
+                for record in records:
+                    topic, user, offset = record.topic, record.key.decode("utf-8"), record.offset
+                    topic_key = TOPIC_TO_KEY[topic]
+                    # print(topic, user)
+                    # print("\n Value type: \n", type(record.value)) # <class 'bytes'>
+                    data = avro_deserializer(record.value, TOPIC_CONFIG[topic_key]['schema'])
+                    print("\n data type: \n", type(data))
+                    temp.append(data)
+                # print(f"data: {data}")
                 print("------------------------------------------------------------------------------------------------------------------------------------")
                 # if len(temp) > 1:
-                minio(user, topic, data, offset)
-                time.sleep(3)
+                minio(user, topic, temp, offset)
         
         
     except json.JSONDecodeError as e:

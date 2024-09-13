@@ -18,16 +18,7 @@
           "fields": [
             {"name": "collaborative", "type": "boolean"},
             {"name": "description", "type": ["null", "string"]},
-            {
-              "name": "external_urls",
-              "type": {
-                "type": "record",
-                "name": "ExternalUrls",
-                "fields": [
-                  {"name": "spotify", "type": "string"}
-                ]
-              }
-            },
+            {"name": "external_urls", "type": {"type": "map", "values": "string"}},
             {"name": "href", "type": "string"},
             {"name": "id", "type": "string"},
             {
@@ -50,10 +41,10 @@
               "name": "owner",
               "type": {
                 "type": "record",
-                "name": "Owner",
+                "name": "User",
                 "fields": [
                   {"name": "display_name", "type": "string"},
-                  {"name": "external_urls", "type": "ExternalUrls"},
+                  {"name": "external_urls", "type": {"type": "map", "values": "string"}},
                   {"name": "href", "type": "string"},
                   {"name": "id", "type": "string"},
                   {"name": "type", "type": "string"},

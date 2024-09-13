@@ -29,6 +29,7 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
 
             while track_count < max_tracks:
                 result = self.sp.current_user_recently_played(limit=limit, before=before)
+                
                 # print(result)
                 # break
                 if not result['items']:
@@ -37,6 +38,7 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
                 # Send to Kafka as soon as we have the data
                 future = self.produce_recent_plays(user_id, result)
                 futures.append(future)
+                
 
                 played_at = datetime.strptime(result['items'][0]['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
                 before = int(played_at.timestamp() * 1000)

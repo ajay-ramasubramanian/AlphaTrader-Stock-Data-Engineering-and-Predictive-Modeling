@@ -20,7 +20,7 @@ class BaseKafkaConsumer:
     """
 
     # Class-level constants for batch size and time interval for batch processing
-    BATCH_SIZE = 5  # Number of messages to batch before uploading to storage
+    BATCH_SIZE = 1  # Number of messages to batch before uploading to storage
     MAX_BATCH_TIME = 100  # Maximum time to wait before forcing a batch upload
 
     def __init__(self, topic):

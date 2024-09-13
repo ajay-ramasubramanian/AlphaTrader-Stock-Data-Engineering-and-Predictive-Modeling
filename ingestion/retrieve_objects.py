@@ -22,7 +22,7 @@ def retrieve_and_convert_to_dataframe(user, topic):
         for obj in object_list:
             with fs.open(obj, 'r') as f:
                 json_data = json.load(f)
-                for record in json_data:
+                for record in json_data: # unpacking batched data if any
                     print(f"record: {record}")
                     all_data.append(record)
         print(len(all_data))

@@ -34,7 +34,8 @@ class SavedTracksProducer(SpotifyKafkaProducer):
 
             while True:
                 # Fetch the current user's saved tracks with pagination support
-                result = self.sp.current_user_saved_tracks(limit=limit, offset=offset)
+                result = self.sp.current_user_playlists(limit=limit, offset=offset)
+                print(f"result: {result}")
                 print("..")  # Optional debug print
 
                 # Break the loop if no items are returned
@@ -44,6 +45,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
                 # Send the data to Kafka as soon as it is retrieved
                 future = self.produce_liked_songs(user_id, result)
                 futures.append(future)
+                
 
                 # Increment offset for the next batch of items
                 offset += limit

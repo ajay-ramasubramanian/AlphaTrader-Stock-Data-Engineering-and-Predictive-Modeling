@@ -36,10 +36,11 @@ class FollowingArtistsProducer(SpotifyKafkaProducer):
             while True:
                 # Fetch the current user's followed artists with pagination support
                 result = self.sp.current_user_followed_artists(limit=limit, after=after)
-
+                
                 # Send the data to Kafka as soon as it is retrieved
                 future = self.produce_following_artists(user_id, result)
                 futures.append(future)
+                
 
                 # Check if there is a next page of results; if not, exit the loop
                 if result['artists']['next']:

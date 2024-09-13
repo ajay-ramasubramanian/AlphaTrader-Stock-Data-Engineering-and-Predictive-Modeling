@@ -29,12 +29,13 @@ class TopTracksProducer(SpotifyKafkaProducer):
 
             while True:
                 result = self.sp.current_user_top_tracks(time_range=time_range, limit=limit, offset=offset)
+                
                 if not result['items']:
                     break
                 # Send to Kafka as soon as we have the data
                 future = self.produce_top_songs(user_id, result)
                 futures.append(future)
-
+                
                 offset += limit
 
             print("Sent all the data")

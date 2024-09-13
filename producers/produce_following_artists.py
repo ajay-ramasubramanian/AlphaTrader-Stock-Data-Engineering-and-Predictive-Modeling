@@ -15,7 +15,7 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 # redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 
 class FollowingArtistsProducer(SpotifyKafkaProducer):
-    def __init__():
+    def __init__(self, ):
         super().__init__()
 
 
@@ -62,4 +62,5 @@ class FollowingArtistsProducer(SpotifyKafkaProducer):
 
 if __name__ == "__main__":
     # Start the data processing for a specific user
-    process_spotify_data('suhaas')
+    following_artists = FollowingArtistsProducer()
+    following_artists.process_spotify_data(user_id='suhaas')

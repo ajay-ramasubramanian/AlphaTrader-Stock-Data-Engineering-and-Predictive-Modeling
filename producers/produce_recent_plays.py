@@ -1,88 +1,62 @@
+from kafka import KafkaProducer
+from base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
-
-import pandas as pd
-import spotipy
-from datetime import datetime
-from dotenv import load_dotenv
-from spotipy.oauth2 import SpotifyOAuth
-
-from base_producer import SpotifyKafkaProducer
 from utils import scope
+import pandas as pd
+from dotenv import load_dotenv
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+class RecentlyPlayedProducer(SpotifyKafkaProducer):
+    def __init__(self):
+        super().__init__()
 
-def process_spotify_data(user_id):
-    producer = SpotifyKafkaProducer()
-    futures = []
+    def process_spotify_data(self, user_id):
+        """
+        Processes Spotify data for the given user by retrieving their recently played tracks
+        and sending this data to Kafka for downstream processing.
 
-    try:
-        # after = None
-        before = int(datetime.now().timestamp() * 1000)
-        limit = 1
-        track_count = 0
-        max_tracks = 100
+        Args:
+            user_id (str): The Spotify user ID.
+        """
+        futures = []
+        try:
+            before = int(datetime.now().timestamp() * 1000)
+            limit = 1
+            track_count = 0
+            max_tracks = 100
 
-        while track_count < max_tracks:
-            result = sp.current_user_recently_played(limit=limit, before=before)
-            if not result['items']:
-                break
-            
-            # Send to Kafka as soon as we have the data
-            future = producer.produce_recent_plays(user_id, result)
-            futures.append(future)
+            while track_count < max_tracks:
+                result = self.sp.current_user_recently_played(limit=limit, before=before)
+                # print(result)
+                # break
+                if not result['items']:
+                    break
 
-            played_at = datetime.strptime(result['items'][0]['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
-            # Update the 'after' parameter for the next request
-            # after = int(played_at.timestamp() * 1000)
-            before = int(played_at.timestamp() * 1000)
-            track_count += 1
-            print(f"Processed track {track_count}")
+                # Send to Kafka as soon as we have the data
+                future = self.produce_recent_plays(user_id, result)
+                futures.append(future)
 
-        print(f"Sent {track_count} tracks")
+                played_at = datetime.strptime(result['items'][0]['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+                before = int(played_at.timestamp() * 1000)
+                track_count += 1
+                print(f"Processed track {track_count}")
 
-        # Wait for all messages to be sent
-        for future in futures:
-            try:
-                kafka_future = future.result()
-                record_metadata = kafka_future.get(timeout=10)
-                print(f"Message sent to {record_metadata.topic} partition {record_metadata.partition} offset {record_metadata.offset}")
-            except Exception as e:
-                print(f"Failed to send message: {e}")
+            print(f"Sent {track_count} tracks")
 
-    finally:
-        producer.close()
+            # Wait for all messages to be sent
+            for future in futures:
+                try:
+                    kafka_future = future.result()
+                    record_metadata = kafka_future.get(timeout=10)
+                    print(f"Message sent to {record_metadata.topic} partition {record_metadata.partition} offset {record_metadata.offset}")
+                except Exception as e:
+                    print(f"Failed to send message: {e}")
+
+        finally:
+            self.close()
 
 if __name__ == "__main__":
-    process_spotify_data('suhaas')
-
-
-        # limit = 50  # Maximum allowed by Spotify API
-        # track_count = 0
-        # max_tracks = 100
-
-        # while track_count < max_tracks:
-        #     result = sp.current_user_recently_played(limit=limit, before=before)
-            
-        #     if not result['items']:
-        #         print("No more tracks to process")
-        #         break
-            
-        #     # for item in result['items']:
-        #         # Send to Kafka as soon as we have the data
-        #     future = producer.produce_recent_plays(user_id, result)
-        #     futures.append(future)
-
-        #     played_at = datetime.strptime(result["items"][0]['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        #     before = int(played_at.timestamp() * 1000)
-            
-        #     track_count += 1
-        #     print(f"Processed track {track_count}")
-
-        #     if track_count >= max_tracks:
-        #         break
-
-        #     # Add a small delay to avoid hitting rate limits
-        #     # time.sleep(1)
-
-        # print(f"Sent {track_count} tracks")
+    recent_plays = RecentlyPlayedProducer()
+    recent_plays.process_spotify_data('suhaas')

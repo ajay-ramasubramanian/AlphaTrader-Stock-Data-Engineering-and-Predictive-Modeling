@@ -20,7 +20,7 @@ class BaseKafkaConsumer:
     """
 
     # Class-level constants for batch size and time interval for batch processing
-    BATCH_SIZE = 30  # Number of messages to batch before uploading to storage
+    BATCH_SIZE = 5  # Number of messages to batch before uploading to storage
     MAX_BATCH_TIME = 100  # Maximum time to wait before forcing a batch upload
 
     def __init__(self, topic):
@@ -51,7 +51,7 @@ class BaseKafkaConsumer:
         decoder = avro.io.BinaryDecoder(bytes_reader)  # Create a BinaryDecoder from the buffer
         return reader.read(decoder)  # Deserialize and return the message
 
-    def minio(user, topic, data, offset):
+    def minio(self, user, topic, data, offset):
         """
         Uploads batched data to MinIO (an S3-compatible object storage).
 
@@ -61,6 +61,7 @@ class BaseKafkaConsumer:
             data (list): The batch of messages to upload.
             offset (int): The offset of the last message in the batch.
         """
+        topic = topic.replace("_", "-")
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
@@ -72,8 +73,19 @@ class BaseKafkaConsumer:
             # Convert data to JSON format
             obj = json.dumps(data)
 
+            # Check if the bucket exists, create it if it doesn't
+            if not fs.exists(topic):
+                fs.mkdir(topic)
+                print(f"Bucket '{topic}' created.")
+
+            # Check if the subfolder exists, create it if it doesn't
+            subfolder_path = f"{topic}/{user}"
+            if not fs.exists(subfolder_path):
+                fs.mkdir(subfolder_path)
+                print(f"Subfolder '{user}' created in bucket '{topic}'.")
+
             # Write the data to MinIO
-            with fs.open(f"{user}/{topic}/{offset}.json", 'w') as f:
+            with fs.open(f"{topic}/{user}/{offset}.json", 'w') as f:
                 f.write(obj)
 
             print(f"{offset} is successfully uploaded as object {topic}/{offset} to bucket {user}")
@@ -90,7 +102,7 @@ class BaseKafkaConsumer:
             user (str): The user whose batch is being uploaded.
             offset (int): The offset of the last message in the batch.
         """
-        minio(user, self.topic, self.user_batches[user], offset)  # Upload the batch to MinIO
+        self.minio(user, self.topic, self.user_batches[user], offset)  # Upload the batch to MinIO
         self.user_batches[user] = []  # Clear the batch after uploading
 
     def process_message(self, message):

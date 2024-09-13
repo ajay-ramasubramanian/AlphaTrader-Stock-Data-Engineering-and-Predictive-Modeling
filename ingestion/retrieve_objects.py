@@ -22,8 +22,13 @@ def retrieve_and_convert_to_dataframe(user, topic):
         for obj in object_list:
             with fs.open(obj, 'r') as f:
                 json_data = json.load(f)
-                all_data.append(json_data)
+                for record in json_data:
+                    print(f"record: {record}")
+                    all_data.append(record)
         print(len(all_data))
+        # print(all_data)
+
+
         
         print(f"Successfully retrieved and converted {len(all_data)} objects from {user}/{topic}")
         # return df
@@ -32,4 +37,4 @@ def retrieve_and_convert_to_dataframe(user, topic):
         print(f"Error in retrieve_and_convert_to_dataframe function: {e}")
         return None
 
-retrieve_and_convert_to_dataframe("suhaas","spotify-recent-plays")
+retrieve_and_convert_to_dataframe("suhaas","spotify-top-songs")

@@ -24,8 +24,9 @@ class MinioRetriever:
             for obj in object_list:
                 with fs.open(obj, 'r') as f:
                     json_data = json.load(f)
-                    all_data.append(json_data)
-            # print(all_data[0])
+                    for record in json_data: # unpacking batched data if any
+                        print(f"record: {record}")
+                        all_data.append(record)
             return all_data
             
             # print(f"Successfully retrieved and converted {len(all_data[0])} objects from {self.topic}/{self.user}")
@@ -73,4 +74,5 @@ class MinioUploader:
             except Exception as e:
                 print("\nError occured while uploading file to bucket : {e}")
             
+        
         

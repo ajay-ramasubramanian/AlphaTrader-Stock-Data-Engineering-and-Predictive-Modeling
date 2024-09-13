@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "name": "RecentlyPlayedResponse",
+  "name": "RecentlyPlayedTracks",
   "fields": [
     {
       "name": "items",
@@ -8,7 +8,7 @@
         "type": "array",
         "items": {
           "type": "record",
-          "name": "PlayedItem",
+          "name": "PlayedTrack",
           "fields": [
             {
               "name": "track",
@@ -81,7 +81,7 @@
                   {"name": "is_local", "type": "boolean"},
                   {"name": "name", "type": "string"},
                   {"name": "popularity", "type": "int"},
-                  {"name": "preview_url", "type": ["string", "null"]},
+                  {"name": "preview_url", "type": ["null", "string"]},
                   {"name": "track_number", "type": "int"},
                   {"name": "type", "type": "string"},
                   {"name": "uri", "type": "string"}
@@ -89,19 +89,7 @@
               }
             },
             {"name": "played_at", "type": "string"},
-            {
-              "name": "context",
-              "type": {
-                "type": "record",
-                "name": "Context",
-                "fields": [
-                  {"name": "type", "type": "string"},
-                  {"name": "href", "type": "string"},
-                  {"name": "external_urls", "type": {"type": "map", "values": "string"}},
-                  {"name": "uri", "type": "string"}
-                ]
-              }
-            }
+            {"name": "context", "type": ["null", "string"]}
           ]
         }
       }

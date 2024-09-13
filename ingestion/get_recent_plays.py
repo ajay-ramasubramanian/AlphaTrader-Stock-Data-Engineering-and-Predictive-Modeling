@@ -1,4 +1,4 @@
-from retrieve_objects import MinioRetriever
+from retrieve_objects import MinioRetriever,
 import pandas as pd
 from datetime import datetime
 

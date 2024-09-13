@@ -35,6 +35,7 @@ def minio (user, topic, data, offset):
     try:
         ### IMPORTANT: It is not yet batch processing. We are still uploading each object to lake.  
         # Set up S3 filesystem (MinIO uses S3 protocol)
+        topic = topic.replace("_", "-")
         fs = s3fs.S3FileSystem(
             endpoint_url="http://localhost:9000",
             key="minioadmin",

@@ -1,14 +1,15 @@
-from retrieve_objects import MinioRetriever
+from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
 
-class RetrieveTopArtists(MinioRetriever):
+class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
-    def __init__(self,user, topic) -> None:
-        super().__init__(user, topic)
+    def __init__(self,user, topic,container) -> None:
+        MinioRetriever.__init__(user, topic)
+        MinioUploader.__init__(container, user, topic)
 
     def get_user_top_artists(self):
         artists = []
-        all_data = super().retrieve_object()
+        all_data = MinioRetriever.retrieve_object()
         results= all_data[0]
         for item in results['items']:
             artists.append({
@@ -23,6 +24,6 @@ class RetrieveTopArtists(MinioRetriever):
             })
         # Convert to DataFrame
         df_artists = pd.DataFrame(artists)
-        return df_artists
+        MinioUploader.upload_files(data=df_artists)
     
 

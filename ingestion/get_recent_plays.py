@@ -1,18 +1,16 @@
-from retrieve_objects import MinioRetriever,
+from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
 from datetime import datetime
 
+class RetrieveRecentPlays(MinioRetriever,MinioUploader):
 
-
-
-class RetrieveRecentPlays(MinioRetriever):
-
-    def __init__(self,user, topic) -> None:
-        super().__init__(user, topic)
+    def __init__(self,user, topic, container) -> None:
+        MinioRetriever.__init__(user, topic)
+        MinioUploader.__init__(container, user,topic)
 
     def get_user_recent_plays(self):
         tracks = []
-        all_data = super().retrieve_object()
+        all_data = MinioRetriever.retrieve_object()
         results= all_data[0]
         for item in results['items']:
             track = item['track']
@@ -32,6 +30,6 @@ class RetrieveRecentPlays(MinioRetriever):
             })
         # Convert to DataFrame
         df_tracks = pd.DataFrame(tracks)
-        return df_tracks
+        MinioUploader.upload_files(data=df_tracks)
     
 

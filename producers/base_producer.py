@@ -13,8 +13,6 @@ class SpotifyKafkaProducer:
         self.producer = KafkaProducer(
             bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
             key_serializer=str.encode,
-            batch_size=16384,
-            linger_ms=100,
             compression_type='gzip'
         )
         self.executor = ThreadPoolExecutor(max_workers=5)  # Adjust based on your needs
@@ -33,7 +31,7 @@ class SpotifyKafkaProducer:
         topic = TOPIC_CONFIG[topic_key]['topic']
         schema = TOPIC_CONFIG[topic_key]['schema']
         avro_data = self.avro_serializer(data, schema)
-        future = self.producer.send(topic, key=user_id, value=avro_data)
+        future = self.producer.send(topic=topic, key=user_id, value=avro_data)
         return future
 
     def produce_following_artists(self, user_id, track_data):

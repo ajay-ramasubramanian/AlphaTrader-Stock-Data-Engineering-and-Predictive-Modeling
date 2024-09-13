@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "name": "RecentlyPlayedTracks",
+  "name": "RecentlyPlayedResponse",
   "fields": [
     {
       "name": "items",
@@ -8,7 +8,7 @@
         "type": "array",
         "items": {
           "type": "record",
-          "name": "PlayedTrack",
+          "name": "PlayedItem",
           "fields": [
             {
               "name": "track",
@@ -31,6 +31,8 @@
                               "type": "record",
                               "name": "Artist",
                               "fields": [
+                                {"name": "external_urls", "type": {"type": "map", "values": "string"}},
+                                {"name": "href", "type": "string"},
                                 {"name": "id", "type": "string"},
                                 {"name": "name", "type": "string"},
                                 {"name": "type", "type": "string"},
@@ -40,6 +42,8 @@
                           }
                         },
                         {"name": "available_markets", "type": {"type": "array", "items": "string"}},
+                        {"name": "external_urls", "type": {"type": "map", "values": "string"}},
+                        {"name": "href", "type": "string"},
                         {"name": "id", "type": "string"},
                         {
                           "name": "images",
@@ -50,8 +54,8 @@
                               "name": "Image",
                               "fields": [
                                 {"name": "height", "type": "int"},
-                                {"name": "width", "type": "int"},
-                                {"name": "url", "type": "string"}
+                                {"name": "url", "type": "string"},
+                                {"name": "width", "type": "int"}
                               ]
                             }
                           }
@@ -70,11 +74,14 @@
                   {"name": "disc_number", "type": "int"},
                   {"name": "duration_ms", "type": "long"},
                   {"name": "explicit", "type": "boolean"},
-                  {"name": "external_ids", "type": {"type": "record", "name": "ExternalIds", "fields": [{"name": "isrc", "type": "string"}]}},
+                  {"name": "external_ids", "type": {"type": "map", "values": "string"}},
+                  {"name": "external_urls", "type": {"type": "map", "values": "string"}},
+                  {"name": "href", "type": "string"},
                   {"name": "id", "type": "string"},
+                  {"name": "is_local", "type": "boolean"},
                   {"name": "name", "type": "string"},
                   {"name": "popularity", "type": "int"},
-                  {"name": "preview_url", "type": ["null", "string"]},
+                  {"name": "preview_url", "type": ["string", "null"]},
                   {"name": "track_number", "type": "int"},
                   {"name": "type", "type": "string"},
                   {"name": "uri", "type": "string"}
@@ -82,7 +89,19 @@
               }
             },
             {"name": "played_at", "type": "string"},
-            {"name": "context", "type": ["null", "string"]}
+            {
+              "name": "context",
+              "type": {
+                "type": "record",
+                "name": "Context",
+                "fields": [
+                  {"name": "type", "type": "string"},
+                  {"name": "href", "type": "string"},
+                  {"name": "external_urls", "type": {"type": "map", "values": "string"}},
+                  {"name": "uri", "type": "string"}
+                ]
+              }
+            }
           ]
         }
       }

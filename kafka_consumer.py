@@ -41,23 +41,23 @@ def minio (user, topic, data, offset):
             secret="minioadmin"
         )
         # Check if the bucket exists, create it if it doesn't
-        if not fs.exists(user):
-            fs.mkdir(user)
-            print(f"Bucket '{user}' created.")
+        if not fs.exists(topic):
+            fs.mkdir(topic)
+            print(f"Bucket '{topic}' created.")
 
         # Check if the subfolder exists, create it if it doesn't
-        subfolder_path = f"{user}/{topic}"
+        subfolder_path = f"{topic}/{user}"
         if not fs.exists(subfolder_path):
             fs.mkdir(subfolder_path)
-            print(f"Subfolder '{topic}' created in bucket '{user}'.")
+            print(f"Subfolder '{user}' created in bucket '{topic}'.")
 
         obj = json.dumps(data)
 
-        with fs.open(f"{user}/{topic}/{offset}.json", 'w') as f:
+        with fs.open(f"{topic}/{user}/{offset}.json", 'w') as f:
             f.write(obj)
         
 
-        print( f"{offset} is successfully uploaded as object {topic}/{offset} to bucket {user}")
+        # print( f"{offset} is successfully uploaded as object {topic}/{offset} to bucket {user}")
     except S3Error as e:
         print(f"error occured: {e}")
     except Exception as e:
@@ -95,7 +95,9 @@ def consumer(bootstrap_servers=['localhost:9093'],
                 topic, user, offset = record.topic, record.key.decode("utf-8"), record.offset
                 topic_key = TOPIC_TO_KEY[topic]
                 # print(topic, user)
+                # print("1")
                 data = avro_deserializer(record.value, TOPIC_CONFIG[topic_key]['schema'])
+                # print("2")
                 temp.append(data)
                 print(f"data: {data}")
                 print("------------------------------------------------------------------------------------------------------------------------------------")
@@ -106,7 +108,7 @@ def consumer(bootstrap_servers=['localhost:9093'],
         
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON: {e}")
-        print(f"Problematic message: {message.value[:100]}...")  # Print first 100 chars of the message
+        # print(f"Problematic message: {message.value[:100]}...")  # Print first 100 chars of the message
     except Exception as e:
         print(f"Error processing message: {e}")
 

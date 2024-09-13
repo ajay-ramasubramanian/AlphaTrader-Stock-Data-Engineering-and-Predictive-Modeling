@@ -30,7 +30,7 @@ TOPIC_CONFIG = {
         'schema': load_schema("schemas/liked_songs.avsc")
     },
     'recent_plays': {
-        'topic': 'spotify-recent-plays',
+        'topic': 'spotify_recent_plays',
         'schema': load_schema("schemas/recent_plays.avsc")
     },
     'saved_playlists': {

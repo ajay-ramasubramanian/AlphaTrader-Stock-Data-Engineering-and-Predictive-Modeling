@@ -62,3 +62,4 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
 if __name__ == "__main__":
     recent_plays = RecentlyPlayedProducer()
     recent_plays.process_spotify_data('suhaas')
+q

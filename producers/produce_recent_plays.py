@@ -23,11 +23,11 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
         futures = []
         try:
             before = int(datetime.now().timestamp() * 1000)
-            limit = 1
+            limit = 10
             track_count = 0
             max_tracks = 100
 
-            while track_count < max_tracks:
+            while True:
                 result = self.sp.current_user_recently_played(limit=limit, before=before)
                 
                 # print(result)

@@ -25,7 +25,7 @@ class MinioRetriever:
                 with fs.open(obj, 'r') as f:
                     json_data = json.load(f)
                     for record in json_data: # unpacking batched data if any
-                        print(f"record: {record}")
+                        # print(f"record: {record}")
                         all_data.append(record)
             return all_data
             

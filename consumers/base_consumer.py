@@ -20,8 +20,9 @@ class BaseKafkaConsumer:
     """
 
     # Class-level constants for batch size and time interval for batch processing
-    BATCH_SIZE = 1  # Number of messages to batch before uploading to storage
+    BATCH_SIZE = 100  # Number of messages to batch before uploading to storage
     MAX_BATCH_TIME = 100  # Maximum time to wait before forcing a batch upload
+    CONTAINER = "RAW"
 
     def __init__(self, topic):
         """
@@ -50,6 +51,15 @@ class BaseKafkaConsumer:
         bytes_reader = io.BytesIO(avro_bytes)  # Read bytes into a BytesIO buffer
         decoder = avro.io.BinaryDecoder(bytes_reader)  # Create a BinaryDecoder from the buffer
         return reader.read(decoder)  # Deserialize and return the message
+    
+
+    def ensure_bucket_exists(self, client, bucket_name):
+        if not client.bucket_exists(bucket_name):
+            client.make_bucket(bucket_name)
+            print(f"Bucket '{bucket_name}' created successfully")
+        else:
+            print(f"Bucket '{bucket_name}' already exists")
+
 
     def minio(self, user, topic, data, offset):
         """
@@ -63,6 +73,7 @@ class BaseKafkaConsumer:
         """
         topic = topic.replace("_", "-")
         try:
+
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
                 endpoint_url="http://localhost:9000",  # MinIO endpoint
@@ -74,14 +85,20 @@ class BaseKafkaConsumer:
             obj = json.dumps(data)
 
             # Check if the bucket exists, create it if it doesn't
-            if not fs.exists(topic):
-                fs.mkdir(topic)
-                print(f"Bucket '{topic}' created.")
+            if not fs.exists(BaseKafkaConsumer.CONTAINER):
+                fs.mkdir(BaseKafkaConsumer.CONTAINER)
+                print(f"Bucket '{BaseKafkaConsumer.CONTAINER}' created.")
 
-            # Check if the subfolder exists, create it if it doesn't
-            subfolder_path = f"{topic}/{user}"
-            if not fs.exists(subfolder_path):
-                fs.mkdir(subfolder_path)
+            # Check if the topic subfolder exists, create it if it doesn't
+            topic_path = f"{BaseKafkaConsumer.CONTAINER}/{topic}"
+            if not fs.exists(topic_path):
+                fs.mkdir(topic_path)
+                print(f"Topic folder '{topic}' created.")
+
+            # Check if the user subfolder exists, create it if it doesn't
+            user_path = f"{topic}/{user}"
+            if not fs.exists(user_path):
+                fs.mkdir(user_path)
                 print(f"Subfolder '{user}' created in bucket '{topic}'.")
 
             # Write the data to MinIO
@@ -117,7 +134,7 @@ class BaseKafkaConsumer:
 
         # Iterate over each ConsumerRecord in the list
         for record in records:
-            print(f"record: {record}")
+            # print(f"record: {record}")
             # Extract topic key, user identifier, and offset from the record
             topic_key, user, offset = TOPIC_TO_KEY[record.topic], record.key.decode("utf-8"), record.offset
 

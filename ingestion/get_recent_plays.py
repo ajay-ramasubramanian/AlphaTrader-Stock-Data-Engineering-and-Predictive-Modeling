@@ -1,16 +1,16 @@
-from retrieve_objects import MinioRetriever,MinioUploader
+from retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
 from datetime import datetime
 
 class RetrieveRecentPlays(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic, container) -> None:
-        MinioRetriever.__init__(user, topic)
-        MinioUploader.__init__(container, user,topic)
+        MinioRetriever.__init__(self, user, topic)
+        MinioUploader.__init__(self, container, user,topic)
 
     def get_user_recent_plays(self):
         tracks = []
-        all_data = MinioRetriever.retrieve_object()
+        all_data = MinioRetriever.retrieve_object(self)
         results= all_data[0]
         for item in results['items']:
             track = item['track']
@@ -30,6 +30,10 @@ class RetrieveRecentPlays(MinioRetriever,MinioUploader):
             })
         # Convert to DataFrame
         df_tracks = pd.DataFrame(tracks)
-        MinioUploader.upload_files(data=df_tracks)
+        MinioUploader.upload_files(self, data=df_tracks)
+        print("done")
     
 
+if __name__ == '__main__':
+    ob = RetrieveRecentPlays('suhaas', 'spotify-recent-plays', 'processed')
+    ob.get_user_recent_plays()

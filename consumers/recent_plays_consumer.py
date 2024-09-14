@@ -7,7 +7,7 @@ class RecentPlaysConsumer(BaseKafkaConsumer):
     TOPIC = TOPIC_CONFIG['recent_plays']['topic']
 
     def __init__(self, group_id):
-        super().__init__('spotify_recent_plays')
+        super().__init__(RecentPlaysConsumer.TOPIC)
         self.consumer = KafkaConsumer(
             bootstrap_servers = RecentPlaysConsumer.KAFKA_BOOTSTRAP_SERVERS,
             auto_offset_reset = 'earliest',  # Start reading from the earliest message available

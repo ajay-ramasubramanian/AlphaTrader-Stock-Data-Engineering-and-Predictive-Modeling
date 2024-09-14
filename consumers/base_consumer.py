@@ -20,9 +20,9 @@ class BaseKafkaConsumer:
     """
 
     # Class-level constants for batch size and time interval for batch processing
-    BATCH_SIZE = 100  # Number of messages to batch before uploading to storage
+    BATCH_SIZE = 10  # Number of messages to batch before uploading to storage
     MAX_BATCH_TIME = 100  # Maximum time to wait before forcing a batch upload
-    CONTAINER = "RAW"
+    CONTAINER = "raw" # Cannot capitalize bucket names in Minio
 
     def __init__(self, topic):
         """
@@ -86,23 +86,25 @@ class BaseKafkaConsumer:
 
             # Check if the bucket exists, create it if it doesn't
             if not fs.exists(BaseKafkaConsumer.CONTAINER):
+                print("In container section\n")
                 fs.mkdir(BaseKafkaConsumer.CONTAINER)
                 print(f"Bucket '{BaseKafkaConsumer.CONTAINER}' created.")
 
             # Check if the topic subfolder exists, create it if it doesn't
             topic_path = f"{BaseKafkaConsumer.CONTAINER}/{topic}"
             if not fs.exists(topic_path):
+                print("In topic section")
                 fs.mkdir(topic_path)
                 print(f"Topic folder '{topic}' created.")
 
             # Check if the user subfolder exists, create it if it doesn't
-            user_path = f"{topic}/{user}"
+            user_path = f"{topic_path}/{user}"
             if not fs.exists(user_path):
                 fs.mkdir(user_path)
                 print(f"Subfolder '{user}' created in bucket '{topic}'.")
 
             # Write the data to MinIO
-            with fs.open(f"{topic}/{user}/{offset}.json", 'w') as f:
+            with fs.open(f"{user_path}/{offset}.json", 'w') as f:
                 f.write(obj)
 
             print(f"{offset} is successfully uploaded as object {topic}/{offset} to bucket {user}")

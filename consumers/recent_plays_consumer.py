@@ -7,6 +7,7 @@ class RecentPlaysConsumer(BaseKafkaConsumer):
     TOPIC = TOPIC_CONFIG['recent_plays']['topic']
 
     def __init__(self, group_id):
+        print(RecentPlaysConsumer.TOPIC)
         super().__init__(RecentPlaysConsumer.TOPIC)
         self.consumer = KafkaConsumer(
             bootstrap_servers = RecentPlaysConsumer.KAFKA_BOOTSTRAP_SERVERS,

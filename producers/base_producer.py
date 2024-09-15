@@ -70,6 +70,7 @@ class SpotifyKafkaProducer:
         
         # Retrieve the topic name and schema for the specified topic_key from TOPIC_CONFIG
         topic = TOPIC_CONFIG[topic_key]['topic']
+        # print(f"producer: {topic}")
         schema = TOPIC_CONFIG[topic_key]['schema']
         
         # Serialize the data using Avro format

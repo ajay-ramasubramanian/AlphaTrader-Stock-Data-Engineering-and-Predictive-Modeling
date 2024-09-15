@@ -3,11 +3,11 @@ import pandas as pd
 from utils import TOPIC_CONFIG
 class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
 
-    def __init__(self,user, topic,container) -> None:
-        MinioRetriever.__init__(self,user, topic)
-        MinioUploader.__init__(container, user, topic)
+    def __init__(self,user, topic,raw, processed) -> None:
+        MinioRetriever.__init__(self,user, topic, raw)
+        MinioUploader.__init__(self, user, topic, processed)
 
-    def get_user_recent_plays(self):
+    def get_user_saved_playlist(self):
         playlists = []
         results = MinioRetriever.retrieve_object(self)
         print(results)
@@ -32,5 +32,8 @@ class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
 
 
 if __name__ == "__main__":
-    ob = RetrieveSavedPlaylist("suhaas",TOPIC_CONFIG["saved_playlists"]["topic"],"processed")
-    ob.get_liked_songs()
+    ob = RetrieveSavedPlaylist("suhaas", \
+                            TOPIC_CONFIG["saved_playlists"]["topic"],\
+                            "raw", \
+                            "processed")
+    ob.get_user_saved_playlist()

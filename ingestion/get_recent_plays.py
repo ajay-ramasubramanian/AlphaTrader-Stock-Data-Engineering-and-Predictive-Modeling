@@ -5,14 +5,9 @@ from utils import TOPIC_CONFIG
 
 class RetrieveRecentPlays(MinioRetriever,MinioUploader):
 
-    RAW_CONTAINER = "raw"
-    PROCESSED_CONTAINER = "processed"
-
     def __init__(self, user, topic, raw, processed) -> None:
         MinioRetriever.__init__(self, user, topic, raw)
         MinioUploader.__init__(self, user, topic, processed)
-        
-        
 
     def get_user_recent_plays(self):
         tracks = []
@@ -42,5 +37,8 @@ class RetrieveRecentPlays(MinioRetriever,MinioUploader):
     
 
 if __name__ == "__main__":
-    ob = RetrieveRecentPlays("suhaas",TOPIC_CONFIG["recent_plays"]["topic"], "raw", "processed")
+    ob = RetrieveRecentPlays("suhaas", \
+                            TOPIC_CONFIG["recent_plays"]["topic"], \
+                            "raw", \
+                            "processed")
     ob.get_user_recent_plays()

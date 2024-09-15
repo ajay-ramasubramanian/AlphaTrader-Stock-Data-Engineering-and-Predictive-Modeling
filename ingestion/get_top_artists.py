@@ -3,9 +3,9 @@ import pandas as pd
 from utils import TOPIC_CONFIG
 class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
-    def __init__(self,user, topic,container) -> None:
-        MinioRetriever.__init__(self,user, topic)
-        MinioUploader.__init__(self,container, user, topic)
+    def __init__(self,user, topic,raw, processed) -> None:
+        MinioRetriever.__init__(self,user, topic, raw)
+        MinioUploader.__init__(self, user, topic, processed)
 
     def get_user_top_artists(self):
         artists = []
@@ -30,7 +30,10 @@ class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
 
 if __name__ == "__main__":
-    ob = RetrieveTopArtists("suhaas",TOPIC_CONFIG["top_artists"]["topic"],"processed")
+    ob = RetrieveTopArtists("suhaas", \
+                            TOPIC_CONFIG["top_artists"]["topic"],\
+                            "raw",\
+                            "processed")
     ob.get_user_top_artists()
     
 

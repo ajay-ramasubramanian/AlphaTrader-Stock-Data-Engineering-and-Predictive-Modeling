@@ -4,10 +4,10 @@ from utils import TOPIC_CONFIG
 
 class RetrieveLikedSongs(MinioRetriever,MinioUploader):
 
-    def __init__(self,user, topic,container) -> None:
-        MinioRetriever.__init__(self,user, topic)
-        MinioUploader.__init__(self,container,user,topic)
-    def get_liked_songs(self):
+    def __init__(self,user, topic,raw, processed) -> None:
+        MinioRetriever.__init__(self,user, topic, raw)
+        MinioUploader.__init__(self,user,topic, processed)
+    def get_user_liked_songs(self):
         tracks = []
         results= MinioRetriever.retrieve_object(self)
         for result in results:
@@ -33,5 +33,8 @@ class RetrieveLikedSongs(MinioRetriever,MinioUploader):
     
 
 if __name__ == "__main__":
-    ob = RetrieveLikedSongs("suhaas",TOPIC_CONFIG["liked_songs"]["topic"],"processed")
-    ob.get_liked_songs()
+    ob = RetrieveLikedSongs("suhaas", \
+                            TOPIC_CONFIG["liked_songs"]["topic"], \
+                            "raw", \
+                            "processed")
+    ob.get_user_liked_songs()

@@ -3,16 +3,14 @@ import pandas as pd
 from utils import TOPIC_CONFIG
 class RetrieveTopSongs(MinioRetriever,MinioUploader):
 
-    def __init__(self,user, topic, container) -> None:
-        MinioRetriever.__init__(self,user, topic)
-        MinioUploader.__init__(self,container, user, topic)
+    def __init__(self,user, topic, raw, processed) -> None:
+        MinioRetriever.__init__(self,user, topic, raw)
+        MinioUploader.__init__(self, user, topic, processed)
 
     def get_user_top_songs(self):
         try:
             tracks = []
             results = MinioRetriever.retrieve_object(self)
-            # print(f'=============== results ==================== : {results}')
-
             for result in results:
                 # print(f'result : {result}')
                 item = result["items"][0]
@@ -39,6 +37,9 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
             print(f" Error has occured  : {e}")
 
 
-obj= RetrieveTopSongs("suhaas", TOPIC_CONFIG["top_songs"]["topic"] ,"processed")
+obj= RetrieveTopSongs("suhaas", \
+                    TOPIC_CONFIG["top_songs"]["topic"], \
+                    "raw", \
+                    "processed")
 
 obj.get_user_top_songs()

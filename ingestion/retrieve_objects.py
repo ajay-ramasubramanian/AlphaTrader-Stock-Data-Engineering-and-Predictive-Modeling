@@ -64,11 +64,11 @@ class MinioRetriever:
             secure=False  # Set to True if using HTTPS
             )
 
-            fs = s3fs.S3FileSystem(
-                endpoint_url="http://localhost:9000",
-                key="minioadmin",
-                secret="minioadmin"
-            )
+            # fs = s3fs.S3FileSystem(
+            #     endpoint_url="http://localhost:9000",
+            #     key="minioadmin",
+            #     secret="minioadmin"
+            # )
 
             # List all objects in the specified subfolder
             data = client.get_object(bucket,prefix)

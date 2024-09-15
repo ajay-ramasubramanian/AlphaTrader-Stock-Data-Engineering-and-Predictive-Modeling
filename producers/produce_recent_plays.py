@@ -25,7 +25,7 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
         utc_timestamp = calendar.timegm(dt.utctimetuple())
 
         # Convert to milliseconds
-        milliseconds = int(utc_timestamp * 1000 + dt.microsecond / 1000)
+        milliseconds = int(utc_timestamp * 1000 + dt.microsecond / 1000) - 1
 
         return milliseconds
 
@@ -49,7 +49,7 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
             track_count = 0
             max_tracks = 100
 
-            while len(futures) < limit:
+            while True:
                 result = self.sp.current_user_recently_played(limit=limit, before=before)
 
                 if not result['items']:

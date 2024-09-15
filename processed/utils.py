@@ -1,16 +1,12 @@
-import io
 import json
-
-import pandas as pd
 import s3fs
 from minio import Minio
 
 class MinioRetriever:
-    def __init__(self, user, topic, container) -> None:
-        self.ret_container = container #raw
+    def __init__(self, container, user, topic) -> None:
+        self.container = container
         self.user = user
         self.topic = topic
-
     def retrieve_object(self):
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
@@ -21,22 +17,7 @@ class MinioRetriever:
             )
 
             # List all objects in the specified subfolder
-            if fs.exists(f"{self.ret_container}"):
-                print("True")
-            else:
-                print("false")
-
-            if fs.exists(f"{self.ret_container}/{self.topic}"):
-                print("True")
-            else:
-                print("false")
-
-            if fs.exists(f"{self.ret_container}/{self.topic}/{self.user}"):
-                print("True")
-            else:
-                print("false")
-
-            object_list = fs.ls(f"{self.ret_container}/{self.topic}/{self.user}")
+            object_list = fs.ls(f"{self.container}/{self.topic}/{self.user}")
             # Initialize an empty list to store all JSON data
             all_data = []
 
@@ -45,6 +26,7 @@ class MinioRetriever:
                 with fs.open(obj, 'r') as f:
                     json_data = json.load(f)
                     for record in json_data: # unpacking batched data if any
+                        # print(f"record: {record}")
                         all_data.append(record)
             return all_data
             
@@ -54,39 +36,12 @@ class MinioRetriever:
         except Exception as e:
             print(f"Error in retrieve_and_convert_to_dataframe function: {e}")
             return None
-        
-    def read_object(self,prefix,bucket):
-        try:
-            client = Minio(
-            "localhost:9000",
-            access_key="minioadmin",
-            secret_key="minioadmin",
-            secure=False  # Set to True if using HTTPS
-            )
-
-            fs = s3fs.S3FileSystem(
-                endpoint_url="http://localhost:9000",
-                key="minioadmin",
-                secret="minioadmin"
-            )
-
-            # List all objects in the specified subfolder
-            data = client.get_object(bucket,prefix)
-
-            with io.BytesIO(data.read()) as parquet_buffer:
-                df = pd.read_parquet(parquet_buffer)
-
-            return df
-
-        except Exception as e:
-            print(f"Error in retrieve_and_convert_to_dataframe function: {e}")
-            return None
 
 class MinioUploader:
-    def __init__(self, user, topic, container) -> None:
+    def __init__(self, container, user, topic) -> None:
         self.container = container
         self.user = user
-        self.topic = topic.replace("_","-")
+        self.topic = topic
 
 
     def ensure_bucket_exists(self, client, bucket_name):
@@ -105,16 +60,16 @@ class MinioUploader:
                 secure=False  # Keep this False for localhost without HTTPS
             )
             fs = s3fs.S3FileSystem(
-                    key="minioadmin",
-                    secret="minioadmin",
+                    key=minio_client.access_key,
+                    secret=minio_client.secret_key,
                     endpoint_url="http://localhost:9000",  # Explicitly set the endpoint URL
                     client_kwargs={'endpoint_url': 'http://localhost:9000'},  
                     use_ssl=False  # Set to False for localhost without HTTPS
                 )
 
             bucket_name = f'{self.container}'
-            self.ensure_bucket_exists(minio_client,bucket_name)
-            path = f"{self.container}/{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
+            self.ensure_bucket_exists(minio_client, bucket_name)
+            path = f"{self.container}/{self.topic}/{self.user}.parquet"
             try:
                 with fs.open(path, 'wb') as f:
                     data.to_parquet(f, engine='pyarrow', compression='snappy')

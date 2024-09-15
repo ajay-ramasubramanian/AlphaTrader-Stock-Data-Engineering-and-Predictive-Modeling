@@ -4,14 +4,13 @@ import pandas as pd
 
 class RetrieveFollowingArtists(MinioRetriever,MinioUploader):
 
-    def __init__(self, user, topic, container) -> None:
-        MinioRetriever.__init__(self, user, topic)
-        MinioUploader.__init__(self, container, user,topic)
+    def __init__(self,user, topic,container) -> None:
+        MinioRetriever.__init__(self,user, topic)
+        MinioUploader.__init__(self,container, user,topic)
 
     def get_user_followed_artists(self):
         artists = []
-        results = self.retrieve_object()
-        print(f"results: {results}")
+        results = MinioRetriever.retrieve_object(self)
         for result in results:
             # Process each artist
             print(f"result: {result}")
@@ -26,10 +25,10 @@ class RetrieveFollowingArtists(MinioRetriever,MinioUploader):
                 })
         # Convert to DataFrame
         df_artists = pd.DataFrame(artists)
-        self.upload_files(data=df_artists)
-        print("done")
+        MinioUploader.upload_files(self,data=df_artists)
+        print("object uploaded")
     
-    
-if __name__ == '__main__':
-    ob = RetrieveFollowingArtists('suhaas', 'spotify-following-artists', 'raw')
+
+if __name__ == "__main__":
+    ob = RetrieveFollowingArtists("suhaas","spotify-following-artists","processed")
     ob.get_user_followed_artists()

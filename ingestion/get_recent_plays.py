@@ -1,20 +1,21 @@
 from retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
 from datetime import datetime
+from utils import TOPIC_CONFIG
 
 class RetrieveRecentPlays(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic, container) -> None:
-        MinioRetriever.__init__(self, user, topic)
-        MinioUploader.__init__(self, container, user,topic)
+        MinioRetriever.__init__(self,user, topic)
+        MinioUploader.__init__(self,container, user,topic)
 
     def get_user_recent_plays(self):
         tracks = []
-        all_data = MinioRetriever.retrieve_object(self)
-        results= all_data[0]
-        for item in results['items']:
-            track = item['track']
-            played_at = datetime.strptime(item['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        results = MinioRetriever.retrieve_object(self)
+        for result in results:
+            item = result["items"]
+            track = item[0]['track']
+            played_at = datetime.strptime(item[0]['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
             
             tracks.append({
                 'track_name': track['name'],
@@ -30,10 +31,10 @@ class RetrieveRecentPlays(MinioRetriever,MinioUploader):
             })
         # Convert to DataFrame
         df_tracks = pd.DataFrame(tracks)
-        MinioUploader.upload_files(self, data=df_tracks)
-        print("done")
+        MinioUploader.upload_files(self,data=df_tracks)
+        print("Object uploaded")
     
 
-if __name__ == '__main__':
-    ob = RetrieveRecentPlays('suhaas', 'spotify-recent-plays', 'processed')
+if __name__ == "__main__":
+    ob = RetrieveRecentPlays("suhaas",TOPIC_CONFIG["recent_plays"]["topic"],"processed")
     ob.get_user_recent_plays()

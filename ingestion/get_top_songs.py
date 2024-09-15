@@ -4,14 +4,13 @@ import pandas as pd
 class RetrieveTopSongs(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic, container) -> None:
-        MinioRetriever.__init__(user, topic)
-        MinioUploader.__init__(container, user, topic)
+        MinioRetriever.__init__(self,user, topic)
+        MinioUploader.__init__(self,container, user, topic)
 
     def get_user_top_songs(self):
         try:
             tracks = []
-            all_data = super().retrieve_object()
-            results= all_data[0]
+            results = super().retrieve_object(self)
             for item in results['items']:
                 tracks.append({
                     'track_name': item['name'],
@@ -29,12 +28,12 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
                 })
             # Convert to DataFrame
             df_artists = pd.DataFrame(tracks)
-            MinioUploader.upload_files(data=df_artists)
+            MinioUploader.upload_files(self,data=df_artists)
         # return df_artists
         except Exception as e:
             print(f" Error has occured  : {e}")
 
 
-obj= RetrieveTopSongs("suhaas", "spotify-following-artists" ,"raw")
+obj= RetrieveTopSongs("suhaas", "spotify-following-artists" ,"processed")
 
 obj.get_user_top_songs()

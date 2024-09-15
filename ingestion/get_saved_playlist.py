@@ -4,13 +4,12 @@ import pandas as pd
 class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic,container) -> None:
-        MinioRetriever.__init__(user, topic)
+        MinioRetriever.__init__(self,user, topic)
         MinioUploader.__init__(container, user, topic)
 
     def get_user_recent_plays(self):
         playlists = []
-        all_data = MinioRetriever.retrieve_object()
-        results= all_data[0]
+        results = MinioRetriever.retrieve_object(self)
         for item in results['items']:
             playlists.append({
                 'playlist_name': item['name'],
@@ -25,7 +24,11 @@ class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
             })
         # Convert to DataFrame
         df_playlist = pd.DataFrame(playlists)
-        MinioUploader.upload_files(data=df_playlist)
-
+        MinioUploader.upload_files(self,data=df_playlist)
+        print("Object uploaded")
     
 
+
+if __name__ == "__main__":
+    ob = RetrieveSavedPlaylist("suhaas","spotify-following-artists","processed")
+    ob.get_liked_songs()

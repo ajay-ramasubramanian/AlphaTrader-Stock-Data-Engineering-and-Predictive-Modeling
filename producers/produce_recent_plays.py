@@ -41,24 +41,29 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
         """
         futures = []
         try:
-            before = int(time.time() * 1000)
+            #TODO have to figure out the schema mismatch
+            # before = int(time.time() * 1000)
+            before = int(datetime.now().timestamp() * 1000)
             # after =None
-            limit = 1
+            limit = 50
             track_count = 0
             max_tracks = 100
 
-            while True:
+            while len(futures) < limit:
                 result = self.sp.current_user_recently_played(limit=limit, before=before)
 
                 if not result['items']:
                     break
 
-                # Send to Kafka as soon as we have the data
+                # Send to Kafka as soon as we have the dataPG706448238CA
                 future = self.produce_recent_plays(user_id, result)
                 futures.append(future)
-
-                played_at = result['items'][0]['played_at']
-                before = self.convert_to_unix_timestamp(played_at)
+                oldest_timestamp = int(datetime.strptime(\
+                                        result['items'][-1]['played_at'], \
+                                        "%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1000)
+                # played_at = result['items'][0]['played_at']
+                # before = self.convert_to_unix_timestamp(played_at)
+                before= oldest_timestamp - 1
 
                 track_count += 1
                 print(f"Processed track {track_count}")

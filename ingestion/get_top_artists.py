@@ -4,13 +4,12 @@ import pandas as pd
 class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic,container) -> None:
-        MinioRetriever.__init__(user, topic)
-        MinioUploader.__init__(container, user, topic)
+        MinioRetriever.__init__(self,user, topic)
+        MinioUploader.__init__(self,container, user, topic)
 
     def get_user_top_artists(self):
         artists = []
-        all_data = MinioRetriever.retrieve_object()
-        results= all_data[0]
+        results = MinioRetriever.retrieve_object()
         for item in results['items']:
             artists.append({
                 'artist_name': item['name'],
@@ -24,6 +23,13 @@ class RetrieveTopArtists(MinioRetriever,MinioUploader):
             })
         # Convert to DataFrame
         df_artists = pd.DataFrame(artists)
-        MinioUploader.upload_files(data=df_artists)
+        MinioUploader.upload_files(self,data=df_artists)
+        print("Object uploaded")
+    
+
+
+if __name__ == "__main__":
+    ob = RetrieveTopArtists("suhaas","spotify-following-artists","processed")
+    ob.get_user_top_artists()
     
 

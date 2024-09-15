@@ -1,6 +1,6 @@
 from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-
+from utils import TOPIC_CONFIG
 
 class RetrieveFollowingArtists(MinioRetriever,MinioUploader):
 
@@ -30,5 +30,5 @@ class RetrieveFollowingArtists(MinioRetriever,MinioUploader):
     
 
 if __name__ == "__main__":
-    ob = RetrieveFollowingArtists("suhaas","spotify-following-artists","processed")
+    ob = RetrieveFollowingArtists("suhaas",TOPIC_CONFIG["following_artists"]["topic"],"processed")
     ob.get_user_followed_artists()

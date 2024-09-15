@@ -1,6 +1,6 @@
 from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-
+from utils import TOPIC_CONFIG
 class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic,container) -> None:
@@ -10,7 +10,9 @@ class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
     def get_user_recent_plays(self):
         playlists = []
         results = MinioRetriever.retrieve_object(self)
-        for item in results['items']:
+        print(results)
+        for result in results:
+            item = result["items"][0]
             playlists.append({
                 'playlist_name': item['name'],
                 'playlist_id': item['id'],
@@ -30,5 +32,5 @@ class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
 
 
 if __name__ == "__main__":
-    ob = RetrieveSavedPlaylist("suhaas","spotify-following-artists","processed")
+    ob = RetrieveSavedPlaylist("suhaas",TOPIC_CONFIG["saved_playlists"]["topic"],"processed")
     ob.get_liked_songs()

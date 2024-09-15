@@ -1,6 +1,6 @@
 from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-
+from utils import TOPIC_CONFIG
 class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic,container) -> None:
@@ -9,8 +9,9 @@ class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
     def get_user_top_artists(self):
         artists = []
-        results = MinioRetriever.retrieve_object()
-        for item in results['items']:
+        results = MinioRetriever.retrieve_object(self)
+        for result in results:
+            item = result["items"][0]
             artists.append({
                 'artist_name': item['name'],
                 'artist_id': item['id'],
@@ -29,7 +30,7 @@ class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
 
 if __name__ == "__main__":
-    ob = RetrieveTopArtists("suhaas","spotify-following-artists","processed")
+    ob = RetrieveTopArtists("suhaas",TOPIC_CONFIG["top_artists"]["topic"],"processed")
     ob.get_user_top_artists()
     
 

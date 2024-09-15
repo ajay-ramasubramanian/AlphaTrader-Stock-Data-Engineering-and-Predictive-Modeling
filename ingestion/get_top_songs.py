@@ -1,6 +1,6 @@
 from retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
-
+from utils import TOPIC_CONFIG
 class RetrieveTopSongs(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic, container) -> None:
@@ -10,8 +10,13 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
     def get_user_top_songs(self):
         try:
             tracks = []
-            results = super().retrieve_object(self)
-            for item in results['items']:
+            results = MinioRetriever.retrieve_object(self)
+            # print(f'=============== results ==================== : {results}')
+
+            for result in results:
+                # print(f'result : {result}')
+                item = result["items"][0]
+                print(item)
                 tracks.append({
                     'track_name': item['name'],
                     'track_id': item['id'],
@@ -34,6 +39,6 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
             print(f" Error has occured  : {e}")
 
 
-obj= RetrieveTopSongs("suhaas", "spotify-following-artists" ,"processed")
+obj= RetrieveTopSongs("suhaas", TOPIC_CONFIG["top_songs"]["topic"] ,"processed")
 
 obj.get_user_top_songs()

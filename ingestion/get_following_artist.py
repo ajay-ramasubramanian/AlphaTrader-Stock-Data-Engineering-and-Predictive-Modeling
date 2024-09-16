@@ -1,3 +1,6 @@
+import sys
+import site
+sys.path.extend(site.getsitepackages())
 from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
 from utils import TOPIC_CONFIG
@@ -13,7 +16,7 @@ class RetrieveFollowingArtists(MinioRetriever, MinioUploader):
         results = MinioRetriever.retrieve_object(self)
         for result in results:
             # Process each artist
-            print(f"result: {result}")
+            # print(f"result: {result}")
             for item in result['artists']['items']:
                 artists.append({
                     'name': item['name'],

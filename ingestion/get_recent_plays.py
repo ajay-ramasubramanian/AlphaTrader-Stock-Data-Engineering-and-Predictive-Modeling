@@ -1,3 +1,6 @@
+import sys
+import site
+sys.path.extend(site.getsitepackages())
 from retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
 from datetime import datetime

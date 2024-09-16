@@ -1,9 +1,12 @@
+import sys
+import site
+sys.path.extend(site.getsitepackages())
 import io
 import json
-
 import pandas as pd
 import s3fs
 from minio import Minio
+
 
 class MinioRetriever:
     def __init__(self, user, topic, container) -> None:
@@ -22,19 +25,19 @@ class MinioRetriever:
 
             # List all objects in the specified subfolder
             if fs.exists(f"{self.ret_container}"):
-                print("True")
+                print(f"Folder Path :{self.ret_container} exists")
             else:
-                print("false")
+                print(f"Folder Path :{self.ret_container} does not exists")
 
             if fs.exists(f"{self.ret_container}/{self.topic}"):
-                print("True")
+                print(f" Folder Path: {self.ret_container}/{self.topic} exists")
             else:
-                print("false")
+                print(f" Folder Path: {self.ret_container}/{self.topic} exists")
 
             if fs.exists(f"{self.ret_container}/{self.topic}/{self.user}"):
-                print("True")
+                print(f" Folder Path: {self.ret_container}/{self.topic}/{self.user} exists")
             else:
-                print("false")
+                print(f"Folder Path : {self.ret_container}/{self.topic}/{self.user} does not exists")
 
             object_list = fs.ls(f"{self.ret_container}/{self.topic}/{self.user}")
             # Initialize an empty list to store all JSON data

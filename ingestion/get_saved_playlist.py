@@ -1,3 +1,6 @@
+import sys
+import site
+sys.path.extend(site.getsitepackages())
 from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
 from utils import TOPIC_CONFIG
@@ -10,7 +13,7 @@ class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
     def get_user_saved_playlist(self):
         playlists = []
         results = MinioRetriever.retrieve_object(self)
-        print(results)
+        # print(results)
         for result in results:
             item = result["items"][0]
             playlists.append({

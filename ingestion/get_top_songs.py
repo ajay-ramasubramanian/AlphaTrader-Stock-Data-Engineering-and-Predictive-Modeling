@@ -1,3 +1,6 @@
+import sys
+import site
+sys.path.extend(site.getsitepackages())
 from retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
 from utils import TOPIC_CONFIG
@@ -14,7 +17,7 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
             for result in results:
                 # print(f'result : {result}')
                 item = result["items"][0]
-                print(item)
+                # print(item)
                 tracks.append({
                     'track_name': item['name'],
                     'track_id': item['id'],

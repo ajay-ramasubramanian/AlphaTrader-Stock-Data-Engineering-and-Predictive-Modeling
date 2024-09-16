@@ -1,4 +1,7 @@
-import sys, os
+import sys
+import site
+sys.path.extend(site.getsitepackages())
+import os
 sys.path.append(os.path.abspath(os.path.join('..', 'utils')))
 
 from avro.schema import parse

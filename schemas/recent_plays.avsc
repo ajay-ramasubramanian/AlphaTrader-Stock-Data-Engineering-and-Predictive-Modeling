@@ -89,7 +89,16 @@
               }
             },
             {"name": "played_at", "type": "string"},
-            {"name": "context", "type": ["null", "string"]}
+            {"name": "context", "type": ["null", {
+              "type": "record",
+              "name": "Context",
+              "fields": [
+                {"name": "type", "type": ["null", "string"]},
+                {"name": "href", "type": ["null", "string"]},
+                {"name": "external_urls", "type": ["null", {"type": "map", "values": "string"}]},
+                {"name": "uri", "type": ["null", "string"]}
+              ]
+            }]}
           ]
         }
       }

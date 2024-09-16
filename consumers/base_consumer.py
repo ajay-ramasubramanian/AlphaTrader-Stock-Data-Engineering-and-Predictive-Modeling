@@ -20,7 +20,7 @@ class BaseKafkaConsumer:
     """
 
     # Class-level constants for batch size and time interval for batch processing
-    BATCH_SIZE = 10  # Number of messages to batch before uploading to storage
+    BATCH_SIZE = 1  # Number of messages to batch before uploading to storage
     MAX_BATCH_TIME = 100  # Maximum time to wait before forcing a batch upload
     CONTAINER = "raw" # Cannot capitalize bucket names in Minio
 
@@ -47,11 +47,13 @@ class BaseKafkaConsumer:
         Returns:
             dict: The deserialized message as a Python dictionary.
         """
-        reader = DatumReader(schema)  # Create an Avro DatumReader for schema
-        bytes_reader = io.BytesIO(avro_bytes)  # Read bytes into a BytesIO buffer
-        decoder = avro.io.BinaryDecoder(bytes_reader)  # Create a BinaryDecoder from the buffer
-        return reader.read(decoder)  # Deserialize and return the message
-    
+        try:
+            reader = DatumReader(schema)  # Create an Avro DatumReader for schema
+            bytes_reader = io.BytesIO(avro_bytes)  # Read bytes into a BytesIO buffer
+            decoder = avro.io.BinaryDecoder(bytes_reader)  # Create a BinaryDecoder from the buffer
+            return reader.read(decoder)  # Deserialize and return the message
+        except Exception as e :
+            print(f"schema mismatch:  {e}")
 
     def ensure_bucket_exists(self, client, bucket_name):
         if not client.bucket_exists(bucket_name):

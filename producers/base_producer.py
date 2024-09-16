@@ -45,12 +45,16 @@ class SpotifyKafkaProducer:
 
         Returns:
             bytes: The serialized data in Avro format.
+    
         """
-        writer = DatumWriter(schema)  # Create an Avro DatumWriter for the provided schema
-        bytes_writer = io.BytesIO()  # Create a BytesIO buffer to store serialized data
-        encoder = avro.io.BinaryEncoder(bytes_writer)  # Create a BinaryEncoder to write to the buffer
-        writer.write(data, encoder)  # Write the data using the writer
-        return bytes_writer.getvalue()  # Return the serialized data as bytes
+        try:
+            writer = DatumWriter(schema)  # Create an Avro DatumWriter for the provided schema
+            bytes_writer = io.BytesIO()  # Create a BytesIO buffer to store serialized data
+            encoder = avro.io.BinaryEncoder(bytes_writer)  # Create a BinaryEncoder to write to the buffer
+            writer.write(data, encoder)  # Write the data using the writer
+            return bytes_writer.getvalue()  # Return the serialized data as bytes
+        except Exception as e:
+            print(f"schema mismatch: {e}")
 
     def produce_message(self, topic_key, user_id, data):
         """

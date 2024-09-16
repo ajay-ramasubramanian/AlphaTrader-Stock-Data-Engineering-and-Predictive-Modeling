@@ -47,9 +47,10 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
             # after =None
             limit = 20
             track_count = 0
-            max_tracks = 100
+            max_tracks = 1000
 
-            while True:
+            while track_count < max_tracks:
+                print("Start recent_plays producer\n")
                 result = self.sp.current_user_recently_played(limit=limit, before=before)
                 # print(result)
                 if not result['items']:

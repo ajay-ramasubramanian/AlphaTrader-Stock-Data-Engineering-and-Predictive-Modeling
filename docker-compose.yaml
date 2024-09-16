@@ -41,5 +41,38 @@ services:
       timeout: 20s
       retries: 3
 
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  airflow:
+    image: apache/airflow:2.7.0-python3.7
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__FERNET_KEY='YOUR_FERNET_KEY'
+      - AIRFLOW__WEBSERVER__WORKERS=2
+      - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/usr/local/airflow/dags
+      - ./airflow/logs:/usr/local/airflow/logs
+      - ./airflow/plugins:/usr/local/airflow/plugins
+    depends_on:
+      - postgres
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 volumes:
   minio_data:
+  postgres_data:

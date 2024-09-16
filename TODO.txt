@@ -1,0 +1,2 @@
+# Optimizations:
+# 1) Partitioning the data in ingestion according to some criteria

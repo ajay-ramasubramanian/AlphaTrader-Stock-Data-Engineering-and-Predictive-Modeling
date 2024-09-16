@@ -1,36 +1,43 @@
 from utils import MinioRetriever, MinioUploader
 import pandas as pd
+from pyspark.sql import SparkSession
 
 
-class RetrieveFollowingArtists(MinioRetriever, MinioUploader):
+class ProcessRecentPlays():
 
-    def __init__(self, user, topic, processed, presentation) -> None:
-        MinioRetriever.__init__(self, user, topic, processed)
-        MinioUploader.__init__(self, user, topic, presentation)
-       
+    # Class variables
+    PROCESSED: str = 'processed'
+    PRESENTATION: str = 'presentation'
+
+    def __init__(self, user, topic) -> None:
+        # Instance variables
+        self.user = user
+        self.topic = topic
+        self.spark = (
+            SparkSession.builder
+                .appName("Data Pipeline")
+                .config("spark.executor.instances", "1")  # Use 1 executor
+                .config("spark.executor.cores", "1")     # Use 1 core
+                .getOrCreate()
+        )
+        self.retriever = MinioRetriever(user=user, topic=topic, container=self.PROCESSED)
+        self.uploader = MinioUploader(user=user, topic=topic, container=self.PRESENTATION)
 
     def get_user_followed_artists(self):
         artists = []
-        results = MinioRetriever.retrieve_object(self)
-        print(f"results: {results}")
-        for result in results:
-            # Process each artist
-            print(f"result: {result}")
-            for item in result['artists']['items']:
-                artists.append({
-                    'name': item['name'],
-                    'id': item['id'],
-                    'uri': item['uri'],
-                    'popularity': item['popularity'],
-                    'genres': ', '.join(item['genres']),
-                    'followers': item['followers']['total']
-                })
+        df = self.retriever.retrieve_object()
+        df = self.spark.createDataFrame(df)
+        df.show()
+
+
         # Convert to DataFrame
-        df_artists = pd.DataFrame(artists)
-        self.upload_files(data=df_artists)
-        print("done")
+        # df_artists = pd.DataFrame(artists)
+        # self.upload_files(data=df_artists)
+        # print("done")
+
+        self.spark.stop()
     
     
 if __name__ == '__main__':
-    ob = RetrieveFollowingArtists('suhaas', 'spotify-following-artists', 'processed', 'presentation')
+    ob = ProcessRecentPlays('suhaas', 'spotify-recent-plays')
     ob.get_user_followed_artists()

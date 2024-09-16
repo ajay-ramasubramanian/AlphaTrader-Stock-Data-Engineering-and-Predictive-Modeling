@@ -57,33 +57,7 @@ class MinioRetriever:
         except Exception as e:
             print(f"Error in retrieve_and_convert_to_dataframe function: {e}")
             return None
-        
-    def read_object(self,prefix,bucket):
-        try:
-            client = Minio(
-            "localhost:9000",
-            access_key="minioadmin",
-            secret_key="minioadmin",
-            secure=False  # Set to True if using HTTPS
-            )
 
-            # fs = s3fs.S3FileSystem(
-            #     endpoint_url="http://localhost:9000",
-            #     key="minioadmin",
-            #     secret="minioadmin"
-            # )
-
-            # List all objects in the specified subfolder
-            data = client.get_object(bucket,prefix)
-
-            with io.BytesIO(data.read()) as parquet_buffer:
-                df = pd.read_parquet(parquet_buffer)
-
-            return df
-
-        except Exception as e:
-            print(f"Error in retrieve_and_convert_to_dataframe function: {e}")
-            return None
 
 class MinioUploader:
     def __init__(self, user, topic, container) -> None:

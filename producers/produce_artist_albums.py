@@ -8,7 +8,7 @@ from base_producer import SpotifyKafkaProducer
 from utils import scope
 
 # Load environment variables from .env file (if needed)
-load_dotenv()
+# load_dotenv()
 # clientID = os.getenv("SPOTIPY_CLIENT_ID")
 # clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 # redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
@@ -25,21 +25,21 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
         super().__init__()
 
 
-    def get_artist_ids(self, artist_ids):
-        self.process_spotify_data(artist_ids)
+    def get_artist_ids(self, user_id, artist_ids):
+        self.process_spotify_data(user_id, artist_ids)
 
 
-    def get_all_artist_albums(sp, artist_id):
+    def get_all_artist_albums(self, sp, artist_id):
         albums = []
-        results = sp.artist_albums(artist_id, album_type='album,single,compilation', limit=50)
-        albums.extend(results['items'])
+        results = sp.artist_albums(artist_id, album_type='album,single,compilation', limit=1)
+        albums.append(results['items'])
         while results['next']:
             results = sp.next(results)
-            albums.extend(results['items'])
+            albums.append(results['items'])
         return albums
 
 
-    def process_spotify_data(self, artist_ids=None, depth=2, max_artists=100):
+    def process_spotify_data(self, user_id, artist_ids=None):
         """
         Processes Spotify data for the given user by retrieving their saved tracks 
         and sending this data to Kafka for downstream processing.
@@ -48,15 +48,31 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
             user_id (str): The Spotify user ID.
         """
         futures = []  # List to keep track of future objects for asynchronous Kafka sends
-        artist_ids = ['4IHSCHg3UPSy0rBSHi3c5s', '7Hjbimq43OgxaBRpFXic4x', '3PWp9R5HvbQgxI5KBx5kVd', '1t17z3vfuc82cxSDMrvryJ', '4EPYWwU4c8eG2GzD7MenUA', '6PDLwWvgYNMfBRLqC1h5cJ', '2dixWDh9f2COEfikojSd39']
+        # artist_ids = ['4IHSCHg3UPSy0rBSHi3c5s', '7Hjbimq43OgxaBRpFXic4x', '3PWp9R5HvbQgxI5KBx5kVd', '1t17z3vfuc82cxSDMrvryJ', '4EPYWwU4c8eG2GzD7MenUA', '6PDLwWvgYNMfBRLqC1h5cJ', '2dixWDh9f2COEfikojSd39']
+        artist_ids =['4IHSCHg3UPSy0rBSHi3c5s']
         try:
 
             for artist_id in artist_ids:
-                albums = self.get_all_artist_albums(self.sp, artist_id)
+
+                albums = []
+                result = self.sp.artist_albums(artist_id, album_type='album,single,compilation', limit=1)
+                future = self.produce_artist_albums(user_id, result['items'][0])
+                futures.append(future)
+                albums.append(result['items'])
+                while result['next']:
+                    if result['items']:
+                        albums.append(result['items'])
+                        future = self.produce_artist_albums(user_id, result['items'][0])
+                        futures.append(future)
+                    result = self.sp.next(result)
+                    
+                    # albums.append(results['items'])
+               
+                # albums = self.get_all_artist_albums(self.sp, artist_id)
+                print(f"length of albums: {len(albums)}\n")
                 ## producer for artist_albums topic
 
-                future = self.produce_artist_albums(albums)
-                futures.append(future)
+                
 
             print("Sent all the data")  # Confirmation print            
 
@@ -76,4 +92,4 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
 if __name__ == "__main__":
     # Start the data processing for a specific user
     artist_albums_producer = ArtistAlbumsProducer()
-    artist_albums_producer.process_spotify_data()
+    artist_albums_producer.process_spotify_data('suhaas')

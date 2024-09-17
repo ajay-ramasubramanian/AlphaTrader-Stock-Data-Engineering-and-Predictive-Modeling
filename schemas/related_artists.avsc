@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "Artist",
+  "fields": [
+    {"name": "id", "type": "string"},
+    {"name": "name", "type": "string"},
+    {"name": "followers", "type": "int"},
+    {"name": "genres", "type": {"type": "array", "items": "string", "default": []}},
+    {"name": "popularity", "type": "int"},
+    {"name": "image", "type": ["string", "null"]},
+    {"name": "type", "type": "string"},
+    {"name": "uri", "type": "string"}
+  ]
+}

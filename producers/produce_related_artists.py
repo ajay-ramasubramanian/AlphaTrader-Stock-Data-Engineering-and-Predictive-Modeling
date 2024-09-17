@@ -28,8 +28,8 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
         """
         super().__init__()
 
-    def get_artist_ids(self, artist_ids):
-        self.process_spotify_data(artist_ids)
+    def get_artist_ids(self, user_id, artist_ids):
+        self.process_spotify_data(user_id, artist_ids)
 
     def get_related_artists(self, sp, artist_id):
         try:
@@ -38,9 +38,19 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
         except spotipy.SpotifyException as e:
             print(f"Error getting related artists for {artist_id}: {e}")
             return []
+        
+    
+    def send_to_kafka(self, user_id, artist_data):
+        # print(f"data: {artist_data}")
+        result = dict(zip(['id', 'name', 'followers', 'genres', 'popularity', 'image', 'type', 'uri'],
+                            artist_data))
+        result['genres'] = list(result['genres'])
+        future = self.produce_related_artists(user_id, result)
+        print(f"Sent record to Kafka: {result['name']}")
+        return future
 
 
-    def process_spotify_data(self, artist_ids=None, depth=2, max_artists=100):
+    def process_spotify_data(self, user_id, artist_ids=None, depth=2, max_artists=1000):
         """
         Processes Spotify data for the given user by retrieving their saved tracks 
         and sending this data to Kafka for downstream processing.
@@ -50,7 +60,10 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
         """
         futures = []  # List to keep track of future objects for asynchronous Kafka sends
         artist_ids = ['4IHSCHg3UPSy0rBSHi3c5s', '7Hjbimq43OgxaBRpFXic4x', '3PWp9R5HvbQgxI5KBx5kVd', '1t17z3vfuc82cxSDMrvryJ', '4EPYWwU4c8eG2GzD7MenUA', '6PDLwWvgYNMfBRLqC1h5cJ', '2dixWDh9f2COEfikojSd39']
+        # artist_ids =['4IHSCHg3UPSy0rBSHi3c5s']
+
         try:
+            print("Sending data to Kafka\n")
             artist_set = set()
             to_process = set(artist_ids)
             processed = set()
@@ -60,31 +73,37 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
                 current_level = set()
                 for artist_id in to_process:
                     if artist_id not in processed:
-                        time.sleep(1)
                         related = self.get_related_artists(self.sp, artist_id)
-                        for artist in related: # take name, id, followers, genres
+                        for artist in related:
                             if len(artist_set) < max_artists:
                                 c += 1
-                                # print(f"artist: {artist}")
                                 id = artist['id']
                                 name = artist['name']
                                 number_of_followers = artist['followers']['total']
                                 genres = tuple(artist['genres'])
                                 popularity = artist['popularity']
-                                image = artist['images'][0]['url']
-                                artist_set.add((id, name, number_of_followers, genres, popularity, image))
+                                image = artist['images'][0]['url'] if artist['images'] else ''
+                                type = artist['type']
+                                uri = artist['uri']
+                                
+                                artist_data = (id, name, number_of_followers, genres, popularity, image, type, uri)
+                                
+                                if artist_data not in artist_set:
+                                    artist_set.add(artist_data)
+                                    
+                                    # Send to Kafka
+                                    future = self.send_to_kafka(user_id, artist_data)
+                                    futures.append(future)
+                                
                                 current_level.add(artist['id'])
-                                # print(f"artist: {artist}")
                         processed.add(artist_id)
                     if len(artist_set) >= max_artists:
                         break
                     time.sleep(0.1)  # Add a small delay to respect rate limits
                 to_process = current_level
-                print(artist_set)
                 if len(artist_set) >= max_artists:
                     break
 
-            
             print(f"length of set: {len(artist_set)}")
             print(f"total artists: {c}")
             print("Sent all the data")  # Confirmation print            
@@ -98,6 +117,9 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
                 except Exception as e:
                     print(f"Failed to send message: {e}")
 
+        except Exception as e:
+            print(f"An Exception occured: {e}")
+
         finally:
             # Close the producer to release resources
             self.close()
@@ -105,4 +127,4 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
 if __name__ == "__main__":
     # Start the data processing for a specific user
     related_artists_producer = RelatedArtistsProducer()
-    related_artists_producer.process_spotify_data()
+    related_artists_producer.process_spotify_data('suhaas')

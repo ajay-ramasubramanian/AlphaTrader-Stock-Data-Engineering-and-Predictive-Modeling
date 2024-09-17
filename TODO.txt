@@ -1,2 +1,12 @@
 # Optimizations:
 # 1) Partitioning the data in ingestion according to some criteria
+
+
+procedure to set up secret key for airflow
+
+This is for Airflow webserver secret key
+- python3 -c 'import secrets; print(secrets.token_hex(16))'
+
+This is for fernet key:
+
+- python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'

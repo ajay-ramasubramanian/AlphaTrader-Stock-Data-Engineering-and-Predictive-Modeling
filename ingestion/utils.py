@@ -18,35 +18,35 @@ scope = "user-library-read \
          user-read-email"
 
 
-def load_schema(schema_path):
-    with open(schema_path, "rb") as schema_file:
-        return parse(schema_file.read())
+# def load_schema(schema_path):
+#     with open(schema_path, "rb") as schema_file:
+#         return parse(schema_file.read())
 
 
 TOPIC_CONFIG = {
     'following_artists': {
         'topic': 'spotify_following_artists',
-        'schema': load_schema("schemas/following_artists.avsc")
+        # 'schema': load_schema("schemas/following_artists.avsc")
     },
     'liked_songs': {
         'topic': 'spotify_liked_songs',
-        'schema': load_schema("schemas/liked_songs.avsc")
+        # 'schema': load_schema("schemas/liked_songs.avsc")
     },
     'recent_plays': {
         'topic': 'spotify_recent_plays',
-        'schema': load_schema("schemas/recent_plays.avsc")
+        # 'schema': load_schema("schemas/recent_plays.avsc")
     },
     'saved_playlists': {
         'topic': 'spotify_saved_playlists',
-        'schema': load_schema("schemas/saved_playlists.avsc")
+        # 'schema': load_schema("schemas/saved_playlists.avsc")
     },
     'top_artists': {
         'topic': 'spotify_top_artists',
-        'schema': load_schema("schemas/top_artists.avsc")
+        # 'schema': load_schema("schemas/top_artists.avsc")
     },
     'top_songs': {
         'topic': 'spotify_top_songs',
-        'schema': load_schema("schemas/top_songs.avsc")
+        # 'schema': load_schema("schemas/top_songs.avsc")
     }
 }
 

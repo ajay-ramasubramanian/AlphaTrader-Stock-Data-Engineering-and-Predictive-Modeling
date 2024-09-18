@@ -1,9 +1,9 @@
 import sys
 import site
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-from utils import TOPIC_CONFIG
+from .retrieve_objects import MinioRetriever,MinioUploader
+from .utils import TOPIC_CONFIG
 
 class RetrieveLikedSongs(MinioRetriever,MinioUploader):
 
@@ -33,11 +33,14 @@ class RetrieveLikedSongs(MinioRetriever,MinioUploader):
         print("Object uploaded")
 
 
-    
-
-if __name__ == "__main__":
+def run_retrieve_liked_songs():
     ob = RetrieveLikedSongs("suhaas", \
                             TOPIC_CONFIG["liked_songs"]["topic"], \
                             "raw", \
                             "processed")
     ob.get_user_liked_songs()
+
+    
+
+if __name__ == "__main__":
+    run_retrieve_liked_songs()

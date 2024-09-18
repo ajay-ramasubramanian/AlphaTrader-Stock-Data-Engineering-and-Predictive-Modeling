@@ -1,6 +1,6 @@
 from kafka import KafkaConsumer
-from base_consumer import BaseKafkaConsumer
-from utils import TOPIC_CONFIG
+from .base_consumer import BaseKafkaConsumer
+from .utils import TOPIC_CONFIG
 
 class TopSongsConsumer(BaseKafkaConsumer):
 
@@ -18,6 +18,9 @@ class TopSongsConsumer(BaseKafkaConsumer):
         self.consumer.subscribe([TopSongsConsumer.TOPIC])
 
 
-if __name__ == '__main__':
+def run_consumer_top_songs():
     top_songs = TopSongsConsumer('top_songs_group')
     top_songs.consume(top_songs.consumer)
+
+if __name__ == '__main__':
+    run_consumer_top_songs()

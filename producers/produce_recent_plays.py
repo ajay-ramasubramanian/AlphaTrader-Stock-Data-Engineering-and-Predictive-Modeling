@@ -1,9 +1,9 @@
 from kafka import KafkaProducer
-from base_producer import SpotifyKafkaProducer
+from .base_producer import SpotifyKafkaProducer
 import os
 import time
 from datetime import datetime
-from utils import scope
+from .utils import scope
 import pandas as pd
 from dotenv import load_dotenv
 import spotipy
@@ -68,7 +68,11 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
         finally:
             self.close()
 
-if __name__ == "__main__":
+def run_producer_recent_plays():
     recent_plays = RecentlyPlayedProducer()
     recent_plays.process_spotify_data('suhaas')
+
+
+if __name__ == "__main__":
+    run_producer_recent_plays()
 

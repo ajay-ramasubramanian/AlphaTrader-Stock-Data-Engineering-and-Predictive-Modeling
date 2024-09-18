@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 from kafka import KafkaProducer
 from spotipy.oauth2 import SpotifyOAuth
 
-from base_producer import SpotifyKafkaProducer
-from utils import scope
+from .base_producer import SpotifyKafkaProducer
+from .utils import scope
 
 # Load environment variables from .env file (if needed)
 # load_dotenv()
@@ -73,7 +73,13 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             # Close the producer to release resources
             self.close()
 
-if __name__ == "__main__":
-    # Start the data processing for a specific user
+
+def run_producer_liked_songs():
     saved_tracks_producer = SavedTracksProducer()
     saved_tracks_producer.process_spotify_data('suhaas')
+
+
+if __name__ == "__main__":
+    # Start the data processing for a specific user
+    run_producer_liked_songs()
+    

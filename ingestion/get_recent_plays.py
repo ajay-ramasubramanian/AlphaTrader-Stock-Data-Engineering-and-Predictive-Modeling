@@ -1,10 +1,10 @@
 import sys
 import site
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
 from datetime import datetime
-from utils import TOPIC_CONFIG
+from .retrieve_objects import MinioRetriever,MinioUploader
+from .utils import TOPIC_CONFIG
 
 class RetrieveRecentPlays(MinioRetriever,MinioUploader):
 
@@ -41,10 +41,14 @@ class RetrieveRecentPlays(MinioRetriever,MinioUploader):
         MinioUploader.upload_files(self,data=df_tracks)
         print("Object uploaded")
     
-
-if __name__ == "__main__":
+def run_retrieve_recent_plays():
     ob = RetrieveRecentPlays("suhaas", \
                             TOPIC_CONFIG["recent_plays"]["topic"], \
                             "raw", \
                             "processed")
     ob.get_user_recent_plays()
+
+
+if __name__ == "__main__":
+    run_retrieve_recent_plays()
+    

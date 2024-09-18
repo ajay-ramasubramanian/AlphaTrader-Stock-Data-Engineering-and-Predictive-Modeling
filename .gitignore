@@ -137,10 +137,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-<<<<<<< HEAD
-=======
 spotify_insight_venv/
->>>>>>> main
 spotify-de/
 
 # Spyder project settings
@@ -179,3 +176,7 @@ cython_debug/
 
 # Ignore Gradle build output directory
 build
+
+
+#airflow
+airflow/logs/

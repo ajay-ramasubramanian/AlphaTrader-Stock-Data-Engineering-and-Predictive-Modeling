@@ -1,18 +1,16 @@
 from kafka import KafkaProducer
-from base_producer import SpotifyKafkaProducer
+from producers.base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
-from utils import scope
+from producers.utils import scope
 import pandas as pd
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
-# Load environment variables from .env file (if needed)
-# load_dotenv()
-# clientID= os.getenv("SPOTIPY_CLIENT_ID")
-# clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
-# redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
+# import sys
+# import os
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class FollowingArtistsProducer(SpotifyKafkaProducer):
     def __init__(self, ):
@@ -61,7 +59,11 @@ class FollowingArtistsProducer(SpotifyKafkaProducer):
             # Close the producer to release resources
             self.close()
 
-if __name__ == "__main__":
-    # Start the data processing for a specific user
+def run_producer_following_artists():
     following_artists = FollowingArtistsProducer()
     following_artists.process_spotify_data(user_id='suhaas')
+
+
+if __name__ == "__main__":
+    # Start the data processing for a specific user
+    run_producer_following_artists()

@@ -1,8 +1,8 @@
 from kafka import KafkaProducer
-from base_producer import SpotifyKafkaProducer
+from .base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
-from utils import scope
+from .utils import scope
 import pandas as pd
 from dotenv import load_dotenv
 import spotipy
@@ -65,7 +65,12 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             # Close the producer to release resources
             self.close()
 
-if __name__ == "__main__":
-    # Start the data processing for a specific user
+
+
+def run_producer_saved_playlist():
     saved_tracks = SavedTracksProducer()
     saved_tracks.process_spotify_data(user_id='suhaas')
+
+if __name__ == "__main__":
+    # Start the data processing for a specific user
+    run_producer_saved_playlist()

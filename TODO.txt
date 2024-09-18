@@ -10,3 +10,6 @@ This is for Airflow webserver secret key
 This is for fernet key:
 
 - python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
+
+
+Export parth "export PYTHONPATH="/e/spotify_insight" 

@@ -1,6 +1,6 @@
 from kafka import KafkaConsumer
-from base_consumer import BaseKafkaConsumer
-from utils import TOPIC_CONFIG
+from .base_consumer import BaseKafkaConsumer
+from .utils import TOPIC_CONFIG
 class RecentPlaysConsumer(BaseKafkaConsumer):
     
     KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
@@ -17,6 +17,10 @@ class RecentPlaysConsumer(BaseKafkaConsumer):
         # Subscribe to the specified topic
         self.consumer.subscribe([RecentPlaysConsumer.TOPIC])
 
-if __name__ == '__main__':
+def run_consumer_recently_played():
     recent_plays = RecentPlaysConsumer('recent_plays_group')
     recent_plays.consume(recent_plays.consumer)
+
+
+if __name__ == '__main__':
+    run_consumer_recently_played()

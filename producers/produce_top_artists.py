@@ -1,8 +1,8 @@
 from kafka import KafkaProducer
-from base_producer import SpotifyKafkaProducer
+from .base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
-from utils import scope
+from .utils import scope
 import pandas as pd
 from dotenv import load_dotenv
 import spotipy
@@ -53,6 +53,10 @@ class TopArtistsProducer(SpotifyKafkaProducer):
         finally:
             self.close()
 
-if __name__ == "__main__":
+
+def run_producer_top_artist():
     top_artists = TopArtistsProducer()
     top_artists.process_spotify_data('suhaas')
+
+if __name__ == "__main__":
+    run_producer_top_artist()

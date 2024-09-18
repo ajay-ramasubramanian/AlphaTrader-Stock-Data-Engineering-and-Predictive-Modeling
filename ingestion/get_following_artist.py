@@ -1,9 +1,10 @@
-import sys
+import sys ,os
 import site
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever,MinioUploader
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-from utils import TOPIC_CONFIG
+from ingestion.utils import TOPIC_CONFIG
 
 class RetrieveFollowingArtists(MinioRetriever, MinioUploader):
 
@@ -32,9 +33,12 @@ class RetrieveFollowingArtists(MinioRetriever, MinioUploader):
         print("object uploaded")
     
 
-if __name__ == "__main__":
+def run_retrieve_following_artists():
     ob = RetrieveFollowingArtists("suhaas", \
                                 TOPIC_CONFIG["following_artists"]["topic"], \
                                 "raw", \
                                 "processed")
     ob.get_user_followed_artists()
+
+if __name__ == "__main__":
+    run_retrieve_following_artists()

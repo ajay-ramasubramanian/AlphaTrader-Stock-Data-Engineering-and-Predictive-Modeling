@@ -1,6 +1,6 @@
 from kafka import KafkaConsumer
-from base_consumer import BaseKafkaConsumer
-from utils import TOPIC_CONFIG
+from .base_consumer import BaseKafkaConsumer
+from .utils import TOPIC_CONFIG
 class LikedSongsConsumer(BaseKafkaConsumer):
     
     KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
@@ -16,7 +16,9 @@ class LikedSongsConsumer(BaseKafkaConsumer):
         # Subscribe to the specified topic
         self.consumer.subscribe([LikedSongsConsumer.TOPIC])
 
-
-if __name__ == '__main__':
+def run_consumer_liked_songs():
     liked_songs = LikedSongsConsumer('liked_songs_group')
     liked_songs.consume(liked_songs.consumer)
+
+if __name__ == '__main__':
+    run_consumer_liked_songs()

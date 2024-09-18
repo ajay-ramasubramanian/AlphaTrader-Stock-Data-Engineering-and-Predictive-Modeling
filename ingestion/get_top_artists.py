@@ -1,9 +1,9 @@
 import sys
 import site
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-from utils import TOPIC_CONFIG
+from .retrieve_objects import MinioRetriever,MinioUploader
+from .utils import TOPIC_CONFIG
 class RetrieveTopArtists(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic,raw, processed) -> None:
@@ -31,12 +31,15 @@ class RetrieveTopArtists(MinioRetriever,MinioUploader):
         print("Object uploaded")
     
 
-
-if __name__ == "__main__":
+def run_retrieve_top_artists():
     ob = RetrieveTopArtists("suhaas", \
                             TOPIC_CONFIG["top_artists"]["topic"],\
                             "raw",\
                             "processed")
     ob.get_user_top_artists()
+
+
+if __name__ == "__main__":
+    run_retrieve_top_artists()
     
 

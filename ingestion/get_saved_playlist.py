@@ -1,9 +1,9 @@
 import sys
 import site
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-from utils import TOPIC_CONFIG
+from .retrieve_objects import MinioRetriever,MinioUploader
+from .utils import TOPIC_CONFIG
 class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic,raw, processed) -> None:
@@ -33,10 +33,13 @@ class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
         print("Object uploaded")
     
 
-
-if __name__ == "__main__":
+def run_retrieve_saved_playlist():
     ob = RetrieveSavedPlaylist("suhaas", \
                             TOPIC_CONFIG["saved_playlists"]["topic"],\
                             "raw", \
                             "processed")
     ob.get_user_saved_playlist()
+
+
+if __name__ == "__main__":
+    run_retrieve_saved_playlist()

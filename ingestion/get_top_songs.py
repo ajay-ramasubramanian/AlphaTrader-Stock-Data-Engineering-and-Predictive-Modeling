@@ -1,9 +1,10 @@
 import sys
 import site
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
-from utils import TOPIC_CONFIG
+from .retrieve_objects import MinioRetriever,MinioUploader
+from .utils import TOPIC_CONFIG
+
 class RetrieveTopSongs(MinioRetriever,MinioUploader):
 
     def __init__(self,user, topic, raw, processed) -> None:
@@ -40,9 +41,14 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
             print(f" Error has occured  : {e}")
 
 
-obj= RetrieveTopSongs("suhaas", \
+def run_retrieve_top_songs():
+    obj= RetrieveTopSongs("suhaas", \
                     TOPIC_CONFIG["top_songs"]["topic"], \
                     "raw", \
                     "processed")
 
-obj.get_user_top_songs()
+    obj.get_user_top_songs()
+
+
+if __name__ == "__main__":
+    run_retrieve_top_songs()

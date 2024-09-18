@@ -1,17 +1,17 @@
 from kafka import KafkaProducer
-from utils import TOPIC_CONFIG
-import json
-import io
+from kafka.errors import KafkaError
+import io,os
 import avro.schema
 from avro.io import DatumWriter
 from concurrent.futures import ThreadPoolExecutor
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
-from utils import scope
+from producers.utils import scope, TOPIC_CONFIG
+from dotenv import load_dotenv
 
-
+load_dotenv()
 # Kafka broker address
-KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
+KAFKA_BOOTSTRAP_SERVERS = ['kafka:9092']
 
 class SpotifyKafkaProducer:
     """
@@ -24,11 +24,14 @@ class SpotifyKafkaProducer:
         Initializes the Kafka producer and sets up a thread pool executor for asynchronous message production.
         """
         # Create a Kafka producer with string key serialization and Gzip compression for message payloads
-        self.producer = KafkaProducer(
-            bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-            key_serializer=str.encode,  # Serialize keys as strings
-            compression_type='gzip'  # Compress messages using gzip to save bandwidth
-        )
+        try:
+            self.producer = KafkaProducer(
+                bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+                key_serializer=str.encode,
+                compression_type='gzip'
+            )
+        except KafkaError as e:
+            print(f"Failed to connect to Kafka: {e}")
         
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 

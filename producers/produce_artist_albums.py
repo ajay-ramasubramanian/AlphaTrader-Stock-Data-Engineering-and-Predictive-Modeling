@@ -51,19 +51,21 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
         # artist_ids = ['4IHSCHg3UPSy0rBSHi3c5s', '7Hjbimq43OgxaBRpFXic4x', '3PWp9R5HvbQgxI5KBx5kVd', '1t17z3vfuc82cxSDMrvryJ', '4EPYWwU4c8eG2GzD7MenUA', '6PDLwWvgYNMfBRLqC1h5cJ', '2dixWDh9f2COEfikojSd39']
         artist_ids =['4IHSCHg3UPSy0rBSHi3c5s']
         try:
-
+            print("Sending data to Kafka")
             for artist_id in artist_ids:
 
                 albums = []
                 result = self.sp.artist_albums(artist_id, album_type='album,single,compilation', limit=1)
                 future = self.produce_artist_albums(user_id, result['items'][0])
                 futures.append(future)
+
                 albums.append(result['items'])
                 while result['next']:
                     if result['items']:
                         albums.append(result['items'])
                         future = self.produce_artist_albums(user_id, result['items'][0])
                         futures.append(future)
+                        print(f"Sent record to Kafka: {result['items'][0]['name']}")
                     result = self.sp.next(result)
                     
                     # albums.append(results['items'])

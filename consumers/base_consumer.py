@@ -135,6 +135,7 @@ class BaseKafkaConsumer:
         """
         # Get the list of ConsumerRecords from the Kafka message for the subscribed topic partition
         records = list(message.values())[0]  # Extract multiple records
+        # print(f"records: {records}\n")
         # Iterate over each ConsumerRecord in the list
         for record in records:
             # print(f"record: {record}")

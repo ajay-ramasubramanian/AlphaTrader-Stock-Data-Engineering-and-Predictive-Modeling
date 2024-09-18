@@ -1,0 +1,123 @@
+{
+  "type": "record",
+  "name": "Album",
+  "fields": [
+    {
+      "type": "string",
+      "name": "album_type"
+    },
+    {
+      "type": ["int", "null"],
+      "name": "total_tracks"
+    },
+    {
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "name": "available_markets"
+    },
+    {
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "name": "external_urls"
+    },
+    {
+      "type": "string",
+      "name": "href"
+    },
+    {
+      "type": "string",
+      "name": "id"
+    },
+    {
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Image",
+          "fields": [
+            {
+              "type": "string",
+              "name": "url"
+            },
+            {
+              "type": "int",
+              "name": "height"
+            },
+            {
+              "type": "int",
+              "name": "width"
+            }
+          ]
+        }
+      },
+      "name": "images"
+    },
+    {
+      "type": "string",
+      "name": "name"
+    },
+    {
+      "type": "string",
+      "name": "release_date"
+    },
+    {
+      "type": "string",
+      "name": "release_date_precision"
+    },
+    {
+      "type": "string",
+      "name": "type"
+    },
+    {
+      "type": "string",
+      "name": "uri"
+    },
+    {
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Artist",
+          "fields": [
+            {
+              "type": {
+                "type": "map",
+                "values": "string"
+              },
+              "name": "external_urls"
+            },
+            {
+              "type": "string",
+              "name": "href"
+            },
+            {
+              "type": "string",
+              "name": "id"
+            },
+            {
+              "type": "string",
+              "name": "name"
+            },
+            {
+              "type": "string",
+              "name": "type"
+            },
+            {
+              "type": "string",
+              "name": "uri"
+            }
+          ]
+        }
+      },
+      "name": "artists"
+    },
+    {
+      "type": ["string", "null"],
+      "name": "album_group"
+    }
+  ]
+}

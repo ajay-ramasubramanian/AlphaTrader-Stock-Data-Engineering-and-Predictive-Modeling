@@ -1,5 +1,6 @@
 # Optimizations:
 # 1) Partitioning the data in ingestion according to some criteria
+<<<<<<< HEAD
 
 
 procedure to set up secret key for airflow
@@ -13,3 +14,13 @@ This is for fernet key:
 
 
 Export parth "export PYTHONPATH="/e/spotify_insight" 
+=======
+# 2) Top artists in a genre based on popularity. If there are multiple artists with the same popularity, choose the one with the most followers.
+# 3) Outputs: Popular recommendations for artists in a genre (general). Top genre for the user (user-specific). Top tracks for user. Top artists overall. 
+
+
+# Lessons learnt:
+# Understand the dataset thoroughly. VERY IMPORTANT!! 
+# Have a clear idea about the outputs before starting the project. 
+
+>>>>>>> 2cbf0835ba6cb1dbdfb32ef63aca4402a7106bf9

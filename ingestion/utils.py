@@ -1,7 +1,6 @@
-import sys
 import site
+import sys, os
 sys.path.extend(site.getsitepackages())
-import os
 sys.path.append(os.path.abspath(os.path.join('..', 'utils')))
 
 from avro.schema import parse
@@ -47,6 +46,14 @@ TOPIC_CONFIG = {
     'top_songs': {
         'topic': 'spotify_top_songs',
         # 'schema': load_schema("schemas/top_songs.avsc")
+    },
+    'related_artists': {
+        'topic': 'spotify_related_artists',
+        # 'schema': load_schema("schemas/related_artists.avsc")
+    },
+    'artist_albums': {
+        'topic': 'spotify_artist_albums',
+        # 'schema': load_schema("schemas/artist_albums.avsc")
     }
 }
 

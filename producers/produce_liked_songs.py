@@ -1,10 +1,15 @@
 import os
 from datetime import datetime
 import pandas as pd
+from spotipy import Spotify
+
 import spotipy
 from dotenv import load_dotenv
 from kafka import KafkaProducer
 from spotipy.oauth2 import SpotifyOAuth
+from produce_related_artists import RelatedArtistsProducer
+from produce_artist_albums import ArtistAlbumsProducer
+
 
 from .base_producer import SpotifyKafkaProducer
 from .utils import scope
@@ -24,8 +29,29 @@ class SavedTracksProducer(SpotifyKafkaProducer):
         """
         Initialize the SavedTracksProducer with a Spotify client and Kafka producer.
         """
-        super().__init__()  # Initialize Kafka producer from base class
-        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))  # Initialize Spotipy client
+        super().__init__()
+        # Initialize Kafka producer from base class
+
+    def send_ids_to_related_artists_producer(self, user_id, artist_ids):
+        """
+        Send artist and album IDs to another file for processing related data.
+        
+        Args:
+            artist_ids (list): List of artist IDs.
+            album_ids (list): List of album IDs.
+        """
+        RelatedArtistsProducer().get_artist_ids(user_id, artist_ids)
+
+    def send_ids_to_artist_albums_producer(self, user_id, artist_ids):
+        """
+        Send artist and album IDs to another file for processing related data.
+        
+        Args:
+            artist_ids (list): List of artist IDs.
+            album_ids (list): List of album IDs.
+        """
+        ArtistAlbumsProducer().get_artist_ids(user_id, artist_ids)
+
 
     def process_spotify_data(self, user_id):
         """
@@ -36,15 +62,20 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             user_id (str): The Spotify user ID.
         """
         futures = []  # List to keep track of future objects for asynchronous Kafka sends
+        max = 300
 
         try:
             offset = 0  # Offset for pagination in Spotify API
             limit = 1  # Limit for the number of items to fetch per request (can be adjusted)
-
-            while True:
+            artist_ids = []
+            # Fetch the current user's saved tracks with pagination support
+            while len(artist_ids) < max:
+            # while True:
                 # Fetch the current user's saved tracks with pagination support
                 result = self.sp.current_user_saved_tracks(limit=limit, offset=offset)
-                # print("..")  # Optional debug print
+                print(len(result))
+                
+                # print("artists_id: ", result['items'][0]['track']['artists'][0]['id'])
                 
                 # Break the loop if no items are returned
                 if not result['items']:
@@ -53,12 +84,15 @@ class SavedTracksProducer(SpotifyKafkaProducer):
                 # Send the data to Kafka as soon as it is retrieved
                 future = self.produce_liked_songs(user_id, result)
                 futures.append(future)
+                artist_ids.append(result['items'][0]['track']['artists'][0]['id'])
                 
                 
                 # Increment offset for the next batch of items
                 offset += limit
 
             print("Sent all the data")  # Confirmation print
+            # After the while loop
+            
 
             # Wait for all Kafka messages to be sent and handle their results
             for future in futures:
@@ -68,6 +102,10 @@ class SavedTracksProducer(SpotifyKafkaProducer):
                     print(f"Message sent to {record_metadata.topic} partition {record_metadata.partition} offset {record_metadata.offset}")
                 except Exception as e:
                     print(f"Failed to send message: {e}")
+
+            if artist_ids:
+                self.send_ids_to_related_artists_producer(user_id, artist_ids)
+                self.send_ids_to_artist_albums_producer(user_id, artist_ids)
 
         finally:
             # Close the producer to release resources

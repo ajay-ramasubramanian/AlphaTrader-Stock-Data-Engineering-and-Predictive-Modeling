@@ -1,6 +1,10 @@
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-import io,os
+from utils import TOPIC_CONFIG
+import os
+from spotipy import Spotify
+import json
+import io
 import avro.schema
 from avro.io import DatumWriter
 from concurrent.futures import ThreadPoolExecutor
@@ -34,6 +38,10 @@ class SpotifyKafkaProducer:
             print(f"Failed to connect to Kafka: {e}")
         
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        # self.sp = Spotify(auth_manager=SpotifyOAuth(client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+        #                                 client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
+        #                                 redirect_uri="http://localhost:8080",
+        #                                 scope=scope))
 
         # Set up a thread pool executor for asynchronous processing with a maximum of 5 worker threads
         self.executor = ThreadPoolExecutor(max_workers=5)  # Adjust based on your concurrency needs
@@ -87,6 +95,8 @@ class SpotifyKafkaProducer:
         future = self.producer.send(topic=topic, key=user_id, value=avro_data)
         return future
 
+    def process_spotify_data(self, user_id=None):
+        print("Head over to the specific file and override the process_spotify_data mathod!!")
     # Methods to produce messages to specific Kafka topics related to Spotify data
 
     def produce_following_artists(self, user_id, track_data):
@@ -101,6 +111,32 @@ class SpotifyKafkaProducer:
             Future: A Future object from the ThreadPoolExecutor.
         """
         return self.executor.submit(self.produce_message, 'following_artists', user_id, track_data)
+    
+    def produce_related_artists(self, user_id, track_data):
+        """
+        Produces messages related to following artists data for a user.
+
+        Args:
+            user_id (str): The user ID.
+            track_data (dict): The data payload related to following artists.
+        
+        Returns:
+            Future: A Future object from the ThreadPoolExecutor.
+        """
+        return self.executor.submit(self.produce_message, 'related_artists', user_id, track_data)
+    
+    def produce_artist_albums(self, user_id, track_data):
+        """
+        Produces messages related to following artists data for a user.
+
+        Args:
+            user_id (str): The user ID.
+            track_data (dict): The data payload related to following artists.
+        
+        Returns:
+            Future: A Future object from the ThreadPoolExecutor.
+        """
+        return self.executor.submit(self.produce_message, 'artist_albums', user_id, track_data)
 
     def produce_liked_songs(self, user_id, album_data):
         """

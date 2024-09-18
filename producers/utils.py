@@ -61,6 +61,14 @@ TOPIC_CONFIG = {
     'top_songs': {
         'topic': 'spotify_top_songs',
         'schema': load_schema("top_songs.avsc")
+    },
+    'related_artists': {
+        'topic': 'spotify_related_artists',
+        'schema': load_schema("related_artists.avsc")
+    },
+    'artist_albums': {
+        'topic': 'spotify_artist_albums',
+        'schema': load_schema("artist_albums.avsc")
     }
 }
 

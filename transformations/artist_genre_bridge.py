@@ -3,7 +3,7 @@ import site
 from datetime import datetime
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from transformations.utils import MinioRetriever, MinioUploader
+from ingestion.utils import MinioRetriever, MinioUploader
 import pandas as pd
 from ingestion.utils import TOPIC_CONFIG
 

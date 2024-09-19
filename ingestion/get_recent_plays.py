@@ -1,10 +1,11 @@
-import sys
+import sys,os
 import site
 sys.path.extend(site.getsitepackages())
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
 from datetime import datetime
-from .retrieve_objects import MinioRetriever,MinioUploader
-from .utils import TOPIC_CONFIG
+from ingestion.retrieve_objects import MinioRetriever,MinioUploader
+from ingestion.utils import TOPIC_CONFIG
 
 class RetrieveRecentPlays(MinioRetriever,MinioUploader):
 

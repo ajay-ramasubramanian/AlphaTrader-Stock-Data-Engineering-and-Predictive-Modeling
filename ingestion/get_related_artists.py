@@ -1,10 +1,11 @@
-import sys
+import sys,os
 import site
 from datetime import datetime
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever, MinioUploader
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ingestion.retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
-from utils import TOPIC_CONFIG
+from ingestion.utils import TOPIC_CONFIG
 
 class RetrieveRelatedArtists(MinioRetriever, MinioUploader):
 
@@ -17,7 +18,7 @@ class RetrieveRelatedArtists(MinioRetriever, MinioUploader):
             'artist_id': str,
             'artist_popularity': 'int64', # allows NaNs
             'genres': object,  # For lists or tuples
-            'artist_followers': 'int64'        
+            'artist_followers': 'int64'
         }
 
     def get_artist_related_artists(self):
@@ -55,9 +56,12 @@ class RetrieveRelatedArtists(MinioRetriever, MinioUploader):
         print("object uploaded")
     
 
-if __name__ == "__main__":
+def run_get_artist_related_artists():
     ob = RetrieveRelatedArtists("suhaas", \
                                 TOPIC_CONFIG["related_artists"]["topic"], \
                                 "raw", \
                                 "processed")
     ob.get_artist_related_artists()
+
+if __name__ == "__main__":
+    run_get_artist_related_artists()

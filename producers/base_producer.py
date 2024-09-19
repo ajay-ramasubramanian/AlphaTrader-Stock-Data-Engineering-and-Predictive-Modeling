@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 # Kafka broker address
-KAFKA_BOOTSTRAP_SERVERS = ['kafka:9092']
+KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
 
 class SpotifyKafkaProducer:
     """

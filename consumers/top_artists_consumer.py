@@ -1,6 +1,6 @@
 from kafka import KafkaConsumer
-from .base_consumer import BaseKafkaConsumer
-from .utils import TOPIC_CONFIG
+from base_consumer import BaseKafkaConsumer
+from utils import TOPIC_CONFIG
 class TopArtistsConsumer(BaseKafkaConsumer):
     
     KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']

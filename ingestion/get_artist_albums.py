@@ -1,9 +1,10 @@
-import sys
+import sys,os
 import site
 sys.path.extend(site.getsitepackages())
-from retrieve_objects import MinioRetriever,MinioUploader
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
-from utils import TOPIC_CONFIG
+from ingestion.utils import TOPIC_CONFIG
 
 class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
 
@@ -45,10 +46,14 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
         MinioUploader.upload_files(self,data=df_artists)
         print("object uploaded")
     
-
-if __name__ == "__main__":
+def run_get_user_artist_albums():
     ob = RetrieveArtistAlbums("suhaas", \
                                 TOPIC_CONFIG["artist_albums"]["topic"], \
                                 "raw", \
                                 "processed")
     ob.get_user_artist_albums()
+
+
+if __name__ == "__main__":
+    run_get_user_artist_albums()
+

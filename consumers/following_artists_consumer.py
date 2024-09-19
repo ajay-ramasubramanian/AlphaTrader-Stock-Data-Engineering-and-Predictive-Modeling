@@ -2,11 +2,11 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from kafka import KafkaConsumer
-from consumers.base_consumer import BaseKafkaConsumer
-from consumers.utils import TOPIC_CONFIG
+from base_consumer import BaseKafkaConsumer
+from utils import TOPIC_CONFIG
 class FollowingArtistsConsumer(BaseKafkaConsumer):
     
-    KAFKA_BOOTSTRAP_SERVERS = ['kafka:9092']
+    KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
     TOPIC = TOPIC_CONFIG['following_artists']['topic']
 
     def __init__(self, group_id):

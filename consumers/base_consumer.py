@@ -1,4 +1,4 @@
-from consumers.utils import TOPIC_CONFIG, TOPIC_TO_KEY
+from utils import TOPIC_CONFIG, TOPIC_TO_KEY
 import json
 import io
 import time

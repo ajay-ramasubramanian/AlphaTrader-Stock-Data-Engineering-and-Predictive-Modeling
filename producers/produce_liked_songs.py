@@ -11,8 +11,8 @@ from produce_related_artists import RelatedArtistsProducer
 from produce_artist_albums import ArtistAlbumsProducer
 
 
-from .base_producer import SpotifyKafkaProducer
-from .utils import scope
+from base_producer import SpotifyKafkaProducer
+from utils import scope
 
 # Load environment variables from .env file (if needed)
 # load_dotenv()

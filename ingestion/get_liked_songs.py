@@ -18,14 +18,15 @@ class RetrieveLikedSongs(MinioRetriever,MinioUploader):
             item=result["items"]
             track = item[0]['track']
             tracks.append({
-                'name': track['name'],
-                'artist': track['artists'][0]['name'],
-                'album': track['album']['name'],
-                'release_date': track['album']['release_date'],
+                'track_name': track['name'],
+                'artist_id': track['artists'][0]['id'],
+                'album_id': track['album']['id'],
+                # 'album': track['album']['name'],
+                # 'release_date': track['album']['release_date'],
                 'duration_ms': track['duration_ms'],
                 'popularity': track['popularity'],
-                'id': track['id'],
-                'uri': track['uri'],
+                'track_id': track['id'],
+                'track_uri': track['uri'],
                 'added_at': item[0]['added_at']
             })
         # Convert to DataFrame

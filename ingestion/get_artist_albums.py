@@ -10,7 +10,7 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
 
     def __init__(self, user, topic, raw, processed) -> None:
         MinioRetriever.__init__(self, user, topic, raw)
-        MinioUploader.__init__(self, user, topic, processed)
+        MinioUploader.__init__(self, user, 'artist_genres', processed)
 
         self.dtype_dict = {
             'album_name': str,
@@ -33,7 +33,6 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
                 'album_type': result['album_type'],
                 'total_tracks': result['total_tracks'],
                 'release_date': result['release_date'],
-                'artist_name': result['artists'][0]['name'],
                 'artist_id': result['artists'][0]['id'],
             })
         # Convert to DataFrame

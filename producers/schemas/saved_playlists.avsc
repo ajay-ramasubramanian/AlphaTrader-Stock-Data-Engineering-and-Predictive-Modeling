@@ -1,0 +1,76 @@
+{
+  "type": "record",
+  "name": "UserPlaylists",
+  "fields": [
+    {"name": "href", "type": "string"},
+    {"name": "limit", "type": "int"},
+    {"name": "next", "type": ["null", "string"]},
+    {"name": "offset", "type": "int"},
+    {"name": "previous", "type": ["null", "string"]},
+    {"name": "total", "type": "int"},
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Playlist",
+          "fields": [
+            {"name": "collaborative", "type": "boolean"},
+            {"name": "description", "type": ["null", "string"]},
+            {"name": "external_urls", "type": {"type": "map", "values": "string"}},
+            {"name": "href", "type": "string"},
+            {"name": "id", "type": "string"},
+            {
+              "name": "images",
+              "type": {
+                "type": "array",
+                "items": {
+                  "type": "record",
+                  "name": "Image",
+                  "fields": [
+                    {"name": "height", "type": ["null", "int"]},
+                    {"name": "url", "type": "string"},
+                    {"name": "width", "type": ["null", "int"]}
+                  ]
+                }
+              }
+            },
+            {"name": "name", "type": "string"},
+            {
+              "name": "owner",
+              "type": {
+                "type": "record",
+                "name": "User",
+                "fields": [
+                  {"name": "display_name", "type": "string"},
+                  {"name": "external_urls", "type": {"type": "map", "values": "string"}},
+                  {"name": "href", "type": "string"},
+                  {"name": "id", "type": "string"},
+                  {"name": "type", "type": "string"},
+                  {"name": "uri", "type": "string"}
+                ]
+              }
+            },
+            {"name": "primary_color", "type": ["null", "string"]},
+            {"name": "public", "type": "boolean"},
+            {"name": "snapshot_id", "type": "string"},
+            {
+              "name": "tracks",
+              "type": {
+                "type": "record",
+                "name": "Tracks",
+                "fields": [
+                  {"name": "href", "type": "string"},
+                  {"name": "total", "type": "int"}
+                ]
+              }
+            },
+            {"name": "type", "type": "string"},
+            {"name": "uri", "type": "string"}
+          ]
+        }
+      }
+    }
+  ]
+}

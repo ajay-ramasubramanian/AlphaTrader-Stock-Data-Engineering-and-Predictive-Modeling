@@ -28,6 +28,7 @@ class RetrieveTopArtists(MinioRetriever,MinioUploader):
             })
         # Convert to DataFrame
         df_artists = pd.DataFrame(artists)
+        print(df_artists)
         MinioUploader.upload_files(self,data=df_artists)
         print("Object uploaded")
     

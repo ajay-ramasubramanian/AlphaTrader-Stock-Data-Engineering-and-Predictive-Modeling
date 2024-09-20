@@ -14,7 +14,7 @@ class MinioRetriever:
     def __init__(self, user, topic, container) -> None:
         self.container = container #raw
         self.user = user
-        self.topic = topic
+        self.topic = topic.replace("_","-")
 
     def retrieve_object(self):
         try:
@@ -30,8 +30,6 @@ class MinioRetriever:
                 self.container,
                 f"{self.container}/{self.topic}",
                 f"{self.container}/{self.topic}/{self.user}",
-
-                
                 f"{self.container}/{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
             ]
             

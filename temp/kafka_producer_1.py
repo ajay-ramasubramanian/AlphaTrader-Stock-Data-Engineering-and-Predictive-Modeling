@@ -17,7 +17,48 @@ kafka_producer = KafkaProducer(
     )
 
 def producer(api_call, topic):
-    
+    # Validate input parameters
+    if not callable(api_call) or not isinstance(topic, str):
+        raise ValueError("Invalid input: api_call must be callable and topic must be a string")
+
+    # Set up error handling and logging
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Fetch data from API
+        df = api_call()
+        
+        if df.empty:
+            logger.warning(f"No data returned from {api_call.__name__}")
+            return
+
+        # Convert DataFrame to list of dictionaries for more efficient processing
+        data = df.to_dict(orient='records')
+        
+        # Batch size for sending messages (adjust as needed)
+        BATCH_SIZE = 100
+        
+        logger.info(f"Sending {len(data)} records to topic '{topic}'")
+
+        # Send data in batches
+        for i in range(0, len(data), BATCH_SIZE):
+            batch = data[i:i+BATCH_SIZE]
+            future = kafka_producer.send(topic, key=b'suhaas', value=batch)
+            
+            try:
+                record_metadata = future.get(timeout=10)
+                logger.info(f"Batch sent to topic {record_metadata.topic}, "
+                            f"partition {record_metadata.partition}, "
+                            f"offset {record_metadata.offset}")
+            except Exception as e:
+                logger.error(f"Error sending batch: {e}")
+
+        logger.info(f"Finished sending data to topic '{topic}'")
+
+    except Exception as e:
+        logger.error(f"Error in producer function: {e}")
     df = api_call()
     # Convert DataFrame to dictionary
     # data = df.to_dict(orient='records')

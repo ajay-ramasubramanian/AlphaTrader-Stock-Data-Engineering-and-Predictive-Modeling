@@ -1,5 +1,5 @@
 from kafka import KafkaProducer
-from producers.base_producer import SpotifyKafkaProducer
+from base_producer import SpotifyKafkaProducer
 import os
 from datetime import datetime
 from producers.utils import scope

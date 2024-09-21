@@ -1,5 +1,6 @@
 import sys,os
 import site
+from datetime import datetime
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
@@ -19,9 +20,9 @@ class RetrieveLikedSongs(MinioRetriever,MinioUploader):
             track = item[0]['track']
             tracks.append({
                 'name': track['name'],
-                'artist': track['artists'][0]['name'],
-                'album': track['album']['name'],
-                'release_date': track['album']['release_date'],
+                'artist_id': track['artists'][0]['id'],
+                # 'album': track['album']['name'],
+                # 'release_date': track['album']['release_date'],
                 'duration_ms': track['duration_ms'],
                 'popularity': track['popularity'],
                 'id': track['id'],
@@ -30,6 +31,7 @@ class RetrieveLikedSongs(MinioRetriever,MinioUploader):
             })
         # Convert to DataFrame
         df_tracks= pd.DataFrame(tracks)
+        df_tracks['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         MinioUploader.upload_files(self,data=df_tracks)
         print("Object uploaded")
 

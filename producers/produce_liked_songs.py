@@ -103,7 +103,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
                 except Exception as e:
                     print(f"Failed to send message: {e}")
 
-            if artist_ids:
+            if artist_ids:   # artist_ids is a list
                 self.send_ids_to_related_artists_producer(user_id, artist_ids)
                 self.send_ids_to_artist_albums_producer(user_id, artist_ids)
 

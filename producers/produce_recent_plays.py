@@ -54,7 +54,7 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
             # Send to Kafka as soon as we have the data
             future = self.produce_recent_plays(user_id, result)
             futures.append(future)
-            print(f"Sent {track_count} tracks")
+            # print(f"Sent {track_count} tracks")
 
             # Wait for all messages to be sent
             for future in futures:

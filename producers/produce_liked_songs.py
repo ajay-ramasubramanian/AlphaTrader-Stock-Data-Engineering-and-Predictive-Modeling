@@ -73,7 +73,9 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             # while True:
                 # Fetch the current user's saved tracks with pagination support
                 result = self.sp.current_user_saved_tracks(limit=limit, offset=offset)
-                print(len(result))
+                # print(f'results: {result}')
+                # break
+                
                 
                 # print("artists_id: ", result['items'][0]['track']['artists'][0]['id'])
                 

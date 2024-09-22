@@ -14,23 +14,23 @@ class RetrieveLikedSongs(MinioRetriever,MinioUploader):
     def get_user_liked_songs(self):
         tracks = []
         results= MinioRetriever.retrieve_object(self)
-        for result in results:
+        for count, result in enumerate(results):
             item=result["items"]
             track = item[0]['track']
             tracks.append({
-                'track_name': track['name'],
+                'like_id': count,
                 'artist_id': track['artists'][0]['id'],
                 'album_id': track['album']['id'],
-                # 'album': track['album']['name'],
-                # 'release_date': track['album']['release_date'],
-                'duration_ms': track['duration_ms'],
-                'popularity': track['popularity'],
                 'track_id': track['id'],
-                'track_uri': track['uri'],
                 'added_at': item[0]['added_at']
             })
+
+            # print(type(item[0]['added_at'].strftime('%Y%m%d%H%M%S')))
         # Convert to DataFrame
         df_tracks= pd.DataFrame(tracks)
+        df_tracks['added_at'] = pd.to_datetime(df_tracks['added_at']) # data type is TIMESTAMP
+        df_tracks['time_id'] = df_tracks['added_at'].apply(lambda val: val.strftime('%Y%m%d%H%M%S'))
+        print(type(list(df_tracks['added_at'])[0]))
         MinioUploader.upload_files(self,data=df_tracks)
         print("Object uploaded")
 

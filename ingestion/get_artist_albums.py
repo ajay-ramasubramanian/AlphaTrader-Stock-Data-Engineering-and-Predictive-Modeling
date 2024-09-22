@@ -9,22 +9,22 @@ from ingestion.utils import TOPIC_CONFIG
 class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
 
     def __init__(self, user, topic, raw, processed) -> None:
-        MinioRetriever.__init__(self, user, topic, raw)
-        MinioUploader.__init__(self, user, 'artist_genres', processed)
+        self.retriever = MinioRetriever(user, topic, raw)
+        self.uploader = MinioUploader(user, 'artist_genres', processed)
 
         self.dtype_dict = {
             'album_name': str,
             'album_id': str,
             'album_type': str, # allows NaNs
             'total_tracks': 'int64', 
-            'release_date': str,
+            'release_date': object,
             'artist_name': str,
             'artist_id': str
         }
 
     def get_user_artist_albums(self):
         artists = []
-        results = MinioRetriever.retrieve_object(self)
+        results = self.retriever.retrieve_object()
         
         for result in results:
             artists.append({
@@ -34,15 +34,18 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
                 'total_tracks': result['total_tracks'],
                 'release_date': result['release_date'],
                 'artist_id': result['artists'][0]['id'],
+                'artist_name': result['artists'][0]['name']
             })
         # Convert to DataFrame
         df_artists = pd.DataFrame(artists)
+        df_artists['release_date'] = pd.to_datetime(df_artists['release_date'])
+        print(type(list(df_artists['release_date'])[0]))
         df_artists = df_artists.astype(self.dtype_dict)
 
         df_artists.drop_duplicates(['album_id', 'artist_id'], inplace=True)
         df_artists['release_date'] = pd.to_datetime(df_artists['release_date'])
         
-        MinioUploader.upload_files(self,data=df_artists)
+        # self.uploader.upload_files(data=df_artists)
         print("object uploaded")
     
 def run_get_user_artist_albums():

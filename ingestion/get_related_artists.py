@@ -31,7 +31,7 @@ class RetrieveRelatedArtists(MinioRetriever, MinioUploader):
                 'artist_name': result['name'],
                 'artist_id': result['id'],
                 'artist_popularity': result['popularity'],
-                'genres': result['genres'],
+                # 'genres': result['genres'],
                 'artist_followers': result['followers'],
                 })
                 

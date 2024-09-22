@@ -20,6 +20,7 @@ from utils import scope
 # clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 # redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 
+
 class SavedTracksProducer(SpotifyKafkaProducer):
     """
     A producer class for sending a user's saved Spotify tracks to a Kafka topic.

@@ -21,17 +21,18 @@ class RetrieveFollowingArtists(MinioRetriever, MinioUploader):
             # print(f"result: {result}")
             for item in result['artists']['items']:
                 artists.append({
-                    'name': item['name'],
-                    'id': item['id'],
-                    'uri': item['uri'],
-                    'popularity': item['popularity'],
-                    'genres': ', '.join(item['genres']),
-                    'followers': item['followers']['total']
+                    'artist_id': item['id']
+                    # 'name': item['name'],
+                    # 'uri': item['uri'],
+                    # 'popularity': item['popularity'],
+                    # 'genres': ', '.join(item['genres']),
+                    # 'followers': item['followers']['total']
                 })
         # Convert to DataFrame
-        df_artists = pd.DataFrame(artists)
-        df_artists['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        MinioUploader.upload_files(self,data=df_artists)
+        df = pd.DataFrame(artists)
+        df = df.drop_duplicates('artist_id')
+        df['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        MinioUploader.upload_files(self,data=df)
         print("object uploaded")
     
 

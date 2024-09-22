@@ -1,39 +1,37 @@
 import sys,os
 import site
-from datetime import datetime
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
 
-class RetrieveLikedSongs(MinioRetriever,MinioUploader):
+
+class RetrieveLikedSongs():
 
     def __init__(self,user, topic,raw, processed) -> None:
-        MinioRetriever.__init__(self,user, topic, raw)
-        MinioUploader.__init__(self,user,topic, processed)
+        self.retriver = MinioRetriever(user, topic, raw)
+        self.uploader = MinioUploader(user, 'spotify_all_tracks', processed)
     def get_user_liked_songs(self):
         tracks = []
-        results= MinioRetriever.retrieve_object(self)
-        for count, result in enumerate(results):
+        results= self.retriver.retrieve_object()
+        for result in results:
             item=result["items"]
             track = item[0]['track']
             tracks.append({
-                'like_id': count,
-                'artist_id': track['artists'][0]['id'],
-                'album_id': track['album']['id'],
                 'track_id': track['id'],
-                'added_at': item[0]['added_at']
+                'track_name': track['name'],
+                'duration_ms': track['duration_ms'],
+                'track_popularity': track['popularity'],
+                'track_uri': track['uri'],
+                'album_name': track['album']['name'],
+                'artist_name': track['artists'][0]['name']
             })
-
-            # print(type(item[0]['added_at'].strftime('%Y%m%d%H%M%S')))
         # Convert to DataFrame
         df_tracks= pd.DataFrame(tracks)
-        df_tracks['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        df_tracks['added_at'] = pd.to_datetime(df_tracks['added_at']) # data type is TIMESTAMP
-        df_tracks['time_id'] = df_tracks['added_at'].apply(lambda val: val.strftime('%Y%m%d%H%M%S'))
-        print(type(list(df_tracks['added_at'])[0]))
-        MinioUploader.upload_files(self,data=df_tracks)
+        print(df_tracks.head(10))
+        print(f"In ingestion: {len(df_tracks['track_id'])}")
+        self.uploader.upload_files(data=df_tracks)
         print("Object uploaded")
 
 

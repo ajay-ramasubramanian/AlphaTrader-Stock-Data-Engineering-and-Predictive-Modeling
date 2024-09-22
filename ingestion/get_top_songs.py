@@ -38,6 +38,7 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
             # Convert to DataFrame
             df_artists = pd.DataFrame(tracks)
             df_artists['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S") 
+            # print(df_artists.head(20))
             MinioUploader.upload_files(self,data=df_artists)
         # return df_artists
         except Exception as e:

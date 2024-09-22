@@ -31,9 +31,9 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
     def get_artist_ids(self, user_id, artist_ids):
         self.process_spotify_data(user_id, artist_ids)
 
-    def get_related_artists(self, sp, artist_id):
+    def get_related_artists(self, artist_id):
         try:
-            related = sp.artist_related_artists(artist_id)
+            related = self.sp.artist_related_artists(artist_id)
             return related['artists']
         except spotipy.SpotifyException as e:
             print(f"Error getting related artists for {artist_id}: {e}")
@@ -73,7 +73,7 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
                 current_level = set()
                 for artist_id in to_process:
                     if artist_id not in processed:
-                        related = self.get_related_artists(self.sp, artist_id)
+                        related = self.get_related_artists(artist_id)
                         for artist in related:
                             if len(artist_set) < max_artists:
                                 c += 1

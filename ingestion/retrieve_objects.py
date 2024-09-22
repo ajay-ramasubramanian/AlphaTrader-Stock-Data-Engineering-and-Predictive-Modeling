@@ -12,8 +12,8 @@ class MinioRetriever:
     def __init__(self, user, topic, container) -> None:
         self.ret_container = container #raw
         self.user = user
-        self.topic = topic
-
+        self.topic = topic.replace("_","-")
+        
     def retrieve_object(self):
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
@@ -26,6 +26,9 @@ class MinioRetriever:
     }
                 
             )
+
+            print(self.topic)
+
 
             # List all objects in the specified subfolder
             if fs.exists(f"{self.ret_container}"):
@@ -100,7 +103,7 @@ class MinioUploader:
                 with fs.open(path, 'wb') as f:
                     data.to_parquet(f, engine='pyarrow', compression='snappy')
             except Exception as e:
-                print("\nError occured while uploading file to bucket : {e}")
+                print(f"\nError occured while uploading file to bucket : {e}")
             
         
         

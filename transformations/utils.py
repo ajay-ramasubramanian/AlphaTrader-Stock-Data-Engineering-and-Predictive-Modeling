@@ -2,7 +2,6 @@ import io
 import os
 import sys
 import json
-import pyspark
 import pandas as pd
 import s3fs
 from minio import Minio
@@ -11,16 +10,17 @@ from minio import Minio
 # os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 class MinioRetriever:
-    def __init__(self, user, topic, container) -> None:
+    def __init__(self, user, topic, container, host) -> None:
         self.container = container #raw
         self.user = user
         self.topic = topic.replace("_","-")
+        self.host = host
 
     def retrieve_object(self):
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
-                endpoint_url="http://localhost:9000",
+                endpoint_url=f"http://{self.host}:9000",
                 key="minioadmin",
                 secret="minioadmin"
             )
@@ -30,8 +30,6 @@ class MinioRetriever:
                 self.container,
                 f"{self.container}/{self.topic}",
                 f"{self.container}/{self.topic}/{self.user}",
-
-                
                 f"{self.container}/{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
             ]
             
@@ -52,7 +50,7 @@ class MinioRetriever:
     def read_object(self, prefix, bucket):
         try:
             client = Minio(
-            "localhost:9000",
+            f"{self.host}:9000",
             access_key="minioadmin",
             secret_key="minioadmin",
             secure=False  # Set to True if using HTTPS
@@ -86,7 +84,7 @@ class MinioUploader:
 
     def upload_files(self,data):
             minio_client = Minio(
-                "localhost:9000", 
+                f"{self.host}:9000", 
                 access_key="minioadmin",
                 secret_key="minioadmin",
                 secure=False  # Keep this False for localhost without HTTPS
@@ -94,8 +92,8 @@ class MinioUploader:
             fs = s3fs.S3FileSystem(
                     key="minioadmin",
                     secret="minioadmin",
-                    endpoint_url="http://localhost:9000",  # Explicitly set the endpoint URL
-                    client_kwargs={'endpoint_url': 'http://localhost:9000'},  
+                    endpoint_url=f"http://{self.host}:9000",  # Explicitly set the endpoint URL
+                    client_kwargs={'endpoint_url': f"http://{self.host}:9000"},  
                     use_ssl=False  # Set to False for localhost without HTTPS
                 )
 

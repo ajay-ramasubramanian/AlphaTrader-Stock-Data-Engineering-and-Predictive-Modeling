@@ -12,12 +12,23 @@ This is for fernet key:
 - python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
 
 
-Export parth "export PYTHONPATH="/e/spotify_insight" 
+Export path "export PYTHONPATH="/e/spotify_insight" 
+Export path "export PYTHONPATH="/c/Users/suhu/src/spotify-de-pipeline"
 # 2) Top artists in a genre based on popularity. If there are multiple artists with the same popularity, choose the one with the most followers.
 # 3) Outputs: Popular recommendations for artists in a genre (general). Top genre for the user (user-specific). Top tracks for user. Top artists overall. 
 
 
+For warehouse:
+1) Create tables for dimension and facts. Also create tables for transformations.
+2) Insert data into the tables 
+3) Write dags for it in the airflow
+
+### Always add this next to the pywin package in requirements.txt when running on linux; sys_platform == 'win32'
+
+## To interact with postgres database: q in command line of the service
 # Lessons learnt:
 # Understand the dataset thoroughly. VERY IMPORTANT!! 
 # Have a clear idea about the outputs before starting the project. 
+
+
 

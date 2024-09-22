@@ -146,5 +146,9 @@ TOPIC_CONFIG = {
 
     'user_music_preferences': {
         'topic': 'spotify_user_music_preferences'
-        }
+    },
+
+    'recent_plays_analysis':{
+        'topic': 'spotify_recent_plays_analysis'
+    }
 }

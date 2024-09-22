@@ -1,9 +1,10 @@
 import os
 import sys, site
-from utils import MinioRetriever,TOPIC_CONFIG, MinioUploader
+sys.path.extend(site.getsitepackages())
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from processed.utils import MinioRetriever,TOPIC_CONFIG, MinioUploader
 import pandas as pd
-from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, String, Integer, Float, MetaData
+
 
 class ProcessTopAritstBasedOnGenres():
 

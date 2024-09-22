@@ -1,7 +1,10 @@
 
+import os,site,sys
 import numpy as np
+sys.path.extend(site.getsitepackages())
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
-from utils import TOPIC_CONFIG, MinioRetriever, MinioUploader
+from processed.utils import TOPIC_CONFIG, MinioRetriever, MinioUploader
 
 
 class ProcessTopAritstBasedOnGenres:

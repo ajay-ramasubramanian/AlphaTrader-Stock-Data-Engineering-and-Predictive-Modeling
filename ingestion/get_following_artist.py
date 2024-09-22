@@ -1,5 +1,6 @@
 import sys ,os
 import site
+from datetime import datetime
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
@@ -30,6 +31,7 @@ class RetrieveFollowingArtists(MinioRetriever, MinioUploader):
         # Convert to DataFrame
         df = pd.DataFrame(artists)
         df = df.drop_duplicates('artist_fd')
+        df['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         MinioUploader.upload_files(self,data=df)
         print("object uploaded")
     

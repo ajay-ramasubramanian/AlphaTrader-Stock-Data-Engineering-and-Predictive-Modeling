@@ -43,6 +43,8 @@ services:
 
   postgres-airflow:
     image: postgres:13
+    ports:
+      - "5433:5432"
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow_pass
@@ -159,7 +161,7 @@ services:
         airflow db init &&
         airflow users create -r Admin -u admin -p admin_password -e admin@example.com -f Admin -l User
       "
-
+  
 volumes:
   minio_data:
   postgres-db-volume:

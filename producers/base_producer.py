@@ -10,7 +10,7 @@ from avro.io import DatumWriter
 from concurrent.futures import ThreadPoolExecutor
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
-from producers.utils import scope, TOPIC_CONFIG
+from utils import scope, TOPIC_CONFIG
 from dotenv import load_dotenv
 
 load_dotenv()

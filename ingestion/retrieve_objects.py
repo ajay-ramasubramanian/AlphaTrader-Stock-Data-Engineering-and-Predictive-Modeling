@@ -18,11 +18,11 @@ class MinioRetriever:
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
-                endpoint_url="http://minio:9000",
+                endpoint_url="http://localhost:9000",
                 key="minioadmin",
                 secret="minioadmin",
                 client_kwargs={
-                    'endpoint_url': 'http://minio:9000'
+                    'endpoint_url': 'http://localhost:9000'
     }
                 
             )
@@ -80,7 +80,7 @@ class MinioUploader:
 
     def upload_files(self,data):
             minio_client = Minio(
-                "minio:9000", 
+                "localhost:9000", 
                 access_key="minioadmin",
                 secret_key="minioadmin",
                 secure=False  # Keep this False for localhost without HTTPS
@@ -88,8 +88,8 @@ class MinioUploader:
             fs = s3fs.S3FileSystem(
                     key="minioadmin",
                     secret="minioadmin",
-                    endpoint_url="http://minio:9000",  # Explicitly set the endpoint URL
-                    client_kwargs={'endpoint_url': 'http://minio:9000'},  
+                    endpoint_url="http://localhost:9000",  # Explicitly set the endpoint URL
+                    client_kwargs={'endpoint_url': 'http://localhost:9000'},  
                     use_ssl=False  # Set to False for localhost without HTTPS
                 )
 

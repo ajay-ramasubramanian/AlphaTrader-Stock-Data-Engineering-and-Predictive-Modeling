@@ -138,5 +138,13 @@ TOPIC_CONFIG = {
     },
     'artist_albums': {
         'topic': 'spotify_artist_albums',
+    },
+
+    'top_songs_per_genre': {
+        'topic': 'spotify_top_songs_per_genre'
+    },
+
+    'user_music_preferences': {
+        'topic': 'spotify_user_music_preferences'
         }
 }

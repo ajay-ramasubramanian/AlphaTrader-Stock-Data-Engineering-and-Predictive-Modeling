@@ -1,6 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
+from airflow.operators.postgres_operator import PostgresOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 import pendulum
@@ -8,6 +9,8 @@ from airflow.utils.task_group import TaskGroup
 from airflow.models.baseoperator import chain
 import sys
 from pathlib import Path
+
+from load_data import gold_to_warehouse
 
 # Add the project root to the Python path
 project_root = Path(__file__).parents[2]
@@ -23,6 +26,7 @@ from ingestion.get_recent_plays import run_retrieve_recent_plays
 from ingestion.get_saved_playlist import run_retrieve_saved_playlist
 from ingestion.get_top_artists  import run_retrieve_top_artists
 from ingestion.get_top_songs import run_retrieve_top_songs
+import sql_queries
 from ingestion.get_artist_albums import run_get_user_artist_albums
 from ingestion.get_related_artists import run_get_artist_related_artists
 
@@ -93,13 +97,56 @@ with DAG(
             dag=dag
         )
 
+    
+
     # Create tasks using list comprehension
     ingestion_tasks = [create_python_operator('ingestion', name, config['ingestion']) for name, config in task_configs.items()]
     
 
-    # stop_kafka_zookeeper = BashOperator(
-    # task_id='stop_kafka_zookeeper',
-    # bash_command='docker-compose stop kafka zookeeper',
-    # )
+    # # stop_kafka_zookeeper = BashOperator(
+    # # task_id='stop_kafka_zookeeper',
+    # # bash_command='docker-compose stop kafka zookeeper',
+    # # )
+    
+    to_warehouse = create_python_operator('load_to_warehouse', 'all_tracks', gold_to_warehouse)
 
-    chain (ingestion_tasks)
+
+    create_artist_table = PostgresOperator(
+        task_id="create_artist_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_artist_table
+    )
+
+    create_time_table = PostgresOperator(
+        task_id="create_time_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_time_table
+    )
+
+    create_albums_table = PostgresOperator(
+        task_id="create_albums_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_albums_table
+    )
+
+    create_tracks_table = PostgresOperator(
+        task_id="create_tracks_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_tracks_table
+    )
+
+    create_liked_songs_table = PostgresOperator(
+        task_id="create_liked_songs_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_liked_songs_table
+    )
+
+    table_creation = [create_artist_table, create_time_table, create_albums_table, create_tracks_table, create_liked_songs_table]
+
+    # create_artist_table >> create_time_table >> create_albums_table >> create_tracks_table >> create_liked_songs_table >>
+    ingestion_tasks >> table_creation >> to_warehouse

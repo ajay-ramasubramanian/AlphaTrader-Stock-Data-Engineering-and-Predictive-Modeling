@@ -1,5 +1,6 @@
 import sys,os
 import site
+from datetime import datetime
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
@@ -35,9 +36,11 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
                 'release_date': result['release_date'],
                 'artist_name': result['artists'][0]['name'],
                 'artist_id': result['artists'][0]['id'],
+                
             })
         # Convert to DataFrame
         df_artists = pd.DataFrame(artists)
+        df_artists['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         df_artists = df_artists.astype(self.dtype_dict)
 
         df_artists.drop_duplicates(['album_id', 'artist_id'], inplace=True)

@@ -3,7 +3,6 @@ from spotipy import Spotify
 import time
 import spotipy
 from dotenv import load_dotenv
-
 from base_producer import SpotifyKafkaProducer
 from utils import scope
 

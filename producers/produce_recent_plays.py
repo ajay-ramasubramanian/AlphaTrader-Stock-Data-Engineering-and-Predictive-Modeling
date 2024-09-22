@@ -41,9 +41,6 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
         """
         futures = []
         try:
-            #TODO have to figure out the schema mismatch
-            # before = int(time.time() * 1000)
-            # before = int(datetime.now().timestamp() * 1000)
             after =None
             limit = 50
             track_count = 50

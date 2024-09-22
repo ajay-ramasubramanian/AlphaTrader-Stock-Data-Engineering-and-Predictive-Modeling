@@ -1,5 +1,6 @@
 import sys,os
 import site
+from datetime import datetime
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
@@ -16,12 +17,8 @@ class RetrieveRecentPlays(MinioRetriever,MinioUploader):
     def get_user_recent_plays(self):
         tracks = []
         results = MinioRetriever.retrieve_object(self)
-        # print(f"results: {results}")
         for result in results:
-            # print(f"result ====: {result}")
-            # print(result['items'])
             for item in result["items"]:
-                # print(f'=======item===== :{item}')
                 track = item['track']
                 played_at = datetime.strptime(item['played_at'], "%Y-%m-%dT%H:%M:%S.%fZ")
                 
@@ -39,6 +36,7 @@ class RetrieveRecentPlays(MinioRetriever,MinioUploader):
                 })
             # Convert to DataFrame
         df_tracks = pd.DataFrame(tracks)
+        df_tracks['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         MinioUploader.upload_files(self,data=df_tracks)
         print("Object uploaded")
     

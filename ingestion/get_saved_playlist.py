@@ -3,6 +3,7 @@ import site
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
+from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
 class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
@@ -30,6 +31,7 @@ class RetrieveSavedPlaylist(MinioRetriever,MinioUploader):
             })
         # Convert to DataFrame
         df_playlist = pd.DataFrame(playlists)
+        df_playlist['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         MinioUploader.upload_files(self,data=df_playlist)
         print("Object uploaded")
     

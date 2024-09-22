@@ -7,14 +7,14 @@ import pandas as pd
 import s3fs
 from minio import Minio
 
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+# os.environ['PYSPARK_PYTHON'] = sys.executable
+# os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 class MinioRetriever:
     def __init__(self, user, topic, container) -> None:
         self.container = container #raw
         self.user = user
-        self.topic = topic
+        self.topic = topic.replace("_","-")
 
     def retrieve_object(self):
         try:
@@ -109,4 +109,42 @@ class MinioUploader:
                 print("\nError occured while uploading file to bucket : {e}")
             
         
+
+TOPIC_CONFIG = {
+    'following_artists': {
+        'topic': 'spotify_following_artists',
+    },
+    'liked_songs': {
+        'topic': 'spotify_liked_songs',
+    },
+    'recent_plays': {
+        'topic': 'spotify_recent_plays',
+    },
+    'saved_playlists': {
+        'topic': 'spotify_saved_playlists',
         
+    },
+    'top_artists': {
+        'topic': 'spotify_top_artists',
+        
+    },
+    'top_songs': {
+        'topic': 'spotify_top_songs',
+        
+    },
+    'related_artists': {
+        'topic': 'spotify_related_artists',
+        
+    },
+    'artist_albums': {
+        'topic': 'spotify_artist_albums',
+    },
+
+    'top_songs_per_genre': {
+        'topic': 'spotify_top_songs_per_genre'
+    },
+
+    'user_music_preferences': {
+        'topic': 'spotify_user_music_preferences'
+        }
+}

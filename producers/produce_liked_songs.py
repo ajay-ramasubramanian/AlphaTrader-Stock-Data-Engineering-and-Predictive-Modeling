@@ -70,8 +70,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             limit = 1  # Limit for the number of items to fetch per request (can be adjusted)
             artist_ids = []
             # Fetch the current user's saved tracks with pagination support
-            while len(artist_ids) < max:
-            # while True:
+            while True:
                 # Fetch the current user's saved tracks with pagination support
                 result = self.sp.current_user_saved_tracks(limit=limit, offset=offset)
                 # print(f'results: {result}')

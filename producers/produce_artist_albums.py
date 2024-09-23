@@ -69,7 +69,6 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
                     result = self.sp.next(result)
                     
                     # albums.append(results['items'])
-               
                 # albums = self.get_all_artist_albums(self.sp, artist_id)
                 print(f"length of albums: {len(albums)}\n")
                 ## producer for artist_albums topic

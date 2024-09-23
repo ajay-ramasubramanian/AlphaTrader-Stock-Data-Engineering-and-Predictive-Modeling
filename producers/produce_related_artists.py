@@ -34,6 +34,8 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
     def get_related_artists(self, artist_id):
         try:
             related = self.sp.artist_related_artists(artist_id)
+            print('3')
+
             return related['artists']
         except spotipy.SpotifyException as e:
             print(f"Error getting related artists for {artist_id}: {e}")
@@ -106,7 +108,7 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
 
             print(f"length of set: {len(artist_set)}")
             print(f"total artists: {c}")
-            print("Sent all the data")  # Confirmation print            
+            print("Sent all the data")  # Confirmation print
 
             # Wait for all Kafka messages to be sent and handle their results
             for future in futures:

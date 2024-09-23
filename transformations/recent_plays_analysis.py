@@ -13,9 +13,9 @@ class RecentPlaysAnalysis:
 
     def __init__(self, user, table_1_topic,table_2_topic,table_3_topic) -> None:
         self.user = user
-        self.retriever_1 = MinioRetriever(user=user, topic=table_1_topic, container=self.PROCESSED)
-        self.retriever_2 = MinioRetriever(user=user, topic=table_2_topic, container=self.PROCESSED)
-        self.uploader = MinioUploader(user=user, topic=table_3_topic, container = self.PRESENTATION)
+        self.retriever_1 = MinioRetriever(user=user, topic=table_1_topic, container=self.PROCESSED,host="minio")
+        self.retriever_2 = MinioRetriever(user=user, topic=table_2_topic, container=self.PROCESSED,host="localhost")
+        self.uploader = MinioUploader(user=user, topic=table_3_topic, container = self.PRESENTATION,host="localhost")
     
     def retriever(self):
         recent_plays = self.retriever_1.retrieve_object()
@@ -24,18 +24,11 @@ class RecentPlaysAnalysis:
     
 
     
-    def analyze_recent_plays_with_related(self,recent_plays, related_artist):
-        # Ensure datetime format
+    def analyze_recent_plays(self, recent_plays):
         recent_plays['played_at'] = pd.to_datetime(recent_plays['played_at'])
         
-        # Merge recent_plays with related_artist
-        recent_with_related = recent_plays.merge(related_artist, left_on='artist_name', right_on='artist_name', how='left')
-        
-        # print(recent_with_related.columns)
-        insights = []
-        
-        # Recent Plays Analysis
-        recent_insights = pd.DataFrame({
+        # Recent Plays Summary
+        recent_summary = pd.DataFrame({
             'metric': [
                 'total_recent_listening_time',
                 'avg_recent_song_duration',
@@ -45,66 +38,88 @@ class RecentPlaysAnalysis:
                 'avg_recent_track_popularity'
             ],
             'value': [
-                recent_plays['duration_ms'].sum() / (1000 * 60 * 60),          # Total listening time in hours
-                recent_plays['duration_ms'].mean() / (1000 * 60 * 60),         # Average song duration in hours
-                recent_plays['track_id'].nunique(),                            # Unique tracks played
-                recent_plays['album_id'].nunique(),                            # Unique albums played
-                recent_plays['artist_name'].nunique(),                         # Unique artists played
-                recent_plays['popularity'].mean()                              # Average track popularity
+                recent_plays['duration_ms'].sum() / (1000 * 60 * 60),
+                recent_plays['duration_ms'].mean() / (1000 * 60),
+                recent_plays['track_id'].nunique(),
+                recent_plays['album_id'].nunique(),
+                recent_plays['artist_name'].nunique(),
+                recent_plays['popularity'].mean()
             ]
         })
+    
+        return recent_summary
 
-        print(f'recent_insights :{recent_insights.to_string(index=False)}')
-        insights.append(recent_insights)
+    def analyze_top_recent_artists(self, recent_plays, related_artist):
+
+        recent_with_related = recent_plays.merge(related_artist, on='artist_id', how='inner').rename(columns={'artist_name_x': 'artist_name'})
         
-        # Top Recent Artists
         top_recent_artists = recent_with_related.groupby('artist_name').agg({
             'track_id': 'count',
             'artist_popularity': 'first'
-        }).reset_index().sort_values('track_id', ascending=False).head(5)
-
+        }).reset_index().sort_values('track_id', ascending=False)
+        
         top_recent_artists.columns = ['artist_name', 'play_count', 'artist_popularity']
-        print(top_recent_artists.columns)
-        top_recent_artists['metric'] = ['top_recent_artist_' + str(i) for i in range(1, 6)]
-        insights.append(top_recent_artists)
         
-        # Recent Genre Analysis
-        genre_counts = recent_with_related.explode('genres').groupby('genres').size().sort_values(ascending=False).head(5)
-        genre_insights = pd.DataFrame({
-            'metric': ['top_recent_genre_' + str(i + 1) for i in range(len(genre_counts))],
-            'genre': genre_counts.index,
-            'count': genre_counts.values
-        })
-        insights.append(genre_insights)
+        return top_recent_artists
+
+    def analyze_recent_genres(self, recent_plays, related_artist):
         
-        # Listening Hours Analysis
+        recent_with_related = recent_plays.merge(related_artist, on='artist_name', how='left')
+        
+        genre_counts = recent_with_related.explode('genres').groupby('genres').size().reset_index(name='count')
+        
+        genre_counts = genre_counts.sort_values('count', ascending=False)
+        
+        return genre_counts
+
+    def analyze_listening_hours(self, recent_plays):
+        
         listening_hours = recent_plays['played_at'].dt.hour.value_counts().sort_index().reset_index()
+        
         listening_hours.columns = ['hour', 'count']
-        listening_hours['metric'] = 'listening_hour_' + listening_hours['hour'].astype(str)
-        listening_hours = listening_hours[['metric', 'count']]
         
-        insights.append(listening_hours)
+        return listening_hours
 
-        # Related Artists Analysis
-        total_related_artists = len(related_artist)
-        avg_related_artist_popularity = related_artist['artist_popularity'].mean()
+    def analyze_related_artists(self, related_artist):
         
-        related_insights = pd.DataFrame({
+        related_artist_summary = pd.DataFrame({
             'metric': ['total_related_artists', 'avg_related_artist_popularity'],
-            'value': [total_related_artists, avg_related_artist_popularity]
+            'value': [len(related_artist), related_artist['artist_popularity'].mean()]
         })
         
-        insights.append(related_insights)
+        return related_artist_summary
 
-        # Combine all insights into a single DataFrame
-        all_insights = pd.concat(insights, ignore_index=True)
-
-        # print(all_insights.to_string(index=False))
+    def analyze_recent_plays_daily(self, recent_plays):
         
-        return all_insights
+        daily_plays = recent_plays.groupby(recent_plays['played_at'].dt.date).size().reset_index(name='play_count')
+        
+        daily_plays.columns = ['date', 'play_count']
+        
+        return daily_plays
+
+    def analyze_track_popularity(self, recent_plays):
+        
+        track_popularity = recent_plays[['track_name', 'artist_name', 'popularity']].drop_duplicates()
+        
+        track_popularity = track_popularity.sort_values('popularity', ascending=False)
+        
+        return track_popularity
+
+    def analyze_recent_plays_with_related(self, recent_plays, related_artist):
+        
+        return {
+            'recent_summary': self.analyze_recent_plays(recent_plays),
+            'top_artists': self.analyze_top_recent_artists(recent_plays, related_artist),
+            'genre_analysis': self.analyze_recent_genres(recent_plays, related_artist),
+            'listening_hours': self.analyze_listening_hours(recent_plays),
+            'related_artists_summary': self.analyze_related_artists(related_artist),
+            'daily_plays': self.analyze_recent_plays_daily(recent_plays),
+            'track_popularity': self.analyze_track_popularity(recent_plays)
+        }
     
-    def write_to_parquet(self,df):
-        self.uploader.upload_files(df)
+    def write_to_parquet(self,df,key):
+        
+        self.uploader.upload_files(df,key)
 
 
 
@@ -115,7 +130,6 @@ if __name__ == "__main__":
     
     recent_plays, related_artists = transformed.retriever()
     recent_plays_analysis = transformed.analyze_recent_plays_with_related(recent_plays, related_artists)
-    recent_plays_analysis.head()
-    transformed.write_to_parquet(recent_plays_analysis)
-# Usage example:
-# recent_plays_insights = analyze_recent_plays_with_related(recent_plays, related_artist)
+    for key in recent_plays_analysis:
+        transformed.write_to_parquet(recent_plays_analysis[key], key)
+    

@@ -1,59 +1,54 @@
 import sys,os
 import site
-from datetime import datetime
+
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
 from ingestion.utils import TOPIC_CONFIG
 
-class RetrieveRelatedArtists(MinioRetriever, MinioUploader):
+class RetrieveRelatedArtists():
 
     def __init__(self, user, topic, raw, processed) -> None:
-        MinioRetriever.__init__(self, user, topic, raw)
-        MinioUploader.__init__(self, user, topic, processed)
+        
+        self.retriever = MinioRetriever(user, topic, raw)
+        self.uploader = MinioUploader(user,topic, processed)
+        self.processed = processed
 
         self.dtype_dict = {
             'artist_name': str,
             'artist_id': str,
             'artist_popularity': 'int64', # allows NaNs
-            'genres': object,  # For lists or tuples
             'artist_followers': 'int64'
         }
 
     def get_artist_related_artists(self):
-        results = MinioRetriever.retrieve_object(self)
-        # Assuming 'results' is your list of artist dictionaries
+
+        all_artists = []
+        results = self.retriever.retrieve_object()
         try:
-            all_artists = []
             for result in results:
                 all_artists.append({
-                'artist_name': result['name'],
                 'artist_id': result['id'],
+                'artist_name': result['name'],
                 'artist_popularity': result['popularity'],
-                # 'genres': result['genres'],
                 'artist_followers': result['followers'],
                 })
                 
-            df = pd.DataFrame(all_artists)
-            df = df.astype(self.dtype_dict)
+            df_artists = pd.DataFrame(all_artists)
+            df_artists['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
+            
+            df_artists = df_artists.astype(self.dtype_dict)
+            df_artists.drop_duplicates(['artist_id'], inplace=True)
+            df_artists = df_artists.reset_index(drop=True)
+            
+            self.uploader.upload_files(data=df_artists)
+            print(f"Successfully uploaded to '{self.processed}' container!!")
 
-        except ValueError as e:
-            print(f"Encountered a value error here!!: {e}")
-
-        df['genres'] = df['genres'].apply(lambda x: list(x) if isinstance(x, tuple) else x)
-        df['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        df = df.fillna({
-            'artist_name': '',
-            'artist_id': '',
-            'artist_popularity': 0,
-            'genres': '',
-            'artist_followers': 0
-        })
-        
-        MinioUploader.upload_files(self, data=df)
-        print("object uploaded")
+        except Exception as e:
+            print(f"Encountered an exception here!!: {e}")
     
 
 def run_get_artist_related_artists():

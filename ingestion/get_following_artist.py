@@ -1,39 +1,54 @@
 import sys ,os
 import site
-from datetime import datetime
+
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from datetime import datetime
 import pandas as pd
 from ingestion.utils import TOPIC_CONFIG
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 
-class RetrieveFollowingArtists(MinioRetriever, MinioUploader):
+class RetrieveFollowingArtists():
 
     def __init__(self, user, topic, raw, processed) -> None:
-        MinioRetriever.__init__(self, user, topic, raw)
-        MinioUploader.__init__(self, user, topic, processed)
+
+        self.retriever = MinioRetriever(user, topic, raw)
+        self.uploader = MinioUploader(user, topic, processed)
+        self.processed = processed
+
+        self.dtype_dict = {
+            'follow_id': 'int64',
+            'artist_id': str
+        }
 
     def get_user_followed_artists(self):
-        artists = []
-        results = MinioRetriever.retrieve_object(self)
-        for result in results:
-            # Process each artist
-            # print(f"result: {result}")
-            for item in result['artists']['items']:
-                artists.append({
-                    'artist_id': item['id']
-                    # 'name': item['name'],
-                    # 'uri': item['uri'],
-                    # 'popularity': item['popularity'],
-                    # 'genres': ', '.join(item['genres']),
-                    # 'followers': item['followers']['total']
-                })
-        # Convert to DataFrame
-        df = pd.DataFrame(artists)
-        df = df.drop_duplicates('artist_fd')
-        df['ingested_on'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        MinioUploader.upload_files(self,data=df)
-        print("object uploaded")
+
+        try:
+
+            artists = []
+            results = self.retriever.retrieve_object()
+            for count, result in enumerate(results):
+                for item in result['artists']['items']:
+                    artists.append({
+                        'follow_id': count+1,
+                        'artist_id': item['id']
+                    })
+            
+            # Convert to DataFrame
+            df_following_artist = pd.DataFrame(artists)
+            df_following_artist['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
+            
+            df_following_artist = df_following_artist.astype(self.dtype_dict)
+            df_following_artist.drop_duplicates(inplace=True)
+            df_following_artist = df_following_artist.reset_index(drop=True)
+            
+            self.uploader.upload_files(data=df_following_artist)
+            print(f"Successfully uploaded to '{self.processed}' container!!")
+        
+        except Exception as e:
+            print(f"Encountered an exception here!!: {e}")
+
     
 
 def run_retrieve_following_artists():

@@ -43,17 +43,16 @@ default_args = {
 
 # Define the DAG
 with DAG(
-    'kafka_ingestion_dag',
+    'spotify_pipeline_dag',
     default_args=default_args,
-    description='Kafka to ingestion pipeline with Airflow',
+    description='Spotify ETL with Airflow',
     schedule=None,
     start_date= pendulum.today('UTC').add(days=-1),
     catchup=False,
 ) as dag:
     
 #   PRODUCER SCRIPTS
-    
-    task_configs = {
+    ingestion_task_configs = {
         'following_artists': {
                 'ingestion': run_retrieve_following_artists
         },
@@ -87,6 +86,14 @@ with DAG(
         }
     }
 
+    create_table_task_config = {
+        "artist": sql_queries.create_artist_table,
+        "album": sql_queries.create_albums_table,
+        "time": sql_queries.create_time_table,
+        "track": sql_queries.create_tracks_table,
+        "liked_songs": sql_queries.create_liked_songs_table
+    }
+
     
     def create_python_operator(task_type, task_name, callable_func):
         if not callable(callable_func):
@@ -97,56 +104,27 @@ with DAG(
             dag=dag
         )
 
+    def create_postgres_operator(table_name, dag, postgres_conn_id, sql_query):
+        return PostgresOperator(
+        task_id=f"create_{table_name}_table",
+        dag=dag,
+        postgres_conn_id=postgres_conn_id,
+        sql=sql_query
+    )
+        
     
+    with TaskGroup('ingestion_group') as ingestion_group:
+        ingestion_tasks = [create_python_operator('ingestion', name, 
+                                config['ingestion']) for name, config in ingestion_task_configs.items()]
 
-    # Create tasks using list comprehension
-    ingestion_tasks = [create_python_operator('ingestion', name, config['ingestion']) for name, config in task_configs.items()]
-    
+        
+    with TaskGroup('create_table_group') as create_table_group:
+        create_tables_tasks = [create_postgres_operator(
+            table_name=table_name, dag=dag, postgres_conn_id='postgres-warehouse', sql_query=sql_query
+        ) for table_name, sql_query in create_table_task_config.items()]
 
-    # # stop_kafka_zookeeper = BashOperator(
-    # # task_id='stop_kafka_zookeeper',
-    # # bash_command='docker-compose stop kafka zookeeper',
-    # # )
+    transformation_tasks = []
     
     to_warehouse = create_python_operator('load_to_warehouse', 'all_tracks', gold_to_warehouse)
 
-
-    create_artist_table = PostgresOperator(
-        task_id="create_artist_table",
-        dag=dag,
-        postgres_conn_id='postgres-warehouse',
-        sql=sql_queries.create_artist_table
-    )
-
-    create_time_table = PostgresOperator(
-        task_id="create_time_table",
-        dag=dag,
-        postgres_conn_id='postgres-warehouse',
-        sql=sql_queries.create_time_table
-    )
-
-    create_albums_table = PostgresOperator(
-        task_id="create_albums_table",
-        dag=dag,
-        postgres_conn_id='postgres-warehouse',
-        sql=sql_queries.create_albums_table
-    )
-
-    create_tracks_table = PostgresOperator(
-        task_id="create_tracks_table",
-        dag=dag,
-        postgres_conn_id='postgres-warehouse',
-        sql=sql_queries.create_tracks_table
-    )
-
-    create_liked_songs_table = PostgresOperator(
-        task_id="create_liked_songs_table",
-        dag=dag,
-        postgres_conn_id='postgres-warehouse',
-        sql=sql_queries.create_liked_songs_table
-    )
-
-    table_creation = [create_artist_table, create_time_table, create_albums_table, create_tracks_table, create_liked_songs_table]
-
-    # create_artist_table >> create_time_table >> create_albums_table >> create_tracks_table >> create_liked_songs_table >>
-    ingestion_tasks >> table_creation >> to_warehouse
+    ingestion_group >> create_table_group >> to_warehouse

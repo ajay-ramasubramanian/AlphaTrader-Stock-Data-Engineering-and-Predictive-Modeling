@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS dim_track (
     track_popularity INTEGER,
     track_uri VARCHAR(256),
     artist_name VARCHAR(256) NOT NULL,
-    album_name VARCHAR(256)
+    album_name VARCHAR(256),
+    ingested_on VARCHAR(256)
 )
 """
 

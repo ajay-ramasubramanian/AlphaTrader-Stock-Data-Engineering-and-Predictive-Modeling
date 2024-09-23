@@ -68,10 +68,11 @@ class MinioRetriever:
             return None
 
 class MinioUploader:
-    def __init__(self, user, topic, container) -> None:
+    def __init__(self, user, topic, container, host) -> None:
         self.container = container
         self.user = user
         self.topic = topic.replace("_","-")
+        self.host = host
 
 
     def ensure_bucket_exists(self, client, bucket_name):

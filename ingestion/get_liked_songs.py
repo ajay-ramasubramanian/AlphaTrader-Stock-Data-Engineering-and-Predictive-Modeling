@@ -24,7 +24,8 @@ class RetrieveLikedSongs():
             'album_id': str,
             'track_id': str,
             'added_at': str,
-            'time_id': str
+            'time_id': str,
+            'ingested_on': str
         }
         
     def get_user_liked_songs(self):

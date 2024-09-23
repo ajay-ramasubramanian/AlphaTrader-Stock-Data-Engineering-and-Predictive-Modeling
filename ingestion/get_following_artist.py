@@ -19,7 +19,8 @@ class RetrieveFollowingArtists():
 
         self.dtype_dict = {
             'follow_id': 'int64',
-            'artist_id': str
+            'artist_id': str,
+            'ingested_on': str
         }
 
     def get_user_followed_artists(self):

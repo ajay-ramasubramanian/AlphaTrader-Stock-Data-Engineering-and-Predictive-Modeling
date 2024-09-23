@@ -68,10 +68,11 @@ class MinioRetriever:
             return None
 
 class MinioUploader:
-    def __init__(self, user, topic, container) -> None:
+    def __init__(self, user, topic, container,host) -> None:
         self.container = container
         self.user = user
         self.topic = topic.replace("_","-")
+        self.host = host
 
 
     def ensure_bucket_exists(self, client, bucket_name):
@@ -82,7 +83,7 @@ class MinioUploader:
             print(f"Bucket '{bucket_name}' already exists")
 
 
-    def upload_files(self,data):
+    def upload_files(self,data,key=None):
             minio_client = Minio(
                 f"{self.host}:9000", 
                 access_key="minioadmin",
@@ -93,18 +94,28 @@ class MinioUploader:
                     key="minioadmin",
                     secret="minioadmin",
                     endpoint_url=f"http://{self.host}:9000",  # Explicitly set the endpoint URL
-                    client_kwargs={'endpoint_url': f"http://{self.host}:9000"},  
+                    client_kwargs={'endpoint_url': f"http://{self.host}:9000"},
                     use_ssl=False  # Set to False for localhost without HTTPS
                 )
-
             bucket_name = f'{self.container}'
             self.ensure_bucket_exists(minio_client,bucket_name)
-            path = f"{self.container}/{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
-            try:
-                with fs.open(path, 'wb') as f:
-                    data.to_parquet(f, engine='pyarrow', compression='snappy')
-            except Exception as e:
-                print("\nError occured while uploading file to bucket : {e}")
+            if not key:
+                path = f"{self.container}/{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
+                try:
+                    with fs.open(path, 'wb') as f:
+                        data.to_parquet(f, engine='pyarrow', compression='snappy')
+                except Exception as e:
+                    print(f"\nError occured while uploading file to bucket : {e}")
+            else:
+                key.replace("_","-")
+                path = f"{self.container}/{self.topic}/{self.user}/{self.container}-{key}.parquet"
+                try:
+                    with fs.open(path, 'wb') as f:
+                        data.to_parquet(f, engine='pyarrow', compression='snappy')
+                    print("Uploaded file sucessfully !!")
+                except Exception as e:
+                    print(f"\nError occured while uploading file to bucket : {e}")
+
             
         
 
@@ -148,5 +159,14 @@ TOPIC_CONFIG = {
 
     'recent_plays_analysis':{
         'topic': 'spotify_recent_plays_analysis'
+    },
+
+    'top_tracks_analysis':{
+        'topic': 'spotify_top_tracks_analysis'
+    },
+
+    'all_tracks':{
+        'topic': 'spotify_all_tracks'
     }
+
 }

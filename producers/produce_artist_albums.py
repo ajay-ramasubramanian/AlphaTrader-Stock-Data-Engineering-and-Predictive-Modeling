@@ -48,7 +48,7 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
         """
         futures = []  # List to keep track of future objects for asynchronous Kafka sends
         # artist_ids = ['4IHSCHg3UPSy0rBSHi3c5s', '7Hjbimq43OgxaBRpFXic4x', '3PWp9R5HvbQgxI5KBx5kVd', '1t17z3vfuc82cxSDMrvryJ', '4EPYWwU4c8eG2GzD7MenUA', '6PDLwWvgYNMfBRLqC1h5cJ', '2dixWDh9f2COEfikojSd39']
-        # artist_ids =['4IHSCHg3UPSy0rBSHi3c5s']
+        artist_ids =['4IHSCHg3UPSy0rBSHi3c5s']
         try:
             print("Sending data to Kafka")
             for artist_id in artist_ids:

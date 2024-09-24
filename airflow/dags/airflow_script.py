@@ -136,7 +136,7 @@ with DAG(
         task_id="create_tracks_table",
         dag=dag,
         postgres_conn_id='postgres-warehouse',
-        sql=sql_queries.create_tracks_table
+        sql=sql_queries.create_all_tracks_table
     )
 
     create_liked_songs_table = PostgresOperator(

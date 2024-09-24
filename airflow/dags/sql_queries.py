@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS dim_artist (
     artist_name VARCHAR(255) NOT NULL,
     artist_popularity SMALLINT,
     artist_followers INTEGER
+    ingested_on VARCHAR(256)
 )
 """
 
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS dim_album (
     release_date VARCHAR(50),
     artist_name VARCHAR(50),
     artist_id VARCHAR(22)
+    ingested_on VARCHAR(256)
 )
 """
 
@@ -47,6 +49,21 @@ CREATE TABLE IF NOT EXISTS dim_track (
 )
 """
 
+create_genres_table = """
+CREATE TABLE IF NOT EXISTS dim_genre (
+    genre_id VARCHAR(256) PRIMARY KEY,
+    genre VARCHAR(256)
+)
+"""
+
+create_artist_genre_bridge = """
+CREATE TABLE IF NOT EXISTS dim_artist_genre_bridge (
+    genre_id VARCHAR(256),
+    artist_id VARCHAR(256),
+    PRIMARY KEY (genre_id, artist_id)
+)
+"""
+
 
 ## Fact tables
 create_liked_songs_table = """
@@ -56,7 +73,23 @@ CREATE TABLE IF NOT EXISTS fact_liked_songs (
     album_id VARCHAR(22),
     track_id VARCHAR(22) NOT NULL,
     time_id VARCHAR(22) NOT NULL,
-    added_at TIMESTAMP
+    added_at TIMESTAMP,
+    ingested_on VARCHAR(256)
+)
+"""
+
+create_recently_played = """
+CREATE TABLE IF NOT EXISTS fact_recently_played (
+    track_id VARCHAR(50) PRIMARY KEY,
+    track_name VARCHAR(256) NOT NULL,
+    artist_name VARCHAR(256),
+    artist_id VARCHAR(256),
+    album_id VARCHAR(22),
+    album_name VARCHAR(256),
+    ingested_on VARCHAR(256) NOT NULL,
+    played_at TIMESTAMP,
+    duration_ms SMALLINT,
+    popularity SMALLINT
 )
 """
 

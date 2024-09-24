@@ -1,16 +1,14 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from airflow.operators.postgres_operator import PostgresOperator
+from airflow.operators.postgres_operator import PostgresOperator, DummyOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 import pendulum
 from airflow.utils.task_group import TaskGroup
-from airflow.models.baseoperator import chain
 import sys
 from pathlib import Path
 
-from load_data import gold_to_warehouse
 
 # Add the project root to the Python path
 project_root = Path(__file__).parents[2]
@@ -19,7 +17,6 @@ sys.path.append(str(project_root))
 # import os
 # print("Current working directory:", os.getcwd())
 # print("Python path:", sys.path)
-
 from ingestion.get_following_artist import run_retrieve_following_artists
 from ingestion.get_liked_songs import run_retrieve_liked_songs
 from ingestion.get_recent_plays import run_retrieve_recent_plays
@@ -29,7 +26,6 @@ from ingestion.get_top_songs import run_retrieve_top_songs
 import sql_queries
 from ingestion.get_artist_albums import run_get_user_artist_albums
 from ingestion.get_related_artists import run_get_artist_related_artists
-
 
 # Default arguments for the DAG
 default_args = {
@@ -53,38 +49,15 @@ with DAG(
     
 #   PRODUCER SCRIPTS
     ingestion_task_configs = {
-        'following_artists': {
-                'ingestion': run_retrieve_following_artists
-        },
-        'liked_songs': {
-            'ingestion': run_retrieve_liked_songs
-        },
-        'recent_plays': {
-
-            'ingestion': run_retrieve_recent_plays
-        },
-        'saved_playlists': {
-
-            'ingestion': run_retrieve_saved_playlist
-        },
-        'top_songs': {
-            
-            'ingestion': run_retrieve_top_songs
-        },
-        'top_artists': {
-            
-            'ingestion': run_retrieve_top_artists
-        },
-        'artist_albums':{
-
-            'ingestion': run_get_user_artist_albums
-        },
-
-        'related_artists':{
-
-            'ingestion': run_get_artist_related_artists
-        }
-    }
+    'following_artists': run_retrieve_following_artists,
+    'liked_songs': run_retrieve_liked_songs,
+    'recent_plays': run_retrieve_recent_plays,
+    'saved_playlists': run_retrieve_saved_playlist,
+    'top_songs': run_retrieve_top_songs,
+    'top_artists': run_retrieve_top_artists,
+    'artist_albums': run_get_user_artist_albums,
+    'related_artists': run_get_artist_related_artists
+}
 
     create_table_task_config = {
         "artist": sql_queries.create_artist_table,
@@ -111,11 +84,21 @@ with DAG(
         postgres_conn_id=postgres_conn_id,
         sql=sql_query
     )
+
+    def create_load_dim_operator():
+        pass
+
+    def load_fact_operator():
+        pass
+    
+
+    start_operator = DummyOperator(task_id='Start_execution',  dag=dag)
+    end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
         
     
     with TaskGroup('ingestion_group') as ingestion_group:
         ingestion_tasks = [create_python_operator('ingestion', name, 
-                                config['ingestion']) for name, config in ingestion_task_configs.items()]
+                                config) for name, config in ingestion_task_configs.items()]
 
         
     with TaskGroup('create_table_group') as create_table_group:
@@ -127,4 +110,4 @@ with DAG(
     
     to_warehouse = create_python_operator('load_to_warehouse', 'all_tracks', gold_to_warehouse)
 
-    ingestion_group >> create_table_group >> to_warehouse
+    start_operator >> ingestion_group >> create_table_group >> to_warehouse >> start_operator

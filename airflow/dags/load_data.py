@@ -6,6 +6,8 @@ sys.path.append(str(project_root))
 
 import pandas as pd
 from transformations.utils import MinioRetriever
+import psycopg2
+from io import StringIO
 
 
 def gold_to_warehouse():

@@ -13,7 +13,7 @@ load_dotenv()
 
 class CreateGenresTable():
 
-    TOPIC = 'genres_table'
+    TOPIC = 'spotify_genres_table'
 
     def __init__(self, user, topic, processed, presentation) -> None:
 

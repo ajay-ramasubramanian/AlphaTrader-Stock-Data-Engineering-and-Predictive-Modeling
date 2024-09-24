@@ -13,7 +13,7 @@ load_dotenv()
 
 class ArtistGenreBridge():
 
-    TOPIC = 'artist_genre_table'
+    TOPIC = 'spotify_artist_genre_table'
 
     def __init__(self, user, artist_table, genre_table, processed, presentation) -> None:
 

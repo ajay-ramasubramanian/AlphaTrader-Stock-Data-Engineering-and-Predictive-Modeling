@@ -21,7 +21,8 @@ class RetrieveRelatedArtists():
             'artist_name': str,
             'artist_id': str,
             'artist_popularity': 'int64', # allows NaNs
-            'artist_followers': 'int64'
+            'artist_followers': 'int64',
+            'ingested_on': str
         }
 
     def get_artist_related_artists(self):

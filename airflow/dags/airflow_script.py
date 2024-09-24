@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from airflow.operators.postgres_operator import PostgresOperator, DummyOperator
+from airflow.operators.postgres_operator import PostgresOperator, DummyOperator, LoadDimOperator, LoadFactOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 import pendulum
@@ -67,8 +67,10 @@ with DAG(
         "liked_songs": sql_queries.create_liked_songs_table
     }
 
+    tables_to_insert = []
+
     
-    def create_python_operator(task_type, task_name, callable_func):
+    def initialize_python_operator(task_type, task_name, callable_func):
         if not callable(callable_func):
             raise ValueError(f"The provided {task_type} function for {task_name} is not callable")
         return PythonOperator(
@@ -77,7 +79,7 @@ with DAG(
             dag=dag
         )
 
-    def create_postgres_operator(table_name, dag, postgres_conn_id, sql_query):
+    def initialize_postgres_operator(table_name, dag, postgres_conn_id, sql_query):
         return PostgresOperator(
         task_id=f"create_{table_name}_table",
         dag=dag,
@@ -85,29 +87,39 @@ with DAG(
         sql=sql_query
     )
 
-    def create_load_dim_operator():
-        pass
+    def initialize_load_dim_operator():
+        return LoadDimOperator(
+            task_id=None,
+            dag=dag,
+            df=None,
+            table_name=None,
+            append=None
+        )
 
-    def load_fact_operator():
-        pass
-    
+    def initialize_load_fact_operator():
+        return LoadFactOperator(
+            task_id=None,
+            dag=dag,
+            df=None,
+            table_name=None
+        )
+
 
     start_operator = DummyOperator(task_id='Start_execution',  dag=dag)
     end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
         
     
     with TaskGroup('ingestion_group') as ingestion_group:
-        ingestion_tasks = [create_python_operator('ingestion', name, 
+        ingestion_tasks = [initialize_python_operator('ingestion', name, 
                                 config) for name, config in ingestion_task_configs.items()]
 
         
     with TaskGroup('create_table_group') as create_table_group:
-        create_tables_tasks = [create_postgres_operator(
+        create_tables_tasks = [initialize_postgres_operator(
             table_name=table_name, dag=dag, postgres_conn_id='postgres-warehouse', sql_query=sql_query
         ) for table_name, sql_query in create_table_task_config.items()]
 
-    transformation_tasks = []
     
-    to_warehouse = create_python_operator('load_to_warehouse', 'all_tracks', gold_to_warehouse)
+    # to_warehouse = initialize_python_operator('load_to_warehouse', 'all_tracks', gold_to_warehouse)
 
-    start_operator >> ingestion_group >> create_table_group >> to_warehouse >> start_operator
+    start_operator >> ingestion_group >> create_table_group >> end_operator

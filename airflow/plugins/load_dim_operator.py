@@ -1,17 +1,18 @@
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
+from transformations.utils import MinioRetriever
 import psycopg2
 from io import StringIO
 
 class LoadDimOperator(BaseOperator):
 
     @apply_defaults
-    def __init__(self, df, table_name, append=True, *args, **kwargs):
+    def __init__(self, topic, table_name, append=True, *args, **kwargs):
 
+        self.df = MinioRetriever('suhaas', topic, 'presentation', 'minio').retrieve_object()
         self.conn = psycopg2.connect("dbname=spotify_db user=spotify password=spotify_pass host=postgres-warehouse")
         self.cur = self.conn.cursor()
-        self.df = df
         self.table_name = table_name
         self.append = append
 

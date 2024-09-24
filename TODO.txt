@@ -11,12 +11,7 @@ This is for fernet key:
 
 - python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
 
-
-<<<<<<< HEAD
-=======
-Export parth "export PYTHONPATH="/e/spotify_insight" 
-# 2) 
->>>>>>> cb84b69181c07d997454cb058ec3aa589fa3ff31
+ 
 Export path "export PYTHONPATH="/e/spotify_insight" 
 Export path "export PYTHONPATH="/c/Users/suhu/src/spotify-de-pipeline"
 # 2) Top artists in a genre based on popularity. If there are multiple artists with the same popularity, choose the one with the most followers.
@@ -31,9 +26,11 @@ For warehouse:
 ### Always add this next to the pywin package in requirements.txt when running on linux; sys_platform == 'win32'
 
 ## To interact with postgres database: q in command line of the service
+
 # Lessons learnt:
 # Understand the dataset thoroughly. VERY IMPORTANT!! 
 # Have a clear idea about the outputs before starting the project. 
 
 
 
+Tomorrow: Make custom operators in plugins to insert data into postgres database!!

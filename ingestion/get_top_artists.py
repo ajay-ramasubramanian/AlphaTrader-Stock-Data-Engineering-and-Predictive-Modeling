@@ -25,6 +25,7 @@ class RetrieveTopArtists():
             'followers': 'int64',
             'image_url': str,
             'spotify_url': str,
+            'ingested_on': str
         }
 
     def get_user_top_artists(self):

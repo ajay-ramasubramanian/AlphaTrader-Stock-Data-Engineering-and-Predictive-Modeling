@@ -65,7 +65,7 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
                         albums.append(result['items'])
                         future = self.produce_artist_albums(user_id, result['items'][0])
                         futures.append(future)
-                        print(f"Sent record to Kafka: {result['items'][0]['name']}")
+                        print(f"Sent record inside while to Kafka: {result['items'][0]['name']}")
                     result = self.sp.next(result)
                     
                     # albums.append(results['items'])

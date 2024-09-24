@@ -1,31 +1,23 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from airflow.operators.postgres_operator import PostgresOperator, DummyOperator, LoadDimOperator, LoadFactOperator
-from airflow.utils.dates import days_ago
+from airflow.operators.postgres_operator import PostgresOperator
+from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators import (LoadDimOperator, LoadFactOperator, LoadTransformationOperator)
 from datetime import timedelta
 import pendulum
 from airflow.utils.task_group import TaskGroup
 import sys
 from pathlib import Path
 
+from utils import (ingestion_task_configs, create_table_task_config,
+                insert_to_dim_table_task_config, insert_to_transformation_table_task_config,
+                insert_to_fact_table_task_config)
+
 
 # Add the project root to the Python path
 project_root = Path(__file__).parents[2]
 sys.path.append(str(project_root))
-
-# import os
-# print("Current working directory:", os.getcwd())
-# print("Python path:", sys.path)
-from ingestion.get_following_artist import run_retrieve_following_artists
-from ingestion.get_liked_songs import run_retrieve_liked_songs
-from ingestion.get_recent_plays import run_retrieve_recent_plays
-from ingestion.get_saved_playlist import run_retrieve_saved_playlist
-from ingestion.get_top_artists  import run_retrieve_top_artists
-from ingestion.get_top_songs import run_retrieve_top_songs
-import sql_queries
-from ingestion.get_artist_albums import run_get_user_artist_albums
-from ingestion.get_related_artists import run_get_artist_related_artists
 
 # Default arguments for the DAG
 default_args = {
@@ -47,29 +39,7 @@ with DAG(
     catchup=False,
 ) as dag:
     
-#   PRODUCER SCRIPTS
-    ingestion_task_configs = {
-    'following_artists': run_retrieve_following_artists,
-    'liked_songs': run_retrieve_liked_songs,
-    'recent_plays': run_retrieve_recent_plays,
-    'saved_playlists': run_retrieve_saved_playlist,
-    'top_songs': run_retrieve_top_songs,
-    'top_artists': run_retrieve_top_artists,
-    'artist_albums': run_get_user_artist_albums,
-    'related_artists': run_get_artist_related_artists
-}
 
-    create_table_task_config = {
-        "artist": sql_queries.create_artist_table,
-        "album": sql_queries.create_albums_table,
-        "time": sql_queries.create_time_table,
-        "track": sql_queries.create_tracks_table,
-        "liked_songs": sql_queries.create_liked_songs_table
-    }
-
-    tables_to_insert = []
-
-    
     def initialize_python_operator(task_type, task_name, callable_func):
         if not callable(callable_func):
             raise ValueError(f"The provided {task_type} function for {task_name} is not callable")
@@ -81,27 +51,35 @@ with DAG(
 
     def initialize_postgres_operator(table_name, dag, postgres_conn_id, sql_query):
         return PostgresOperator(
-        task_id=f"create_{table_name}_table",
+        task_id=f"{table_name}_table",
         dag=dag,
         postgres_conn_id=postgres_conn_id,
         sql=sql_query
     )
 
-    def initialize_load_dim_operator():
+    def initialize_load_dim_operator(dag, topic, table_name, append):
         return LoadDimOperator(
-            task_id=None,
+            task_id=f"load_{table_name}_table",
             dag=dag,
-            df=None,
-            table_name=None,
-            append=None
+            topic=topic,
+            table_name=table_name,
+            append=append
         )
 
-    def initialize_load_fact_operator():
+    def initialize_load_fact_operator(dag, topic, table_name):
         return LoadFactOperator(
-            task_id=None,
+            task_id=f"load_{table_name}_table",
             dag=dag,
-            df=None,
-            table_name=None
+            topic=topic,
+            table_name=table_name,
+        )
+    
+    def initialize_load_transformation_operator(dag, topic, table_name):
+        return LoadTransformationOperator(
+            task_id=f"load_{table_name}_table",
+            dag=dag,
+            topic=topic,
+            table_name=table_name,
         )
 
 
@@ -110,8 +88,8 @@ with DAG(
         
     
     with TaskGroup('ingestion_group') as ingestion_group:
-        ingestion_tasks = [initialize_python_operator('ingestion', name, 
-                                config) for name, config in ingestion_task_configs.items()]
+        ingestion_tasks = [initialize_python_operator(
+            'ingestion', name, config) for name, config in ingestion_task_configs.items()]
 
         
     with TaskGroup('create_table_group') as create_table_group:
@@ -120,6 +98,25 @@ with DAG(
         ) for table_name, sql_query in create_table_task_config.items()]
 
     
+    with TaskGroup('load_dimension_group') as load_dimension_group:
+        ingestion_tasks = [initialize_load_dim_operator(
+            dag=dag, topic=topic, table_name=table_name, append=True
+        ) for table_name, topic in insert_to_dim_table_task_config.items()]
+        
+
+    with TaskGroup('load_fact_group') as load_fact_group:
+        ingestion_tasks = [initialize_load_fact_operator(
+             dag=dag, topic=topic, table_name=table_name
+        ) for table_name, topic in insert_to_fact_table_task_config.items()]
+        
+
+    with TaskGroup('load_transformation_group') as load_transformation_group:
+        ingestion_tasks = [initialize_load_transformation_operator(
+             dag=dag, topic=topic, table_name=table_name, append=True
+        ) for table_name, topic in insert_to_transformation_table_task_config.items()]
+
+    
     # to_warehouse = initialize_python_operator('load_to_warehouse', 'all_tracks', gold_to_warehouse)
 
-    start_operator >> ingestion_group >> create_table_group >> end_operator
+    start_operator >> ingestion_group >> create_table_group
+    create_table_group >> [load_dimension_group, load_fact_group, load_transformation_group] >> end_operator

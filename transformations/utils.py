@@ -16,7 +16,7 @@ class MinioRetriever:
         self.topic = topic.replace("_","-")
         self.host = host
 
-    def retrieve_object(self):
+    def retrieve_object(self,key=None):
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
@@ -26,20 +26,38 @@ class MinioRetriever:
             )
 
             # List all objects in the specified subfolder
-            paths = [
-                self.container,
-                f"{self.container}/{self.topic}",
-                f"{self.container}/{self.topic}/{self.user}",
-                f"{self.container}/{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
-            ]
-            
-            for path in paths:
-                print("True" if fs.exists(path) else "False")
+            if not key:
+                paths = [
+                    self.container,
+                    f"{self.container}/{self.topic}",
+                    f"{self.container}/{self.topic}/{self.user}",
+                    f"{self.container}/{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
+                ]
+                
+                for path in paths:
+                    print("True" if fs.exists(path) else "False")
 
-            # Construct the path to the parquet file
-            parquet_path = f"{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
+                # Construct the path to the parquet file
+                parquet_path = f"{self.topic}/{self.user}/{self.container}-{self.topic}.parquet"
 
-            df = self.read_object(parquet_path, self.container)
+                df = self.read_object(parquet_path, self.container)
+            else:
+                str(key).replace("_","-")
+                paths = [
+                    self.container,
+                    f"{self.container}/{self.topic}",
+                    f"{self.container}/{self.topic}/{self.user}",
+                    f"{self.container}/{self.topic}/{self.user}/{self.container}-{key}.parquet"
+                ]
+                
+                for path in paths:
+                    print("True" if fs.exists(path) else "False")
+
+                # Construct the path to the parquet file
+                parquet_path = f"{self.topic}/{self.user}/{self.container}-{key}.parquet"
+
+                df = self.read_object(parquet_path, self.container)
+
             
             return df
 
@@ -107,7 +125,7 @@ class MinioUploader:
                 except Exception as e:
                     print(f"\nError occured while uploading file to bucket : {e}")
             else:
-                key.replace("_","-")
+                str(key).replace("_","-")
                 path = f"{self.container}/{self.topic}/{self.user}/{self.container}-{key}.parquet"
                 try:
                     with fs.open(path, 'wb') as f:
@@ -161,9 +179,9 @@ TOPIC_CONFIG = {
         'topic': 'spotify_recent_plays_analysis'
     },
 
-    'top_tracks_analysis':{
-        'topic': 'spotify_top_tracks_analysis'
-    },
+    # 'top_tracks_analysis':{
+    #     'topic': 'spotify_top_tracks_analysis'
+    # },
 
     'all_tracks':{
         'topic': 'spotify_all_tracks'

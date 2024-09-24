@@ -127,4 +127,43 @@ with DAG(
     
     to_warehouse = create_python_operator('load_to_warehouse', 'all_tracks', gold_to_warehouse)
 
-    ingestion_group >> create_table_group >> to_warehouse
+
+    create_artist_table = PostgresOperator(
+        task_id="create_artist_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_artist_table
+    )
+
+    create_time_table = PostgresOperator(
+        task_id="create_time_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_time_table
+    )
+
+    create_albums_table = PostgresOperator(
+        task_id="create_albums_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_albums_table
+    )
+
+    create_tracks_table = PostgresOperator(
+        task_id="create_tracks_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_all_tracks_table
+    )
+
+    create_liked_songs_table = PostgresOperator(
+        task_id="create_liked_songs_table",
+        dag=dag,
+        postgres_conn_id='postgres-warehouse',
+        sql=sql_queries.create_liked_songs_table
+    )
+
+    table_creation = [create_artist_table, create_time_table, create_albums_table, create_tracks_table, create_liked_songs_table]
+
+    # create_artist_table >> create_time_table >> create_albums_table >> create_tracks_table >> create_liked_songs_table >>
+    ingestion_tasks >> table_creation >> to_warehouse

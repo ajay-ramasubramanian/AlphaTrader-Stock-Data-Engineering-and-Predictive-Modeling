@@ -94,6 +94,8 @@ class RecentPlaysAnalysis:
         daily_plays = recent_plays.groupby(recent_plays['played_at'].dt.date).size().reset_index(name='play_count')
         
         daily_plays.columns = ['date', 'play_count']
+
+        daily_plays.sort_values(by="date", ascending=True, inplace= True)
         
         return daily_plays
 

@@ -12,8 +12,6 @@ from io import StringIO
 
 def gold_to_warehouse():
 
-    df = MinioRetriever('suhaas', 'spotify-all-tracks', 'processed', 'minio').retrieve_object()
-    table_name = 'dim_track'
 
     # Reads all_tack.parquet file from MinIO object store
     df_all_tracks = MinioRetriever('suhaas', 'spotify-all-tracks', 'processed', 'minio').retrieve_object()
@@ -88,7 +86,7 @@ def gold_to_warehouse():
     "create_song_details": df_song_details
 
     # Add more tables and DataFrames as needed
-}
+    }
     
     def bulk_insert(conn, df, table_name):
         cur = conn.cursor()
@@ -113,4 +111,5 @@ def gold_to_warehouse():
     insert_multiple_tables(db_params,table_df_dict)
 
 
-# gold_to_warehouse()
+if __name__ == "__main__":
+    gold_to_warehouse()

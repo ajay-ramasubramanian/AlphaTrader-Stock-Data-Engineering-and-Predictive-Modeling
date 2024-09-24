@@ -163,6 +163,45 @@ class SpotifyKafkaProducer:
             Future: A Future object from the ThreadPoolExecutor.
         """
         return self.executor.submit(self.produce_message, 'top_songs', user_id, history_data)
+    
+    def produce_artists_album(self, user_id, artist_album):
+        """
+        Produces messages related to  artists albums data for a user.
+
+        Args:
+            user_id (str): The user ID.
+            artist_ablum (dict): The data payload related to artists albums.
+        
+        Returns:
+            Future: A Future object from the ThreadPoolExecutor.
+        """
+        return self.executor.submit(self.produce_message, 'artist_albums', user_id, artist_album)
+    
+    def produce_artist_albums(self, user_id, artist_album):
+        """
+        Produces messages related to  artists albums data for a user.
+
+        Args:
+            user_id (str): The user ID.
+            artist_ablum (dict): The data payload related to artists albums.
+        
+        Returns:
+            Future: A Future object from the ThreadPoolExecutor.
+        """
+        return self.executor.submit(self.produce_message, 'artist_albums', user_id, artist_album)
+    
+    def produce_related_artists(self, user_id, related_artist):
+        """
+        Produces messages related to  artists albums data for a user.
+
+        Args:
+            user_id (str): The user ID.
+            artist_ablum (dict): The data payload related to artists albums.
+        
+        Returns:
+            Future: A Future object from the ThreadPoolExecutor.
+        """
+        return self.executor.submit(self.produce_message, 'related_artists', user_id, related_artist)
 
     def close(self):
         """

@@ -75,7 +75,7 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
 
                 
 
-            print("Sent all the data")  # Confirmation print            
+            print("Sent all the data")  # Confirmation print
 
             # Wait for all Kafka messages to be sent and handle their results
             for future in futures:

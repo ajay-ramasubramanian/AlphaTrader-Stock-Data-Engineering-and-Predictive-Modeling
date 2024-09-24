@@ -84,7 +84,7 @@ def gold_to_warehouse():
     "create_song_details": df_song_details
 
     # Add more tables and DataFrames as needed
-}
+    }
     
     def bulk_insert(conn, df, table_name):
         cur = conn.cursor()
@@ -109,4 +109,5 @@ def gold_to_warehouse():
     insert_multiple_tables(db_params,table_df_dict)
 
 
-# gold_to_warehouse()
+if __name__ == "__main__":
+    gold_to_warehouse()

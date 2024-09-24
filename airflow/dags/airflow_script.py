@@ -90,7 +90,7 @@ with DAG(
         "artist": sql_queries.create_artist_table,
         "album": sql_queries.create_albums_table,
         "time": sql_queries.create_time_table,
-        "track": sql_queries.create_tracks_table,
+        "track": sql_queries.create_all_tracks_table,
         "liked_songs": sql_queries.create_liked_songs_table
     }
 
@@ -165,5 +165,5 @@ with DAG(
 
     table_creation = [create_artist_table, create_time_table, create_albums_table, create_tracks_table, create_liked_songs_table]
 
-    # create_artist_table >> create_time_table >> create_albums_table >> create_tracks_table >> create_liked_songs_table >>
-    ingestion_tasks >> table_creation >> to_warehouse
+    create_artist_table >> create_time_table >> create_albums_table >> create_tracks_table >> create_liked_songs_table
+    # ingestion_tasks >> table_creation >> to_warehouse

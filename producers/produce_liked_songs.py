@@ -51,6 +51,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             artist_ids (list): List of artist IDs.
             album_ids (list): List of album IDs.
         """
+        print(artist_ids)
         ArtistAlbumsProducer().get_artist_ids(user_id, artist_ids)
 
 
@@ -104,10 +105,10 @@ class SavedTracksProducer(SpotifyKafkaProducer):
                     print(f"Message sent to {record_metadata.topic} partition {record_metadata.partition} offset {record_metadata.offset}")
                 except Exception as e:
                     print(f"Failed to send message: {e}")
-
+            print(f'artist id :{artist_ids}')
             if artist_ids:   # artist_ids is a list
                 self.send_ids_to_related_artists_producer(user_id, artist_ids)
-                self.send_ids_to_artist_albums_producer(user_id, artist_ids)
+                # self.send_ids_to_artist_albums_producer(user_id, artist_ids)
 
         finally:
             # Close the producer to release resources

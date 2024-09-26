@@ -9,6 +9,7 @@ class LoadTransformationOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self, topic, table_name, *args, **kwargs):
+        super(LoadTransformationOperator, self).__init__(*args, **kwargs)
 
         self.df = MinioRetriever('suhaas', topic, 'presentation', 'minio').retrieve_object()
         self.conn = psycopg2.connect("dbname=spotify_db user=spotify password=spotify_pass host=postgres-warehouse")
@@ -16,7 +17,7 @@ class LoadTransformationOperator(BaseOperator):
         self.table_name = table_name
 
 
-    def execute(self,):
+    def execute(self, context):
         try:
 
             output = StringIO()

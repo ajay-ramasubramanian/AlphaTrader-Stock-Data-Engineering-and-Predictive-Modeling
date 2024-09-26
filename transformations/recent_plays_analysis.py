@@ -1,21 +1,25 @@
 import os,site,sys
 import numpy as np
+
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from dotenv import load_dotenv
 import pandas as pd
 from transformations.utils import TOPIC_CONFIG, MinioRetriever, MinioUploader
 
+load_dotenv()
 
 class RecentPlaysAnalysis:
 
     PROCESSED: str = 'processed'
     PRESENTATION: str = 'presentation'
 
-    def __init__(self, user, table_1_topic,table_2_topic,table_3_topic) -> None:
+    def __init__(self, user, table_1_topic, table_2_topic, table_3_topic, host=os.getenv('HOST')) -> None:
         self.user = user
-        self.retriever_1 = MinioRetriever(user=user, topic=table_1_topic, container=self.PROCESSED,host="minio")
-        self.retriever_2 = MinioRetriever(user=user, topic=table_2_topic, container=self.PROCESSED,host="localhost")
-        self.uploader = MinioUploader(user=user, topic=table_3_topic, container = self.PRESENTATION,host="localhost")
+        self.retriever_1 = MinioRetriever(user=user, topic=table_1_topic, container=self.PROCESSED, host=host)
+        self.retriever_2 = MinioRetriever(user=user, topic=table_2_topic, container=self.PROCESSED, host=host)
+        self.uploader = MinioUploader(user=user, topic=table_3_topic, container = self.PRESENTATION, host=host)
     
     def retriever(self):
         recent_plays = self.retriever_1.retrieve_object()
@@ -124,8 +128,19 @@ class RecentPlaysAnalysis:
         self.uploader.upload_files(df,key)
 
 
+def recent_plays_analysis():
+    transformed = RecentPlaysAnalysis(user='suhaas',table_1_topic=TOPIC_CONFIG['recent_plays']['topic'], \
+                                                table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
+                                                table_3_topic=TOPIC_CONFIG['recent_plays_analysis']['topic'],)
+    
+    recent_plays, related_artists = transformed.retriever()
+    recent_plays_analysis = transformed.analyze_recent_plays_with_related(recent_plays, related_artists)
+    for key in recent_plays_analysis:
+        transformed.write_to_parquet(recent_plays_analysis[key], key)
+
 
 if __name__ == "__main__":
+
     transformed = RecentPlaysAnalysis(user='suhaas',table_1_topic=TOPIC_CONFIG['recent_plays']['topic'], \
                                                 table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
                                                 table_3_topic=TOPIC_CONFIG['recent_plays_analysis']['topic'],)

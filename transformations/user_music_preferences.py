@@ -1,23 +1,27 @@
 
 import os,site,sys
 import numpy as np
+
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from dotenv import load_dotenv
 import pandas as pd
 from transformations.utils import TOPIC_CONFIG, MinioRetriever, MinioUploader
 
+load_dotenv()
 
 class ProcessTopAritstBasedOnGenres:
 
     PROCESSED: str = 'processed'
     PRESENTATION: str = 'presentation'
 
-    def __init__(self, user, table_1_topic,table_2_topic,table_3_topic, table_4_topic) -> None:
+    def __init__(self, user, table_1_topic,table_2_topic,table_3_topic, table_4_topic, host=os.getenv('HOST')) -> None:
         self.user = user
-        self.retriever_1 = MinioRetriever(user=user, topic=table_1_topic, container=self.PROCESSED,host="minio")
-        self.retriever_2 = MinioRetriever(user=user, topic=table_2_topic, container=self.PROCESSED,host="minio")
-        self.retriever_3 = MinioRetriever(user=user, topic=table_3_topic, container=self.PROCESSED,host="minio")
-        self.uploader = MinioUploader(user=user, topic=table_4_topic, container = self.PRESENTATION,host="minio")
+        self.retriever_1 = MinioRetriever(user=user, topic=table_1_topic, container=self.PROCESSED, host=host)
+        self.retriever_2 = MinioRetriever(user=user, topic=table_2_topic, container=self.PROCESSED, host=host)
+        self.retriever_3 = MinioRetriever(user=user, topic=table_3_topic, container=self.PROCESSED, host=host)
+        self.uploader = MinioUploader(user=user, topic=table_4_topic, container = self.PRESENTATION, host=host)
     
     def retriever(self):
         liked_songs = self.retriever_1.retrieve_object()
@@ -87,6 +91,17 @@ class ProcessTopAritstBasedOnGenres:
     def write_to_parquet(self,df,key):
         self.uploader.upload_files(df,key)
 # Usage
+def user_music_preferences():   
+    transformed = ProcessTopAritstBasedOnGenres(user='suhaas',table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \
+                                                    table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
+                                                    table_3_topic=TOPIC_CONFIG['all_tracks']['topic'], \
+                                                    table_4_topic=TOPIC_CONFIG['user_music_preferences']['topic'],)
+        
+    liked_songs, related_artists, all_tracks= transformed.retriever()
+    user_music_preferences = transformed.transform_liked_songs_related_artists(liked_songs, related_artists, all_tracks)
+    for key in user_music_preferences:
+        transformed.write_to_parquet(user_music_preferences[key], key)
+
 
 if __name__ == "__main__":
     transformed = ProcessTopAritstBasedOnGenres(user='suhaas',table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \

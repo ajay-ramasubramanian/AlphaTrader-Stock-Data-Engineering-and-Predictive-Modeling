@@ -22,6 +22,7 @@ class RetrieveRelatedArtists():
             'artist_id': str,
             'artist_popularity': 'int64', # allows NaNs
             'artist_followers': 'int64',
+            'genres': object,
             'ingested_on': str
         }
 
@@ -36,6 +37,7 @@ class RetrieveRelatedArtists():
                 'artist_name': result['name'],
                 'artist_popularity': result['popularity'],
                 'artist_followers': result['followers'],
+                'genres': result['genres']
                 })
                 
             df_artists = pd.DataFrame(all_artists)

@@ -71,10 +71,9 @@ services:
       - "postgres"
       - "-c"
       - "listen_addresses=*"
-    # healthcheck:
-    #   test: ["CMD", "pg_isready", "-U", "airflow"]
-    #   interval: 5s
-    #   retries: 5
+      # - "-c"
+      # - "max_connections=100"
+    
 
   airflow-webserver:
     image: apache/airflow:2.7.0-python3.11

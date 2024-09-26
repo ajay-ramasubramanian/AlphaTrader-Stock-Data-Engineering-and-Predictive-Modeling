@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS dim_artist (
     artist_id VARCHAR(22) PRIMARY KEY,
     artist_name VARCHAR(255) NOT NULL,
     artist_popularity SMALLINT,
-    artist_followers INTEGER
+    artist_followers INTEGER,
     ingested_on VARCHAR(256)
 )
 """
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS dim_album (
     total_tracks SMALLINT, 
     release_date VARCHAR(50),
     artist_name VARCHAR(50),
-    artist_id VARCHAR(22)
+    artist_id VARCHAR(22),
     ingested_on VARCHAR(256)
 )
 """
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS fact_recently_played (
 # User music preferences
 create_artist_discovery = """
 CREATE TABLE IF NOT EXISTS artist_discovery (
-    artist_name VARCHAR(255) NOT FULL,
+    artist_name VARCHAR(255) NOT NULL,
     artist_id VARCHAR(255) PRIMARY KEY NOT NULL,
     artist_populartiy SMALLINT,
     genres VARCHAR(22),
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS recent_plays_genre_analysis(
 create_recent_play_summary = """
 CREATE TABLE IF NOT EXISTS recent_plays_summary(
     metric VARCHAR(22) NOT NULL,
-    value DOUBLE
+    value DOUBLE PRECISION
 )
 """
 

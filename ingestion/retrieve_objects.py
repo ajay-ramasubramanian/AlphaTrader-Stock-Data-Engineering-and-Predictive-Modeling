@@ -3,9 +3,13 @@ import site
 sys.path.extend(site.getsitepackages())
 import io
 import json
+import os
 import pandas as pd
 import s3fs
 from minio import Minio
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class MinioRetriever:
@@ -18,11 +22,11 @@ class MinioRetriever:
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
-                endpoint_url="http://localhost:9000",
+                endpoint_url=f"http://{os.getenv('HOST')}:9000",
                 key="minioadmin",
                 secret="minioadmin",
                 client_kwargs={
-                    'endpoint_url': 'http://localhost:9000'
+                    'endpoint_url': f"http://{os.getenv('HOST')}:9000"
     }
                 
             )
@@ -83,7 +87,7 @@ class MinioUploader:
 
     def upload_files(self,data):
             minio_client = Minio(
-                "localhost:9000", 
+                f"{os.getenv('HOST')}:9000", 
                 access_key="minioadmin",
                 secret_key="minioadmin",
                 secure=False  # Keep this False for localhost without HTTPS
@@ -91,8 +95,8 @@ class MinioUploader:
             fs = s3fs.S3FileSystem(
                     key="minioadmin",
                     secret="minioadmin",
-                    endpoint_url="http://localhost:9000",  # Explicitly set the endpoint URL
-                    client_kwargs={'endpoint_url': 'http://localhost:9000'},  
+                    endpoint_url=f"http://{os.getenv('HOST')}:9000",  # Explicitly set the endpoint URL
+                    client_kwargs={'endpoint_url': f"http://{os.getenv('HOST')}:9000"},  
                     use_ssl=False  # Set to False for localhost without HTTPS
                 )
 

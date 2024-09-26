@@ -179,12 +179,12 @@ TOPIC_CONFIG = {
         'topic': 'spotify_recent_plays_analysis'
     },
 
-    # 'top_tracks_analysis':{
-    #     'topic': 'spotify_top_tracks_analysis'
-    # },
-
     'all_tracks':{
         'topic': 'spotify_all_tracks'
+    },
+    
+    'genres_table':{
+        'topic': 'spotify_genres_table'
     }
 
 }

@@ -19,7 +19,7 @@ class ArtistGenreBridge():
 
         self.presentation = presentation
         self.retrieve_artists = MinioRetriever(user, artist_table, processed, os.getenv('HOST'))
-        self.retrieve_genres = MinioRetriever(user, genre_table, presentation, os.getenv('HOST'))
+        self.retrieve_genres = MinioRetriever(user, genre_table, processed, os.getenv('HOST'))
         self.uploader = MinioUploader(user, self.TOPIC, presentation, os.getenv('HOST'))
 
         self.dtype_dict = {
@@ -45,7 +45,6 @@ class ArtistGenreBridge():
 
             bridge_df.astype(self.dtype_dict)
             bridge_df.reset_index(drop=True, inplace=True)
-            print(bridge_df)
             
             self.uploader.upload_files(data=bridge_df)
             print(f"Successfully uploaded to '{self.presentation}' container!!")
@@ -58,7 +57,7 @@ class ArtistGenreBridge():
 def run_get_artist_genre_bridge():
     ob = ArtistGenreBridge("suhaas", \
                                 TOPIC_CONFIG["related_artists"]["topic"], \
-                                "genres_table", \
+                                "spotify_genres_table", \
                                 "processed", \
                                 "presentation")
     ob.create_artist_genre_bridge()

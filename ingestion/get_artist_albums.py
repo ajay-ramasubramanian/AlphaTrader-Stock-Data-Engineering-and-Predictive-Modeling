@@ -16,7 +16,7 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
     def __init__(self, user, topic, raw, processed) -> None:
 
         self.retriever = MinioRetriever(user, topic, raw)
-        self.uploader = MinioUploader(user, self.TOPIC, 'artist_genres', processed)
+        self.uploader = MinioUploader(user, self.TOPIC, processed)
         self.processed = processed
 
         self.dtype_dict = {

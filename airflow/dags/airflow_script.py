@@ -149,4 +149,4 @@ with DAG(
     # >> transformation_group >> create_table_group  \
     # >> load_dimension_group >> load_fact_group >> load_transformation_group >> end_operator
 
-    # start_operator >> load_dimension_group >> load_fact_group >> load_transformation_group >> end_operator
+    # load_dimension_group

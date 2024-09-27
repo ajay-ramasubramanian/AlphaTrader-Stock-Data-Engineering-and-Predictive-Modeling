@@ -1,6 +1,7 @@
 import sys,os
 import site
 from datetime import datetime
+from airflow.utils.log.logging_mixin import LoggingMixin
 
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -10,7 +11,7 @@ from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
 
 
-class RetrieveLikedSongs():
+class RetrieveLikedSongs(LoggingMixin):
 
     def __init__(self,user, topic,raw, processed) -> None:
 
@@ -33,6 +34,7 @@ class RetrieveLikedSongs():
         try:
             tracks = []
             results= self.retriever.retrieve_object()
+            self.log.info(f"Retrieved {len(results)} results from Minio")
 
             for count, result in enumerate(results):
                 item=result["items"]
@@ -62,7 +64,9 @@ class RetrieveLikedSongs():
             print(f"Encountered an exception here!!: {e}")
 
 
-def run_retrieve_liked_songs():
+def run_retrieve_liked_songs(**context):
+    task_instance = context['task_instance']
+    task_instance.log.info("Starting retrieve_liked_songs task")
     ob = RetrieveLikedSongs("suhaas", \
                             TOPIC_CONFIG["liked_songs"]["topic"], \
                             "raw", \

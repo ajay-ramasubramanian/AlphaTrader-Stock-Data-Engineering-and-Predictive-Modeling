@@ -16,11 +16,14 @@ class LoadDimOperator(BaseOperator):
         self.cur = self.conn.cursor()
         self.table_name = table_name
         self.append = append
+        self.topic = topic
 
 
     def execute(self, context):
         try:
             output = StringIO()
+            if self.topic == 'spotify-artist-albums':
+                print(self.df[self.df['album_id'] == "1ntEaMBOvQQID1xN6HbZ2K"].T)
             self.df.to_csv(output, sep='\t', header=False, index=False)
             output.seek(0)
 

@@ -146,4 +146,4 @@ with DAG(
 
     start_operator >> independent_ingestion_group >> dependent_ingestion_group >> move_to_presentation_group >> transformation_group >> create_table_group >> load_dimension_group >> load_fact_group >> load_transformation_group >> end_operator
 
-    # start_operator >> load_dimension_group >> load_fact_group >> load_transformation_group >> end_operator
+    # load_dimension_group

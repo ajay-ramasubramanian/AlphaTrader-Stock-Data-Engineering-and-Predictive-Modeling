@@ -97,11 +97,11 @@ insert_to_transformation_table_task_configs = {
 
 insert_to_dim_table_task_configs = {
         'dim_artist': 'spotify-related-artists',
-        'dim_time': 'spotify-liked-songs',
+        'dim_time': 'spotify-time-table',
         'dim_track': 'spotify-all-tracks',
         'dim_artist_genre_bridge': 'spotify-artist-genre-table',
         'dim_genre': 'spotify-genres-table',
-        'dim_album': 'spotify-artist-genres'
+        'dim_album': 'spotify-artist-albums'
     }
 
 

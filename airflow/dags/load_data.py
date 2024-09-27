@@ -112,4 +112,4 @@ def gold_to_warehouse():
 
 
 if __name__ == "__main__":
-    gold_to_warehouse()~
+    gold_to_warehouse()

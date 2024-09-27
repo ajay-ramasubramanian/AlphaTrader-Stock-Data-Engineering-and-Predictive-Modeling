@@ -49,7 +49,7 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
 
             # Convert to DataFrame
             df_artists = pd.DataFrame(artists)
-            df_artists['release_date'] = pd.to_datetime(df_artists['release_date'])
+            df_artists['release_date'] = pd.to_datetime(df_artists['release_date'],format='mixed')
             df_artists['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
             
             df_artists = df_artists.astype(self.dtype_dict)

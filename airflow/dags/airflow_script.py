@@ -106,34 +106,34 @@ with DAG(
             'ingestion', name, config) for name, config in process_to_presentation_task_configs.items()]
         
 
-    # with TaskGroup('transformation_group') as transformation_group:
-    #     transformation_tasks = [initialize_python_operator(
-    #         'transformation', name, config) for name, config in transformation_task_configs.items()]
+    with TaskGroup('transformation_group') as transformation_group:
+        transformation_tasks = [initialize_python_operator(
+            'transformation', name, config) for name, config in transformation_task_configs.items()]
 
         
-    # with TaskGroup('create_table_group') as create_table_group:
-    #     create_tables_tasks = [initialize_postgres_operator(
-    #         table_name=table_name, dag=dag, postgres_conn_id='postgres-warehouse', sql_query=sql_query
-    #     ) for table_name, sql_query in create_table_task_configs.items()]
+    with TaskGroup('create_table_group') as create_table_group:
+        create_tables_tasks = [initialize_postgres_operator(
+            table_name=table_name, dag=dag, postgres_conn_id='postgres-warehouse', sql_query=sql_query
+        ) for table_name, sql_query in create_table_task_configs.items()]
 
-    #     chain (*create_tables_tasks)
+        chain (*create_tables_tasks)
 
 
     
-    # with TaskGroup('load_dimension_group') as load_dimension_group:
-    #     load_dim_tasks = [initialize_load_dim_operator(
-    #         dag=dag, topic=topic, table_name=table_name, append=False
-    #     ) for table_name, topic in insert_to_dim_table_task_configs.items()]
+    with TaskGroup('load_dimension_group') as load_dimension_group:
+        load_dim_tasks = [initialize_load_dim_operator(
+            dag=dag, topic=topic, table_name=table_name, append=False
+        ) for table_name, topic in insert_to_dim_table_task_configs.items()]
 
-    #     chain (*load_dim_tasks)
+        chain (*load_dim_tasks)
         
 
-    # with TaskGroup('load_fact_group') as load_fact_group:
-    #     load_fact_tasks = [initialize_load_fact_operator(
-    #          dag=dag, topic=topic, table_name=table_name
-    #     ) for table_name, topic in insert_to_fact_table_task_configs.items()]
+    with TaskGroup('load_fact_group') as load_fact_group:
+        load_fact_tasks = [initialize_load_fact_operator(
+            dag=dag, topic=topic, table_name=table_name
+        ) for table_name, topic in insert_to_fact_table_task_configs.items()]
 
-    #     chain (*load_dim_tasks)
+        chain (*load_dim_tasks)
         
 
     # with TaskGroup('load_transformation_group') as load_transformation_group:
@@ -144,9 +144,10 @@ with DAG(
     #     chain (*load_transformation_tasks)
     
 
-    start_operator >> independent_ingestion_group \
-    >>dependent_ingestion_group >> move_to_presentation_group
-    # >> transformation_group >> create_table_group  \
-    # >> load_dimension_group >> load_fact_group >> load_transformation_group >> end_operator
+    start_operator >> independent_ingestion_group >>dependent_ingestion_group >> \
+    move_to_presentation_group >> \
+    transformation_group  >>  create_table_group >> load_dimension_group \
+    >> load_fact_group
+    # >> load_transformation_group >> end_operator
 
     # load_dimension_group

@@ -1,10 +1,9 @@
 import sys,os
 import site
 from datetime import datetime
-
+import pytz
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from dotenv import load_dotenv
 import pandas as pd
 from transformations.utils import MinioRetriever,MinioUploader
@@ -34,6 +33,8 @@ def processed_to_presentation_liked_songs():
                             )
     
     results = liked_songs.retrieve()
+    # Assuming df is your DataFrame
+    results['added_at'] = results['added_at'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S%z').astimezone(pytz.UTC))
     liked_songs.upload(results)
 
 def processed_to_presentation_related_artists():

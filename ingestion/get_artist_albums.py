@@ -83,12 +83,6 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
             df_artists.drop_duplicates(['album_id', 'artist_id'], inplace=True)
             df_artists = df_artists.reset_index(drop=True)
 
-            if not self.check_ingested_on(df_artists):
-                print("Validation failed for 'ingested_on' column")
-            else:
-                print("All values in 'ingested_on' are non-empty strings")
-
-            print(df_artists[df_artists['album_id'] == "1ntEaMBOvQQID1xN6HbZ2K"].T)
             self.uploader.upload_files(data=df_artists)
             print(f"Successfully uploaded to '{self.processed}' container!!")
         

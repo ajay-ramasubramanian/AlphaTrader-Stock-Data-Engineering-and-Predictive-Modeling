@@ -52,6 +52,7 @@ class RetrieveLikedSongs(LoggingMixin):
             df_tracks['added_at'] = pd.to_datetime(df_tracks['added_at']) # data type is TIMESTAMP
             df_tracks['time_id'] = df_tracks['added_at'].apply(lambda val: val.strftime('%Y%m%d%H%M%S'))
             df_tracks['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
+            # df_tracks['ingested_on'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             df_tracks = df_tracks.astype(self.dtype_dict)
             df_tracks.drop_duplicates(inplace=True)

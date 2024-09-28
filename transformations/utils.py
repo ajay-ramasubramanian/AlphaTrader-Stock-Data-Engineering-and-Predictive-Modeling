@@ -16,6 +16,7 @@ class MinioRetriever:
         self.topic = topic.replace("_","-")
         self.host = host
 
+
     def retrieve_object(self,key=None):
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
@@ -24,6 +25,7 @@ class MinioRetriever:
                 key="minioadmin",
                 secret="minioadmin"
             )
+            # print(f"topic:{self.topic}")
 
             # List all objects in the specified subfolder
             if not key:

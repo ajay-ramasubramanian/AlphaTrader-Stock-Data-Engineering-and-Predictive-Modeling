@@ -5,6 +5,7 @@ sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from datetime import datetime
+import pytz
 import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
@@ -55,7 +56,8 @@ class RetrieveRecentPlays():
 
             # Convert to DataFrame
             df_recent_plays = pd.DataFrame(tracks)
-            df_recent_plays['played_at'] = pd.to_datetime(df_recent_plays['played_at']).apply(lambda val: val.strftime("%Y%m%d%H%M%S"))
+            # df_recent_plays['played_at'] = pd.to_datetime(df_recent_plays['played_at'])\
+            #     .apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S%z').astimezone(pytz.UTC))
             df_recent_plays['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
             
             df_recent_plays = df_recent_plays.astype(self.dtype_dict)

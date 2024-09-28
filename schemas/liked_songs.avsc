@@ -1,99 +1,89 @@
 {
   "type": "record",
-  "name": "UserSavedTracks",
+  "name": "SavedTracksResponse",
   "fields": [
     {"name": "href", "type": "string"},
-    {
-      "name": "items",
-      "type": {
-        "type": "array",
-        "items": {
-          "type": "record",
-          "name": "SavedTrack",
-          "fields": [
-            {"name": "added_at", "type": "string"},
-            {
-              "name": "track",
-              "type": {
+    {"name": "items", "type": {
+      "type": "array",
+      "items": {
+        "type": "record",
+        "name": "SavedTrack",
+        "fields": [
+          {"name": "added_at", "type": "string"},
+          {"name": "track", "type": {
+            "type": "record",
+            "name": "Track",
+            "fields": [
+              {"name": "album", "type": {
                 "type": "record",
-                "name": "Track",
+                "name": "Album",
                 "fields": [
-                  {
-                    "name": "album",
-                    "type": {
+                  {"name": "album_type", "type": "string"},
+                  {"name": "artists", "type": {
+                    "type": "array",
+                    "items": {
                       "type": "record",
-                      "name": "Album",
+                      "name": "Artist",
                       "fields": [
-                        {"name": "album_type", "type": "string"},
-                        {
-                          "name": "artists",
-                          "type": {
-                            "type": "array",
-                            "items": {
-                              "type": "record",
-                              "name": "Artist",
-                              "fields": [
-                                {"name": "external_urls", "type": {"type": "map", "values": "string"}},
-                                {"name": "href", "type": "string"},
-                                {"name": "id", "type": "string"},
-                                {"name": "name", "type": "string"},
-                                {"name": "type", "type": "string"},
-                                {"name": "uri", "type": "string"}
-                              ]
-                            }
-                          }
-                        },
-                        {"name": "available_markets", "type": {"type": "array", "items": "string"}},
                         {"name": "external_urls", "type": {"type": "map", "values": "string"}},
                         {"name": "href", "type": "string"},
                         {"name": "id", "type": "string"},
-                        {
-                          "name": "images",
-                          "type": {
-                            "type": "array",
-                            "items": {
-                              "type": "record",
-                              "name": "Image",
-                              "fields": [
-                                {"name": "height", "type": "int"},
-                                {"name": "url", "type": "string"},
-                                {"name": "width", "type": "int"}
-                              ]
-                            }
-                          }
-                        },
                         {"name": "name", "type": "string"},
-                        {"name": "release_date", "type": "string"},
-                        {"name": "release_date_precision", "type": "string"},
-                        {"name": "total_tracks", "type": "int"},
                         {"name": "type", "type": "string"},
                         {"name": "uri", "type": "string"}
                       ]
                     }
-                  },
-                  {"name": "artists", "type": {"type": "array", "items": "Artist"}},
+                  }},
                   {"name": "available_markets", "type": {"type": "array", "items": "string"}},
-                  {"name": "disc_number", "type": "int"},
-                  {"name": "duration_ms", "type": "int"},
-                  {"name": "explicit", "type": "boolean"},
-                  {"name": "external_ids", "type": {"type": "map", "values": "string"}},
                   {"name": "external_urls", "type": {"type": "map", "values": "string"}},
                   {"name": "href", "type": "string"},
                   {"name": "id", "type": "string"},
-                  {"name": "is_local", "type": "boolean"},
+                  {"name": "images", "type": {
+                    "type": "array",
+                    "items": {
+                      "type": "record",
+                      "name": "Image",
+                      "fields": [
+                        {"name": "height", "type": "int"},
+                        {"name": "width", "type": "int"},
+                        {"name": "url", "type": "string"}
+                      ]
+                    }
+                  }},
+                  {"name": "is_playable", "type": "boolean"},
                   {"name": "name", "type": "string"},
-                  {"name": "popularity", "type": "int"},
-                  {"name": "preview_url", "type": ["null", "string"]},
-                  {"name": "track_number", "type": "int"},
+                  {"name": "release_date", "type": "string"},
+                  {"name": "release_date_precision", "type": "string"},
+                  {"name": "total_tracks", "type": "int"},
                   {"name": "type", "type": "string"},
                   {"name": "uri", "type": "string"}
                 ]
-              }
-            }
-          ]
-        }
+              }},
+              {"name": "artists", "type": {
+                "type": "array",
+                "items": "Artist"
+              }},
+              {"name": "available_markets", "type": {"type": "array", "items": "string"}},
+              {"name": "disc_number", "type": "int"},
+              {"name": "duration_ms", "type": "int"},
+              {"name": "explicit", "type": "boolean"},
+              {"name": "external_ids", "type": {"type": "map", "values": "string"}},
+              {"name": "external_urls", "type": {"type": "map", "values": "string"}},
+              {"name": "href", "type": "string"},
+              {"name": "id", "type": "string"},
+              {"name": "is_local", "type": "boolean"},
+              {"name": "is_playable", "type": "boolean"},
+              {"name": "name", "type": "string"},
+              {"name": "popularity", "type": "int"},
+              {"name": "preview_url", "type": ["null", "string"]},
+              {"name": "track_number", "type": "int"},
+              {"name": "type", "type": "string"},
+              {"name": "uri", "type": "string"}
+            ]
+          }}
+        ]
       }
-    },
+    }},
     {"name": "limit", "type": "int"},
     {"name": "next", "type": ["null", "string"]},
     {"name": "offset", "type": "int"},

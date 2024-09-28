@@ -1,0 +1,91 @@
+{
+  "type": "record",
+  "name": "ArtistResponse",
+  "fields": [
+    {
+      "name": "artists",
+      "type": {
+        "type": "record",
+        "name": "Artists",
+        "fields": [
+          {"name": "href", "type": "string"},
+          {"name": "limit", "type": "int"},
+          {"name": "next", "type": ["string", "null"]},
+          {
+            "name": "cursors",
+            "type": {
+              "type": "record",
+              "name": "Cursors",
+              "fields": [
+                {"name": "after", "type": ["string", "null"]},
+                {"name": "before", "type": ["string", "null"]}
+              ]
+            }
+          },
+          {"name": "total", "type": "int"},
+          {
+            "name": "items",
+            "type": {
+              "type": "array",
+              "items": {
+                "type": "record",
+                "name": "Artist",
+                "fields": [
+                  {
+                    "name": "external_urls",
+                    "type": {
+                      "type": "record",
+                      "name": "ExternalUrls",
+                      "fields": [
+                        {"name": "spotify", "type": "string"}
+                      ]
+                    }
+                  },
+                  {
+                    "name": "followers",
+                    "type": {
+                      "type": "record",
+                      "name": "Followers",
+                      "fields": [
+                        {"name": "href", "type": ["string", "null"]},
+                        {"name": "total", "type": "int"}
+                      ]
+                    }
+                  },
+                  {
+                    "name": "genres",
+                    "type": {
+                      "type": "array",
+                      "items": "string"
+                    }
+                  },
+                  {"name": "href", "type": "string"},
+                  {"name": "id", "type": "string"},
+                  {
+                    "name": "images",
+                    "type": {
+                      "type": "array",
+                      "items": {
+                        "type": "record",
+                        "name": "Image",
+                        "fields": [
+                          {"name": "url", "type": "string"},
+                          {"name": "height", "type": "int"},
+                          {"name": "width", "type": "int"}
+                        ]
+                      }
+                    }
+                  },
+                  {"name": "name", "type": "string"},
+                  {"name": "popularity", "type": "int"},
+                  {"name": "type", "type": "string"},
+                  {"name": "uri", "type": "string"}
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

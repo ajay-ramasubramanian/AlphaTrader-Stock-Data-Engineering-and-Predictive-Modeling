@@ -51,6 +51,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             artist_ids (list): List of artist IDs.
             album_ids (list): List of album IDs.
         """
+        print(artist_ids)
         ArtistAlbumsProducer().get_artist_ids(user_id, artist_ids)
 
 
@@ -70,11 +71,12 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             limit = 1  # Limit for the number of items to fetch per request (can be adjusted)
             artist_ids = []
             # Fetch the current user's saved tracks with pagination support
-            while len(artist_ids) < max:
-            # while True:
+            while True:
                 # Fetch the current user's saved tracks with pagination support
                 result = self.sp.current_user_saved_tracks(limit=limit, offset=offset)
-                print(len(result))
+                # print(f'results: {result}')
+                # break
+                
                 
                 # print("artists_id: ", result['items'][0]['track']['artists'][0]['id'])
                 
@@ -103,8 +105,8 @@ class SavedTracksProducer(SpotifyKafkaProducer):
                     print(f"Message sent to {record_metadata.topic} partition {record_metadata.partition} offset {record_metadata.offset}")
                 except Exception as e:
                     print(f"Failed to send message: {e}")
-
-            if artist_ids:
+            print(f'artist id :{artist_ids}')
+            if artist_ids:   # artist_ids is a list
                 self.send_ids_to_related_artists_producer(user_id, artist_ids)
                 self.send_ids_to_artist_albums_producer(user_id, artist_ids)
 

@@ -52,7 +52,7 @@ TOPIC_CONFIG = {
         # 'schema': load_schema("schemas/related_artists.avsc")
     },
     'artist_albums': {
-        'topic': 'spotify_artist_albums',
+        'topic': 'spotify_artist_albums', 
         # 'schema': load_schema("schemas/artist_albums.avsc")
     }
 }

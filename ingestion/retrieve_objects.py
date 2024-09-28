@@ -3,30 +3,37 @@ import site
 sys.path.extend(site.getsitepackages())
 import io
 import json
+import os
 import pandas as pd
 import s3fs
 from minio import Minio
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class MinioRetriever:
     def __init__(self, user, topic, container) -> None:
         self.ret_container = container #raw
         self.user = user
-        self.topic = topic
-
+        self.topic = topic.replace("_","-")
+        
     def retrieve_object(self):
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
-                endpoint_url="http://minio:9000",
+                endpoint_url=f"http://{os.environ.get('HOST')}:9000",
                 key="minioadmin",
                 secret="minioadmin",
                 client_kwargs={
-                    'endpoint_url': 'http://minio:9000'
+                    'endpoint_url': f"http://{os.environ.get('HOST')}:9000"
     }
                 
             )
 
+            print(self.topic)
+
+            print(os.environ.get('HOST'))
             # List all objects in the specified subfolder
             if fs.exists(f"{self.ret_container}"):
                 print(f"Folder Path :{self.ret_container} exists")
@@ -80,7 +87,7 @@ class MinioUploader:
 
     def upload_files(self,data):
             minio_client = Minio(
-                "minio:9000", 
+                f"{os.environ.get('HOST')}:9000",
                 access_key="minioadmin",
                 secret_key="minioadmin",
                 secure=False  # Keep this False for localhost without HTTPS
@@ -88,8 +95,8 @@ class MinioUploader:
             fs = s3fs.S3FileSystem(
                     key="minioadmin",
                     secret="minioadmin",
-                    endpoint_url="http://minio:9000",  # Explicitly set the endpoint URL
-                    client_kwargs={'endpoint_url': 'http://minio:9000'},  
+                    endpoint_url=f"http://{os.environ.get('HOST')}:9000",  # Explicitly set the endpoint URL
+                    client_kwargs={'endpoint_url': f"http://{os.environ.get('HOST')}:9000"},
                     use_ssl=False  # Set to False for localhost without HTTPS
                 )
 
@@ -100,7 +107,7 @@ class MinioUploader:
                 with fs.open(path, 'wb') as f:
                     data.to_parquet(f, engine='pyarrow', compression='snappy')
             except Exception as e:
-                print("\nError occured while uploading file to bucket : {e}")
+                print(f"\nError occured while uploading file to bucket : {e}")
             
         
         

@@ -1,25 +1,30 @@
 import sys,os
 import site
+
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import pandas as pd
+from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
 
-class RetrieveTopSongs(MinioRetriever,MinioUploader):
+class RetrieveTopSongs():
 
     def __init__(self,user, topic, raw, processed) -> None:
-        MinioRetriever.__init__(self,user, topic, raw)
-        MinioUploader.__init__(self, user, topic, processed)
+
+        self.retriever = MinioRetriever(user, topic, raw)
+        self.uploader = MinioUploader(user,topic, processed)
+        self.processed = processed
+
 
     def get_user_top_songs(self):
+        
         try:
             tracks = []
-            results = MinioRetriever.retrieve_object(self)
+            results = self.retriever.retrieve_object()
             for result in results:
-                # print(f'result : {result}')
                 item = result["items"][0]
-                # print(item)
                 tracks.append({
                     'track_name': item['name'],
                     'track_id': item['id'],
@@ -34,12 +39,19 @@ class RetrieveTopSongs(MinioRetriever,MinioUploader):
                     'explicit': item['explicit'],
                     'external_url': item['external_urls']['spotify'],
                 })
+
             # Convert to DataFrame
-            df_artists = pd.DataFrame(tracks)
-            MinioUploader.upload_files(self,data=df_artists)
-        # return df_artists
+            df_songs = pd.DataFrame(tracks)
+            df_songs['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S") 
+            
+            df_songs.drop_duplicates(['track_id'], inplace=True)
+            df_songs = df_songs.reset_index(drop=True)
+
+            self.uploader.upload_files(data=df_songs)
+            print(f"Successfully uploaded to '{self.processed}' container!!")
+
         except Exception as e:
-            print(f" Error has occured  : {e}")
+            print(f"Encountered an exception here!!: {e}")
 
 
 def run_retrieve_top_songs():

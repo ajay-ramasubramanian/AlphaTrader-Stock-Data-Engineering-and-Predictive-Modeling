@@ -1,6 +1,6 @@
 from utils import TOPIC_CONFIG, TOPIC_TO_KEY
 import json
-import io
+import io,os
 import time
 from collections import defaultdict
 import s3fs
@@ -9,6 +9,9 @@ import minio
 import avro.schema
 from avro.io import DatumReader
 from concurrent.futures import ThreadPoolExecutor
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Kafka broker address
 KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
@@ -78,7 +81,7 @@ class BaseKafkaConsumer:
 
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
-                endpoint_url="http://localhost:9000",  # MinIO endpoint
+                endpoint_url=f"http://localhost:9000",  # MinIO endpoint
                 key="minioadmin",  # Access key
                 secret="minioadmin"  # Secret key
             )

@@ -41,8 +41,10 @@ services:
       timeout: 20s
       retries: 3
 
-  postgres:
+  postgres-airflow:
     image: postgres:13
+    ports:
+      - "5433:5432"
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow_pass
@@ -54,13 +56,33 @@ services:
       interval: 5s
       retries: 5
 
+  # new service
+  postgres-warehouse:
+    image: postgres:13
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=spotify
+      - POSTGRES_PASSWORD=spotify_pass
+      - POSTGRES_DB=spotify_db
+    volumes:
+      - postgres-warehouse-volume:/var/lib/postgresql/data
+    command: 
+      - "postgres"
+      - "-c"
+      - "listen_addresses=*"
+      # - "-c"
+      # - "max_connections=100"
+    
+
   airflow-webserver:
     image: apache/airflow:2.7.0-python3.11
     depends_on:
       - airflow-init
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow_pass@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow_pass@postgres-airflow/airflow
+      - AIRFLOW_CONN_WAREHOUSE_POSTGRES='postgresql://spotify:spotify_pass@postgres-warehouse:5432/spotify_db'
       - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -97,7 +119,8 @@ services:
       - airflow-init
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow_pass@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow_pass@postgres-airflow/airflow
+      - AIRFLOW_CONN_WAREHOUSE_POSTGRES='postgresql://spotify:spotify_pass@postgres-warehouse:5432/spotify_db'
       - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -122,10 +145,11 @@ services:
   airflow-init:
     image: apache/airflow:2.7.0-python3.11
     depends_on:
-      - postgres
+      - postgres-airflow
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow_pass@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow_pass@postgres-airflow/airflow
+      - AIRFLOW_CONN_WAREHOUSE_POSTGRES='postgresql://spotify:spotify_pass@postgres-warehouse:5432/spotify_db'
       - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
@@ -136,7 +160,8 @@ services:
         airflow db init &&
         airflow users create -r Admin -u admin -p admin_password -e admin@example.com -f Admin -l User
       "
-
+  
 volumes:
   minio_data:
   postgres-db-volume:
+  postgres-warehouse-volume:

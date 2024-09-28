@@ -3,7 +3,6 @@ from spotipy import Spotify
 import time
 import spotipy
 from dotenv import load_dotenv
-
 from base_producer import SpotifyKafkaProducer
 from utils import scope
 
@@ -66,18 +65,17 @@ class ArtistAlbumsProducer(SpotifyKafkaProducer):
                         albums.append(result['items'])
                         future = self.produce_artist_albums(user_id, result['items'][0])
                         futures.append(future)
-                        print(f"Sent record to Kafka: {result['items'][0]['name']}")
+                        print(f"Sent record inside while to Kafka: {result['items'][0]['name']}")
                     result = self.sp.next(result)
                     
                     # albums.append(results['items'])
-               
                 # albums = self.get_all_artist_albums(self.sp, artist_id)
                 print(f"length of albums: {len(albums)}\n")
                 ## producer for artist_albums topic
 
                 
 
-            print("Sent all the data")  # Confirmation print            
+            print("Sent all the data")  # Confirmation print
 
             # Wait for all Kafka messages to be sent and handle their results
             for future in futures:

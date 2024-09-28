@@ -103,7 +103,7 @@ class MinioUploader:
             print(f"Bucket '{bucket_name}' already exists")
 
 
-    def upload_files(self,data,key=None):
+    def upload_files(self, data, key=None):
             minio_client = Minio(
                 f"{self.host}:9000", 
                 access_key="minioadmin",
@@ -127,7 +127,7 @@ class MinioUploader:
                 except Exception as e:
                     print(f"\nError occured while uploading file to bucket : {e}")
             else:
-                str(key).replace("_","-")
+                key = str(key).replace("_","-")
                 path = f"{self.container}/{self.topic}/{self.user}/{self.container}-{key}.parquet"
                 try:
                     with fs.open(path, 'wb') as f:

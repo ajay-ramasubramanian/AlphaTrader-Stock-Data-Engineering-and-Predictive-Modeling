@@ -11,12 +11,10 @@ from ingestion.utils import TOPIC_CONFIG
 
 class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
 
-    TOPIC = 'spotify_artist_genres'
-
     def __init__(self, user, topic, raw, processed) -> None:
 
         self.retriever = MinioRetriever(user, topic, raw)
-        self.uploader = MinioUploader(user, self.TOPIC, processed)
+        self.uploader = MinioUploader(user, topic, processed)
         self.processed = processed
 
         self.dtype_dict = {

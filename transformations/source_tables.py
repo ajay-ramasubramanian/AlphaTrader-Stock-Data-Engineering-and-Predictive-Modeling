@@ -6,8 +6,7 @@ sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 import pandas as pd
-from transformations.utils import MinioRetriever,MinioUploader
-from transformations.utils import TOPIC_CONFIG
+from transformations.utils import MinioRetriever,MinioUploader, TOPIC_CONFIG
 
 load_dotenv()
 
@@ -60,16 +59,12 @@ def processed_to_presentation_all_tracks():
                             TOPIC_CONFIG["all_tracks"]["topic"]
                             )
     
-    results = all_tracks.retrieve()
-    all_tracks.upload(results)
 
 def processed_to_presentation_artist_albums():
     artist_albums = SourceTables("suhaas", \
                             TOPIC_CONFIG["artist_albums"]["topic"]
                             )
     
-    results = artist_albums.retrieve()
-    artist_albums.upload(results)
 
 def processed_to_presentation_genres_table():
     genres_table = SourceTables("suhaas", "spotify_genres_table"

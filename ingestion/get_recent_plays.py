@@ -20,6 +20,7 @@ class RetrieveRecentPlays():
         self.processed = processed
 
         self.dtype_dict = {
+            'recents_id': 'int64',
             'track_name': str,
             'track_id': str,
             'track_uri': str,
@@ -39,9 +40,10 @@ class RetrieveRecentPlays():
             tracks = []
             results = self.retriever.retrieve_object()
             for result in results:
-                for item in result["items"]:
+                for count, item in enumerate(result["items"]):
                     track = item['track']
                     tracks.append({
+                        'recents_id': count+1,
                         'track_id': track['id'],
                         'track_name': track['name'],
                         'track_uri': track['uri'],

@@ -80,7 +80,8 @@ CREATE TABLE IF NOT EXISTS fact_liked_songs (
 
 create_recently_played_table = """
 CREATE TABLE IF NOT EXISTS fact_recently_played (
-    track_id VARCHAR(255) PRIMARY KEY,
+    recents_id SMALLINT PRIMARY KEY,
+    track_id VARCHAR(255) NOT NULL,
     track_name VARCHAR(255) NOT NULL,
     track_uri VARCHAR(255),
     artist_name VARCHAR(255),
@@ -103,7 +104,7 @@ CREATE TABLE IF NOT EXISTS artist_discovery (
     artist_name VARCHAR(255) NOT NULL,
     artist_id VARCHAR(255) PRIMARY KEY NOT NULL,
     artist_populartiy SMALLINT,
-    genres VARCHAR(22),
+    genres VARCHAR(255),
     artist_followers BIGINT,
     ingested_on TIMESTAMP
 )

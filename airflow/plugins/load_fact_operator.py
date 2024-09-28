@@ -71,6 +71,7 @@ class LoadFactOperator(BaseOperator):
             pg_hook = PostgresHook(postgres_conn_id=self.postgres_conn_id)
             with pg_hook.get_conn() as conn:
                 with conn.cursor() as cur:
+                    cur.execute(f"TRUNCATE TABLE {self.table_name}")
                     self.log.info(f"Copying data to fact table {self.table_name}")
                     cur.copy_from(output, self.table_name, null="")
                     

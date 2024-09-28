@@ -13,7 +13,7 @@ from airflow.utils.task_group import TaskGroup
 import sys
 from pathlib import Path
 
-from dags.utils import (independent_ingestion_task_configs, dependent_ingestion_task_configs, 
+from utils import (independent_ingestion_task_configs, dependent_ingestion_task_configs, 
                 process_to_presentation_task_configs, transformation_task_configs, 
                 create_table_task_configs, insert_to_dim_table_task_configs, insert_to_transformation_table_task_configs,
                 insert_to_fact_table_task_configs)
@@ -88,7 +88,7 @@ with DAG(
 
 
     start_operator = DummyOperator(task_id='Start_execution',  dag=dag)
-    # end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
+    end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
         
     
     with TaskGroup('independent_ingestion_group') as independent_ingestion_group:
@@ -133,21 +133,21 @@ with DAG(
             dag=dag, topic=topic, table_name=table_name
         ) for table_name, topic in insert_to_fact_table_task_configs.items()]
 
-        chain (*load_dim_tasks)
+        chain (*load_fact_group)
         
 
-    # with TaskGroup('load_transformation_group') as load_transformation_group:
-    #     load_transformation_tasks = [initialize_load_transformation_operator(
-    #          dag=dag, topic=topic, table_name=table_name
-    #     ) for table_name, topic in insert_to_transformation_table_task_configs.items()]
+    with TaskGroup('load_transformation_group') as load_transformation_group:
+        load_transformation_tasks = [initialize_load_transformation_operator(
+             dag=dag, topic=topic, table_name=table_name
+        ) for table_name, topic in insert_to_transformation_table_task_configs.items()]
 
-    #     chain (*load_transformation_tasks)
+        chain (*load_transformation_tasks)
     
 
     start_operator >> independent_ingestion_group >>dependent_ingestion_group >> \
     move_to_presentation_group >> \
     transformation_group  >>  create_table_group >> load_dimension_group \
-    >> load_fact_group
-    # >> load_transformation_group >> end_operator
+    >> load_fact_group \
+    >> load_transformation_group >> end_operator
 
     # load_dimension_group

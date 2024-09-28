@@ -31,6 +31,8 @@ For warehouse:
 # Understand the dataset thoroughly. VERY IMPORTANT!! 
 # Have a clear idea about the outputs before starting the project. 
 
-
+# To open database:
+psql -U spotify -d spotify_db
+\c spotify_db
 
 Tomorrow: Make custom operators in plugins to insert data into postgres database!!

@@ -114,13 +114,13 @@ class RecentPlaysAnalysis:
     def analyze_recent_plays_with_related(self, recent_plays, related_artist):
         
         return {
-            'recent_summary': self.analyze_recent_plays(recent_plays),
-            'top_artists': self.analyze_top_recent_artists(recent_plays, related_artist),
-            'genre_analysis': self.analyze_recent_genres(recent_plays, related_artist),
-            'listening_hours': self.analyze_listening_hours(recent_plays),
-            'related_artists_summary': self.analyze_related_artists(related_artist),
-            'daily_plays': self.analyze_recent_plays_daily(recent_plays),
-            'track_popularity': self.analyze_track_popularity(recent_plays)
+            'recent-summary': self.analyze_recent_plays(recent_plays),
+            'top-artists': self.analyze_top_recent_artists(recent_plays, related_artist),
+            'genre-analysis': self.analyze_recent_genres(recent_plays, related_artist),
+            'listening-hours': self.analyze_listening_hours(recent_plays),
+            'related-artists-summary': self.analyze_related_artists(related_artist),
+            'daily-plays': self.analyze_recent_plays_daily(recent_plays),
+            'track-popularity': self.analyze_track_popularity(recent_plays)
         }
     
     def write_to_parquet(self,df,key):
@@ -141,12 +141,5 @@ def recent_plays_analysis():
 
 if __name__ == "__main__":
 
-    transformed = RecentPlaysAnalysis(user='suhaas',table_1_topic=TOPIC_CONFIG['recent_plays']['topic'], \
-                                                table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
-                                                table_3_topic=TOPIC_CONFIG['recent_plays_analysis']['topic'],)
-    
-    recent_plays, related_artists = transformed.retriever()
-    recent_plays_analysis = transformed.analyze_recent_plays_with_related(recent_plays, related_artists)
-    for key in recent_plays_analysis:
-        transformed.write_to_parquet(recent_plays_analysis[key], key)
+    recent_plays_analysis()
     

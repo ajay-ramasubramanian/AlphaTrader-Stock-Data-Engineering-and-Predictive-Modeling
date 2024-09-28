@@ -13,7 +13,7 @@ class MinioRetriever:
     def __init__(self, user, topic, container, host) -> None:
         self.container = container #raw
         self.user = user
-        self.topic = topic.replace("_","-")
+        self.topic = str(topic).replace("_","-")
         self.host = host
 
 
@@ -91,7 +91,7 @@ class MinioUploader:
     def __init__(self, user, topic, container,host) -> None:
         self.container = container
         self.user = user
-        self.topic = topic.replace("_","-")
+        self.topic = str(topic).replace("_","-")
         self.host = host
 
 
@@ -127,7 +127,8 @@ class MinioUploader:
                 except Exception as e:
                     print(f"\nError occured while uploading file to bucket : {e}")
             else:
-                key = str(key).replace("_","-")
+                key=str(key).replace("_","-")
+                print(key)
                 path = f"{self.container}/{self.topic}/{self.user}/{self.container}-{key}.parquet"
                 try:
                     with fs.open(path, 'wb') as f:

@@ -1,26 +1,26 @@
 import sql_queries
 
-from ingestion.get_following_artist import run_retrieve_following_artists
-from ingestion.get_liked_songs import run_retrieve_liked_songs
-from ingestion.get_recent_plays import run_retrieve_recent_plays
-from ingestion.get_saved_playlist import run_retrieve_saved_playlist
-from ingestion.get_top_artists  import run_retrieve_top_artists
-from ingestion.get_top_songs import run_retrieve_top_songs
-from ingestion.get_artist_albums import run_get_user_artist_albums
-from ingestion.get_related_artists import run_get_artist_related_artists
 from ingestion.artist_genre_bridge import run_get_artist_genre_bridge
 from ingestion.create_genres_table import run_get_genre_table
 from ingestion.create_time_table import run_create_time_table
 from ingestion.get_all_tracks import run_retrieve_all_tracks
-
-from transformations.source_tables import (processed_to_presentation_all_tracks, 
-                processed_to_presentation_artist_albums, processed_to_presentation_genres_table, 
-                processed_to_presentation_liked_songs, processed_to_presentation_recent_plays, 
-                processed_to_presentation_related_artists)
-
+from ingestion.get_artist_albums import run_get_user_artist_albums
+from ingestion.get_following_artist import run_retrieve_following_artists
+from ingestion.get_liked_songs import run_retrieve_liked_songs
+from ingestion.get_recent_plays import run_retrieve_recent_plays
+from ingestion.get_related_artists import run_get_artist_related_artists
+from ingestion.get_saved_playlist import run_retrieve_saved_playlist
+from ingestion.get_top_artists import run_retrieve_top_artists
+from ingestion.get_top_songs import run_retrieve_top_songs
 from transformations.recent_plays_analysis import recent_plays_analysis
+from transformations.source_tables import (
+    processed_to_presentation_all_tracks,
+    processed_to_presentation_artist_albums,
+    processed_to_presentation_genres_table,
+    processed_to_presentation_liked_songs,
+    processed_to_presentation_recent_plays,
+    processed_to_presentation_related_artists)
 from transformations.user_music_preferences import user_music_preferences
-
 
 independent_ingestion_task_configs = {
         'following_artists': run_retrieve_following_artists,
@@ -80,18 +80,28 @@ create_table_task_configs = {
 
 
 insert_to_transformation_table_task_configs = {
-        'all_tracks_table': 'spotify-recent-plays-analysis', 
-        'daily_plays': 'spotify-recent-plays-analysis', 
-        'recent_tracks_by_popularity': 'spotify-recent-plays-analysis', 
-        'recent_play_genre_analysis': 'spotify-recent-plays-analysis', 
-        'recent_play_summary': 'spotify-recent-plays-analysis', 
-        'recent_play_top_artists': 'spotify-recent-plays-analysis', 
-        'artist_discovery': 'spotify-user-music-preferences', 
-        'artist_frequency': 'spotify-user-music-preferences', 
-        'genre_analysis': 'spotify-user-music-preferences', 
-        'monthly_genre_trend': 'spotify-user-music-preferences', 
-        'monthly_likes': 'spotify-user-music-preferences', 
-        'song_details': 'spotify-user-music-preferences'
+        'daily_plays': {'topic':'spotify-recent-plays-analysis',
+                        'key': 'daily-plays'},
+        'recent_tracks_by_popularity': {'topic':'spotify-recent-plays-analysis',
+                                        'key':'track-popularity'},
+        'recent_plays_genre_analysis': {'topic':'spotify-recent-plays-analysis',
+                                    'key': 'genre-analysis'},
+        'recent_plays_summary': {'topic':'spotify-recent-plays-analysis',
+                                'key': 'recent-summary'},
+        'recent_plays_top_artists': {'topic':'spotify-recent-plays-analysis',
+                                    'key': 'top-artists'},
+        'artist_discovery': {'topic':'spotify-user-music-preferences',
+                            'key': 'artist-discovery'},
+        'artist_frequency': {'topic':'spotify-user-music-preferences',
+                            'key': 'artist-frequency'},
+        'genre_analysis': {'topic':'spotify-user-music-preferences',
+                        'key': 'genre-analysis'} ,
+        'monthly_genre_trend': {'topic':'spotify-user-music-preferences',
+                                'key': 'monthly-genre-trends'},
+        'monthly_likes': {'topic':'spotify-user-music-preferences',
+                        'key': 'monthly-likes'},
+        'song_details': {'topic':'spotify-user-music-preferences',
+                        'key': 'song-details'}
     }
 
 

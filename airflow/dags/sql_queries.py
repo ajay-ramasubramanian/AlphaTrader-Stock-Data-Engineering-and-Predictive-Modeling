@@ -104,9 +104,8 @@ CREATE TABLE IF NOT EXISTS artist_discovery (
     artist_name VARCHAR(255) NOT NULL,
     artist_id VARCHAR(255) PRIMARY KEY NOT NULL,
     artist_populartiy SMALLINT,
-    genres VARCHAR(255),
     artist_followers BIGINT,
-    ingested_on TIMESTAMP
+    ingested_on VARCHAR(255)
 )
 """
 
@@ -126,15 +125,18 @@ CREATE TABLE IF NOT EXISTS genre_analysis(
 
 create_monthly_genre_trend = """
 CREATE TABLE IF NOT EXISTS monthly_genre_trend(
-    month_year DATE NOT NULL,
+    month_year VARCHAR(7) NOT NULL
+            CHECK (month_year ~ '^\d{4}-\d{2}$'),
     genres VARCHAR(255) NOT NULL,
     genre_count SMALLINT
 )
 """
 
+
 create_monthly_likes = """
 CREATE TABLE IF NOT EXISTS monthly_likes(
-    month_year DATE NOT NULL,
+    month_year VARCHAR(7) NOT NULL
+            CHECK (month_year ~ '^\d{4}-\d{2}$'),
     monthly_like_count SMALLINT
 )
 """
@@ -145,7 +147,7 @@ CREATE TABLE IF NOT EXISTS song_details(
     artist_name VARCHAR(255),
     album_name VARCHAR(255),
     duration_ms BIGINT,
-    artists_popularity SMALLINT,
+    artists_popularity FLOAT,
     added_at TIMESTAMP
 )
 """

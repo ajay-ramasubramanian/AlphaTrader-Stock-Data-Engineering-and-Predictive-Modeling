@@ -6,18 +6,22 @@ from transformations.utils import MinioRetriever
 from io import StringIO
 
 class LoadTransformationOperator(BaseOperator):
-
+    template_fields = ('topic', 'table_name', 'key')
     # @apply_defaults  # Remove if using Airflow 2.0+
-    def __init__(self,
-                topic,
-                table_name,
-                postgres_conn_id='postgres-postgres',
-                minio_conn_id='minio',
-                truncate=True,
-                 *args, **kwargs):
-        super(LoadTransformationOperator, self).__init__(*args, **kwargs)
+    def __init__(
+        self,
+        topic,
+        table_name,
+        key,
+        postgres_conn_id='postgres-warehouse',
+        minio_conn_id='minio',
+        truncate=True,
+        *args, **kwargs
+    ):
+        super().__init__(*args, **kwargs)
         self.topic = topic
         self.table_name = table_name
+        self.key = key
         self.postgres_conn_id = postgres_conn_id
         self.minio_conn_id = minio_conn_id
         self.truncate = truncate
@@ -28,7 +32,7 @@ class LoadTransformationOperator(BaseOperator):
         try:
             # Retrieve data from Minio
             minio_retriever = MinioRetriever('suhaas', self.topic, 'presentation', self.minio_conn_id)
-            df = minio_retriever.retrieve_object()
+            df = minio_retriever.retrieve_object(key=self.key)
             
             # Prepare data for Postgres
             output = StringIO()

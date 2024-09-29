@@ -34,12 +34,12 @@ class RecentPlaysAnalysis:
         # Recent Plays Summary
         recent_summary = pd.DataFrame({
             'metric': [
-                'total_recent_listening_time',
-                'avg_recent_song_duration',
-                'unique_recent_tracks',
-                'unique_recent_albums',
-                'unique_recent_artists',
-                'avg_recent_track_popularity'
+                'total recent listening time',
+                'avg recent song duration',
+                'unique recent tracks',
+                'unique recent albums',
+                'unique recent artists',
+                'avg recent track popularity'
             ],
             'value': [
                 recent_plays['duration_ms'].sum() / (1000 * 60 * 60),

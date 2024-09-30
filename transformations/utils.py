@@ -188,6 +188,9 @@ TOPIC_CONFIG = {
     
     'genres_table':{
         'topic': 'spotify_genres_table'
+    },
+    'user_details':{
+        "topic": 'spotify_user_details'
     }
 
 }

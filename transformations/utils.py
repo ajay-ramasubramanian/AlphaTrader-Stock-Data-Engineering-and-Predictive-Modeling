@@ -8,7 +8,6 @@ from minio import Minio
 
 # os.environ['PYSPARK_PYTHON'] = sys.executable
 # os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-
 class MinioRetriever:
     def __init__(self, user, topic, container, host) -> None:
         self.container = container #raw

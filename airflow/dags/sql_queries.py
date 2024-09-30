@@ -49,6 +49,16 @@ CREATE TABLE IF NOT EXISTS dim_track (
 )
 """
 
+create_user_details_table = """
+CREATE TABLE IF NOT EXISTS user_details(
+    user_id VARCHAR(255) PRIMARY KEY,
+    display_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    country VARCHAR(255),
+    product VARCHAR(22)
+)
+"""
+
 create_genres_table = """
 CREATE TABLE IF NOT EXISTS dim_genre (
     genre_id VARCHAR(255) PRIMARY KEY,

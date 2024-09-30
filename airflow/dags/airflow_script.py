@@ -12,6 +12,8 @@ import pendulum
 from airflow.utils.task_group import TaskGroup
 import sys
 from pathlib import Path
+project_root = Path(__file__).parents[2]
+sys.path.append(str(project_root))
 
 from dags.utils import (independent_ingestion_task_configs, dependent_ingestion_task_configs, 
                 process_to_presentation_task_configs, transformation_task_configs, 
@@ -21,8 +23,6 @@ from dags.utils import (independent_ingestion_task_configs, dependent_ingestion_
 
 # Add the project root to the Python path
 
-project_root = Path(__file__).parents[2]
-sys.path.append(str(project_root))
 
 # Default arguments for the DAG
 default_args = {

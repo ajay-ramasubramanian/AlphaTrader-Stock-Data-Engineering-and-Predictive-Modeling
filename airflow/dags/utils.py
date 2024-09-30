@@ -19,7 +19,9 @@ from transformations.source_tables import (
     processed_to_presentation_genres_table,
     processed_to_presentation_liked_songs,
     processed_to_presentation_recent_plays,
-    processed_to_presentation_related_artists)
+    processed_to_presentation_related_artists,
+    )
+from transformations.user_details import processed_to_presentation_user_details
 from transformations.user_music_preferences import user_music_preferences
 
 independent_ingestion_task_configs = {
@@ -47,7 +49,8 @@ process_to_presentation_task_configs = {
     'related_artists': processed_to_presentation_related_artists,
     'all_tracks': processed_to_presentation_all_tracks,
     'artist_albums': processed_to_presentation_artist_albums,
-    'genres_table': processed_to_presentation_genres_table
+    'genres_table': processed_to_presentation_genres_table,
+    'user_details': processed_to_presentation_user_details
 }
 
 transformation_task_configs = {
@@ -75,7 +78,8 @@ create_table_task_configs = {
         "genre_analysis": sql_queries.create_genre_analysis,
         "monthly_genre_trend": sql_queries.create_monthly_genre_trend,
         "monthly_likes": sql_queries.create_monthly_likes,
-        "song_details": sql_queries.create_song_details
+        "song_details": sql_queries.create_song_details,
+        "user_details": sql_queries.create_user_details_table
     }
 
 
@@ -118,4 +122,5 @@ insert_to_dim_table_task_configs = {
 insert_to_fact_table_task_configs = {
         'fact_liked_songs': 'spotify-liked-songs',
         'fact_recently_played': 'spotify-recent-plays',
+        'user_details': 'spotify-user-details'
     }

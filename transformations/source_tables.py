@@ -1,5 +1,7 @@
 import sys,os
 import site
+import spotipy
+from spotipy import SpotifyOAuth
 from datetime import datetime
 import pytz
 sys.path.extend(site.getsitepackages())
@@ -7,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 import pandas as pd
 from transformations.utils import MinioRetriever,MinioUploader, TOPIC_CONFIG
+from common_utility_functions.utils import USER_INFO, scope
 
 load_dotenv()
 

@@ -4,6 +4,7 @@ import site
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from data_checks.validate_expectations import validate_expectations
 from ingestion.retrieve_objects import MinioRetriever, MinioUploader
 import pandas as pd
 from ingestion.utils import TOPIC_CONFIG
@@ -26,6 +27,8 @@ class CreateGenresTable():
             'genre': str
         }
 
+        self.expectations_suite_name = 'genre_table_suite'
+
     def create_genre_table(self):
 
         try:
@@ -41,6 +44,9 @@ class CreateGenresTable():
 
             df = df.astype(self.dtype_dict)
             df = df.reset_index(drop=True)
+
+            # Run Great Expectations data quality checks
+            validate_expectations(df, self.expectations_suite_name)
             
             self.uploader.upload_files(data=df)
             print(f"Successfully uploaded to '{self.processed}' container!!")

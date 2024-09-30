@@ -4,6 +4,7 @@ import site
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from data_checks.validate_expectations import validate_expectations
 import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
@@ -19,6 +20,7 @@ class RetrieveAllTracks():
         self.retriver = MinioRetriever(user, topic, raw)
         self.uploader = MinioUploader(user, self.TOPIC, processed)
         self.processed = processed
+        self.expectations_suite_name = 'all_tracks_suite'
 
         self.dtype_dict = {
             'track_id': str,
@@ -57,6 +59,9 @@ class RetrieveAllTracks():
             df_tracks = df_tracks.astype(self.dtype_dict)
             df_tracks.drop_duplicates(subset='track_id', inplace=True)
             df_tracks = df_tracks.reset_index(drop=True)
+
+            # Run Great Expectations data quality checks
+            validate_expectations(df_tracks, self.expectations_suite_name)
             
             self.uploader.upload_files(data=df_tracks)
             print(f"Successfully uploaded to '{self.processed}' container!!")
@@ -66,9 +71,9 @@ class RetrieveAllTracks():
 
 
 def run_retrieve_all_tracks():
-    ob = RetrieveAllTracks("suhaas", \
-                            TOPIC_CONFIG["liked_songs"]["topic"], \
-                            "raw", \
+    ob = RetrieveAllTracks("suhaas", 
+                            TOPIC_CONFIG["liked_songs"]["topic"], 
+                            "raw", 
                             "processed")
     ob.get_all_tracks()
 

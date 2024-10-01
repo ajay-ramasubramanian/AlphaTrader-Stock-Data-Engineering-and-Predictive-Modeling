@@ -86,6 +86,7 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=300
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
       - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET_KEY:-}
       - PYTHONPATH=/opt/airflow/project:$PYTHONPATH
@@ -124,6 +125,7 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=300
       - AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL=10
       - PYTHONPATH=/opt/airflow/project:$PYTHONPATH
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
@@ -152,6 +154,7 @@ services:
       - AIRFLOW_CONN_WAREHOUSE_POSTGRES='postgresql://spotify:spotify_pass@postgres-warehouse:5432/spotify_db'
       - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=300
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
     env_file:
       - .env

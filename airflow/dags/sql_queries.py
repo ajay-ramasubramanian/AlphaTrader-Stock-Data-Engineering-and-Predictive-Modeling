@@ -101,8 +101,8 @@ CREATE TABLE IF NOT EXISTS fact_recently_played (
 # User music preferences
 create_artist_discovery = """
 CREATE TABLE IF NOT EXISTS artist_discovery (
-    artist_name VARCHAR(255) NOT NULL,
     artist_id VARCHAR(255) PRIMARY KEY NOT NULL,
+    artist_name VARCHAR(255) NOT NULL,
     artist_populartiy SMALLINT,
     artist_followers BIGINT,
     ingested_on VARCHAR(255)

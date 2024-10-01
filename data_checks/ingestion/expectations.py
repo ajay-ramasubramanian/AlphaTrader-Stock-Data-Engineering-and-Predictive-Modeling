@@ -7,11 +7,11 @@ import sys
 import site
 
 sys.path.extend(site.getsitepackages())
-sys.path.append(os.path.abspath(os.path.join('..', 'time_table')))
+sys.path.append(os.path.abspath(os.path.join('..', 'expectation')))
 
 def create_base_expectation_suite(suite_name):
 
-    context = get_context()
+    context = get_context(project_root_dir=".")
 
     # Create a base suite with common checks
     suite = context.add_or_update_expectation_suite(expectation_suite_name=suite_name)
@@ -570,6 +570,8 @@ def top_songs_expectation_suite():
 
     context.save_expectation_suite(suite)
     print(f"Added {suite_name} to context!!")
+
+    print(f"Context: {context}")
 
 
 # Run the function to create the expectation suites

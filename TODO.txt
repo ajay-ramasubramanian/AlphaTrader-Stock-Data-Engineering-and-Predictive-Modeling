@@ -23,7 +23,7 @@ For warehouse:
 2) Insert data into the tables 
 3) Write dags for it in the airflow
 
-### Always add this next to the pywin package in requirements.txt when running on linux; sys_platform == 'win32'
+### Always add this next to the pywin package in requirements.txt when running on linux: ; sys_platform == 'win32'
 
 ## To interact with postgres database: q in command line of the service
 
@@ -35,4 +35,9 @@ For warehouse:
 psql -U spotify -d spotify_db
 \c spotify_db
 
-Tomorrow: Make custom operators in plugins to insert data into postgres database!!
+
+TODO: 
+- Add data_quality checks
+- Postgres connection pool
+- Lot of code optimizations. A lot!!
+- Find a way to fix the indexing which is now using a counter.

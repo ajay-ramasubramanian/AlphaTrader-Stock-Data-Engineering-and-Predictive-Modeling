@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data_checks.validate_expectations import validate_expectations
 import pandas as pd
+import pytz
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
 
@@ -51,7 +52,7 @@ class RetrieveLikedSongs(LoggingMixin):
 
             # Convert to DataFrame
             df_tracks= pd.DataFrame(tracks)
-            df_tracks['added_at'] = pd.to_datetime(df_tracks['added_at']) # data type is TIMESTAMP
+            df_tracks['added_at'] = df_tracks['added_at'].dt.tz_convert(pytz.UTC)
             df_tracks['time_id'] = df_tracks['added_at'].apply(lambda val: val.strftime('%Y%m%d%H%M%S'))
             df_tracks['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
             # df_tracks['ingested_on'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

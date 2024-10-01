@@ -1,25 +1,15 @@
-from airflow import DAG
+# from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.operators.bash import BashOperator
+# from airflow.operators.bash import BashOperator
 from airflow.models.baseoperator import chain
+from airflow.decorators import dag, task
 from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.plugins.load_dim_operator import LoadDimOperator
-from airflow.plugins.load_fact_operator import LoadFactOperator
-from airflow.plugins.load_transformation_operator import LoadTransformationOperator
 from datetime import timedelta
 import pendulum
 from airflow.utils.task_group import TaskGroup
 import sys
 from pathlib import Path
-
-from dags.utils import (independent_ingestion_task_configs, dependent_ingestion_task_configs, 
-                process_to_presentation_task_configs, transformation_task_configs, 
-                create_table_task_configs, insert_to_dim_table_task_configs, insert_to_transformation_table_task_configs,
-                insert_to_fact_table_task_configs)
-
-
-# Add the project root to the Python path
 
 project_root = Path(__file__).parents[2]
 sys.path.append(str(project_root))
@@ -34,15 +24,36 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
+
+def get_configs():
+    from utils import (independent_ingestion_task_configs, dependent_ingestion_task_configs,
+                       process_to_presentation_task_configs, transformation_task_configs,
+                       create_table_task_configs, insert_to_dim_table_task_configs,
+                       insert_to_transformation_table_task_configs, insert_to_fact_table_task_configs)
+    return (independent_ingestion_task_configs, dependent_ingestion_task_configs,
+            process_to_presentation_task_configs, transformation_task_configs,
+            create_table_task_configs, insert_to_dim_table_task_configs,
+            insert_to_transformation_table_task_configs, insert_to_fact_table_task_configs)
+    
 # Define the DAG
-with DAG(
+@dag (
     'spotify_pipeline_dag',
     default_args=default_args,
     description='Spotify ETL with Airflow',
     schedule=None,
+    dagrun_timeout=timedelta(minutes=200),
     start_date= pendulum.today('UTC').add(days=-1),
     catchup=False,
-) as dag:
+) 
+def spotify_pipeline():
+
+    start_operator = DummyOperator(task_id='Start_execution')
+    end_operator = DummyOperator(task_id='Stop_execution')
+
+    @task (task_id='create_expectation_suites')
+    def initialize_expectation_suites():
+        from data_checks.ingestion.expectations import create_expectation_suites
+        create_expectation_suites()
     
 
     def initialize_python_operator(task_type, task_name, callable_func):
@@ -51,47 +62,22 @@ with DAG(
         return PythonOperator(
             task_id=f'{task_type}_{task_name}',
             python_callable=callable_func,
-            dag=dag
         )
 
-    def initialize_postgres_operator(table_name, dag, postgres_conn_id, sql_query):
+    def initialize_postgres_operator(table_name, postgres_conn_id, sql_query):
         return PostgresOperator(
         task_id=f"{table_name}_table",
-        dag=dag,
         postgres_conn_id=postgres_conn_id,
         sql=sql_query
     )
 
-    def initialize_load_dim_operator(dag, topic, table_name, append):
-        return LoadDimOperator(
-            task_id=f"load_{table_name}_table",
-            dag=dag,
-            topic=topic,
-            table_name=table_name,
-            append=append
-        )
 
-    def initialize_load_fact_operator(dag, topic, table_name):
-        return LoadFactOperator(
-            task_id=f"load_{table_name}_table",
-            dag=dag,
-            topic=topic,
-            table_name=table_name,
-        )
-    
-    def initialize_load_transformation_operator(dag, topic, table_name, key):
-        return LoadTransformationOperator(
-            task_id=f'load_{table_name}_table',
-            dag=dag,
-            topic=topic,
-            table_name=table_name,
-            key=key
-        )
+    independent_ingestion_task_configs, dependent_ingestion_task_configs, \
+    process_to_presentation_task_configs, transformation_task_configs, \
+    create_table_task_configs, insert_to_dim_table_task_configs, \
+    insert_to_transformation_table_task_configs, insert_to_fact_table_task_configs = get_configs()
 
-
-    start_operator = DummyOperator(task_id='Start_execution',  dag=dag)
-    end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
-        
+    initialize_expectation_suites_task = initialize_expectation_suites()
     
     with TaskGroup('independent_ingestion_group') as independent_ingestion_group:
         independent_ingestion_tasks = [initialize_python_operator(
@@ -111,44 +97,74 @@ with DAG(
     with TaskGroup('transformation_group') as transformation_group:
         transformation_tasks = [initialize_python_operator(
             'transformation', name, config) for name, config in transformation_task_configs.items()]
+        
 
         
     with TaskGroup('create_table_group') as create_table_group:
         create_tables_tasks = [initialize_postgres_operator(
-            table_name=table_name, dag=dag, postgres_conn_id='postgres-warehouse', sql_query=sql_query
+            table_name=table_name, postgres_conn_id='postgres-warehouse', sql_query=sql_query
         ) for table_name, sql_query in create_table_task_configs.items()]
 
         chain (*create_tables_tasks)
 
-
     
     with TaskGroup('load_dimension_group') as load_dimension_group:
+        from airflow.plugins.load_dim_operator import LoadDimOperator
+
+        def initialize_load_dim_operator(topic, table_name, append):
+            return LoadDimOperator(
+                task_id=f"load_{table_name}_table",
+                topic=topic,
+                table_name=table_name,
+                append=append
+            )
+
         load_dim_tasks = [initialize_load_dim_operator(
-            dag=dag, topic=topic, table_name=table_name, append=False
+            topic=topic, table_name=table_name, append=False
         ) for table_name, topic in insert_to_dim_table_task_configs.items()]
 
         chain (*load_dim_tasks)
         
 
     with TaskGroup('load_fact_group') as load_fact_group:
+        from airflow.plugins.load_fact_operator import LoadFactOperator
+
+        def initialize_load_fact_operator(topic, table_name):
+            return LoadFactOperator(
+                task_id=f"load_{table_name}_table",
+                topic=topic,
+                table_name=table_name,
+            )
+
+
         load_fact_tasks = [initialize_load_fact_operator(
-            dag=dag, topic=topic, table_name=table_name
+            topic=topic, table_name=table_name
         ) for table_name, topic in insert_to_fact_table_task_configs.items()]
 
-        chain (*load_fact_group)
+        chain (*load_fact_tasks)
         
 
     with TaskGroup('load_transformation_group') as load_transformation_group:
+        from airflow.plugins.load_transformation_operator import LoadTransformationOperator
+
+        def initialize_load_transformation_operator(topic, table_name, key):
+            return LoadTransformationOperator(
+                task_id=f'load_{table_name}_table',
+                topic=topic,
+                table_name=table_name,
+                key=key
+            )
         load_transformation_tasks = [initialize_load_transformation_operator(
-            dag=dag, topic=config['topic'], table_name=table_name, key=config['key']
+            topic=config['topic'], table_name=table_name, key=config['key']
         ) for table_name, config in insert_to_transformation_table_task_configs.items()]
 
         chain (*load_transformation_tasks)
     
 
-    start_operator >> independent_ingestion_group >>dependent_ingestion_group >> \
-    move_to_presentation_group >>  transformation_group >> \
-    create_table_group >> load_dimension_group  >> load_fact_group \
+    start_operator >> initialize_expectation_suites_task >>  independent_ingestion_group >> dependent_ingestion_group \
+    >> move_to_presentation_group     \
+    >> transformation_group >> create_table_group >> load_dimension_group  >> load_fact_group \
     >> load_transformation_group >> end_operator
 
-    # transformation_group>>create_table_group >>load_transformation_group
+
+dag = spotify_pipeline()

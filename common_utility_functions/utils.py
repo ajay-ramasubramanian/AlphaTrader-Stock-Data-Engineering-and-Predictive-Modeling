@@ -21,20 +21,20 @@ scope = "user-library-read \
          user-read-private \
          user-read-email"
 
-client_id = os.getenv('SPOTIPY_CLIENT_ID')
-client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
-redirect_uri = os.getenv('SPOTIPY_REDIRECT_URI')
+# client_id = os.getenv('SPOTIPY_CLIENT_ID')
+# client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
+# redirect_uri = os.getenv('SPOTIPY_REDIRECT_URI')
 
-sp= spotipy.Spotify(auth_manager = SpotifyOAuth(client_id=client_id ,
-                                                client_secret=client_secret,
-                                                redirect_uri=redirect_uri,
-                                                scope= scope))
+# sp= spotipy.Spotify(auth_manager = SpotifyOAuth(client_id=client_id ,
+#                                                 client_secret=client_secret,
+#                                                 redirect_uri=redirect_uri,
+#                                                 scope= scope))
         
-user_info= sp.current_user()
+# user_info= sp.current_user()
 
-USER_INFO = {
-    'user_name': user_info['display_name']
-}
+# USER_INFO = {
+#     'user_name': user_info['display_name']
+# }
 
 # def load_schema(schema_path):
 #     with open(schema_path, "rb") as schema_file:

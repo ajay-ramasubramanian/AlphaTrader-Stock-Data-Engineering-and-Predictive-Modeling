@@ -88,10 +88,10 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
       - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW_SECRET_KEY:-}
-      - PYTHONPATH=/opt/airflow/project:$PYTHONPATH
+      - PYTHONPATH=/opt/airflow/project
       - AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL=10
-      # - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=120
-      # - AIRFLOW__SCHEDULER__DAG_FILE_PROCESSOR_TIMEOUT=180
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=1000
+      - AIRFLOW__SCHEDULER__DAG_FILE_PROCESSOR_TIMEOUT=1000
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -127,10 +127,10 @@ services:
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL=10
-      - PYTHONPATH=/opt/airflow/project:$PYTHONPATH
+      - PYTHONPATH=/opt/airflow/project
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
-      # - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=120
-      # - AIRFLOW__SCHEDULER__DAG_FILE_PROCESSOR_TIMEOUT=180
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=1000
+      - AIRFLOW__SCHEDULER__DAG_FILE_PROCESSOR_TIMEOUT=1000
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
@@ -157,8 +157,8 @@ services:
       - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_FERNET_KEY:-}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
-      # - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=120
-      # - AIRFLOW__SCHEDULER__DAG_FILE_PROCESSOR_TIMEOUT=180
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=1000
+      - AIRFLOW__SCHEDULER__DAG_FILE_PROCESSOR_TIMEOUT=1000
     env_file:
       - .env
     command: >

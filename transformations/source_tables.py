@@ -1,7 +1,7 @@
 import sys,os
 import site
-import spotipy
-from spotipy import SpotifyOAuth
+# import spotipy
+# from spotipy import SpotifyOAuth
 from datetime import datetime
 import pytz
 sys.path.extend(site.getsitepackages())
@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 import pandas as pd
 from transformations.utils import MinioRetriever,MinioUploader, TOPIC_CONFIG
-from common_utility_functions.utils import USER_INFO, scope
+# from common_utility_functions.utils import USER_INFO, scope
 
 load_dotenv()
 
@@ -61,13 +61,24 @@ def processed_to_presentation_all_tracks():
     all_tracks = SourceTables("suhaas", \
                             TOPIC_CONFIG["all_tracks"]["topic"]
                             )
-    
+    results = all_tracks.retrieve()
+    all_tracks.upload(results)
 
 def processed_to_presentation_artist_albums():
     artist_albums = SourceTables("suhaas", \
                             TOPIC_CONFIG["artist_albums"]["topic"]
                             )
-    
+    results = artist_albums.retrieve()
+    artist_albums.upload(results)
+
+def processed_to_presentation_top_songs():
+    top_songs = SourceTables("suhaas", \
+                            TOPIC_CONFIG["top_songs"]["topic"]
+                            )
+    results = top_songs.retrieve()
+    results.index = pd.RangeIndex(start=1, stop=len(results)+1)
+    results.reset_index(names='rank', inplace =True)
+    top_songs.upload(results)
 
 def processed_to_presentation_genres_table():
     genres_table = SourceTables("suhaas", "spotify_genres_table"
@@ -86,3 +97,4 @@ if __name__ == "__main__":
     processed_to_presentation_all_tracks()
     processed_to_presentation_artist_albums()
     processed_to_presentation_genres_table()
+    processed_to_presentation_top_songs()

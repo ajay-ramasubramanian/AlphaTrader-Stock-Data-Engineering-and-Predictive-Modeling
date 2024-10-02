@@ -73,6 +73,24 @@ CREATE TABLE IF NOT EXISTS dim_artist_genre_bridge (
     PRIMARY KEY (genre_id, artist_id)
 )
 """
+create_top_songs ="""
+CREATE TABLE IF NOT EXISTS dim_top_songs(
+    rank BIGINT,
+    track_name VARCHAR(255),
+    track_id VARCHAR(255),
+    track_uri VARCHAR(255),
+    artist_name VARCHAR(255),
+    artist_id VARCHAR(255),
+    album_name VARCHAR(255),
+    album_id VARCHAR(255),
+    albun_release_date VARCHAR(255),
+    duration_ms BIGINT,
+    popularity SMALLINT,
+    explicit BOOLEAN,
+    external_url VARCHAR(255),
+    ingested_on VARCHAR(255)
+)
+"""
 
 
 ## Fact tables
@@ -161,6 +179,8 @@ CREATE TABLE IF NOT EXISTS song_details(
     added_at TIMESTAMP
 )
 """
+
+
 
 
 # Recent plays analysis

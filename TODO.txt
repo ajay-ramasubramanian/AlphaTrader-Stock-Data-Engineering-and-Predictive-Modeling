@@ -36,8 +36,7 @@ psql -U spotify -d spotify_db
 \c spotify_db
 
 
-TODO: 
-- Add data_quality checks
+TODO (after documenting): 
 - Postgres connection pool
 - Lot of code optimizations. A lot!!
 - Find a way to fix the indexing which is now using a counter.

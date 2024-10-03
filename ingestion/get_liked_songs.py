@@ -52,13 +52,12 @@ class RetrieveLikedSongs(LoggingMixin):
 
             # Convert to DataFrame
             df_tracks= pd.DataFrame(tracks)
-            df_tracks['added_at'] = df_tracks['added_at'].dt.tz_convert(pytz.UTC)
+            df_tracks['added_at'] = pd.to_datetime(df_tracks['added_at']).dt.tz_convert(pytz.UTC)
             df_tracks['time_id'] = df_tracks['added_at'].apply(lambda val: val.strftime('%Y%m%d%H%M%S'))
             df_tracks['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
-            # df_tracks['ingested_on'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             df_tracks = df_tracks.astype(self.dtype_dict)
-            df_tracks.drop_duplicates(inplace=True)
+            df_tracks.drop_duplicates(subset=['track_id'], inplace=True)
             df_tracks = df_tracks.reset_index(drop=True)
 
             # Run Great Expectations data quality checks

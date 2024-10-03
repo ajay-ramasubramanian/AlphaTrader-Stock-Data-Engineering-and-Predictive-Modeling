@@ -43,7 +43,7 @@ class RetrieveFollowingArtists():
             df_following_artist['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
             
             df_following_artist = df_following_artist.astype(self.dtype_dict)
-            df_following_artist.drop_duplicates(inplace=True)
+            df_following_artist.drop_duplicates(subset=['artist_id'], inplace=True)
             df_following_artist = df_following_artist.reset_index(drop=True)
             
             # Run Great Expectations data quality checks

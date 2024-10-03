@@ -8,7 +8,7 @@ alembic==1.13.2
 anyio==4.4.0
 apache-airflow-providers-http==4.12.0
 apache-airflow-providers-sqlite==3.8.2
-airflow-provider-great-expectations==0.2.6
+airflow-provider-great-expectations==0.2.7
 apispec==6.6.1
 argcomplete==3.5.0
 argon2-cffi==23.1.0

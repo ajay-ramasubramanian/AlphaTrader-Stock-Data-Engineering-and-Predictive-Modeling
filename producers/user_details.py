@@ -47,7 +47,7 @@ def process_user_details():
 
 def processed_to_presentation_user_details():
 
-    user_details =UserDetailsTables("suhaas", \
+    user_details =UserDetailsTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["user_details"]['topic'],host='localhost')
     user_details_df = process_user_details()
 

@@ -93,7 +93,7 @@ class ProcessTopAritstBasedOnGenres:
         self.uploader.upload_files(df,key)
 # Usage
 def user_music_preferences():   
-    transformed = ProcessTopAritstBasedOnGenres(user='suhaas',table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \
+    transformed = ProcessTopAritstBasedOnGenres(user=os.getenv('USER_NAME'),table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \
                                                     table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
                                                     table_3_topic=TOPIC_CONFIG['all_tracks']['topic'], \
                                                     table_4_topic=TOPIC_CONFIG['user_music_preferences']['topic'],)
@@ -105,15 +105,5 @@ def user_music_preferences():
 
 
 if __name__ == "__main__":
-    transformed = ProcessTopAritstBasedOnGenres(user='suhaas',table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \
-                                                table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
-                                                table_3_topic=TOPIC_CONFIG['all_tracks']['topic'], \
-                                                table_4_topic=TOPIC_CONFIG['user_music_preferences']['topic'],)
-    
-    liked_songs, related_artists, all_tracks= transformed.retriever()
-    user_music_preferences = transformed.transform_liked_songs_related_artists(liked_songs, related_artists, all_tracks)
-
-    for key in user_music_preferences:
-        transformed.write_to_parquet(user_music_preferences[key], key)
-    
+    user_music_preferences()
     

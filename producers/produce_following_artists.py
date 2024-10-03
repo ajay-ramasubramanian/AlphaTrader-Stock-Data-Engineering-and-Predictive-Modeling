@@ -61,7 +61,7 @@ class FollowingArtistsProducer(SpotifyKafkaProducer):
 
 def run_producer_following_artists():
     following_artists = FollowingArtistsProducer()
-    following_artists.process_spotify_data(user_id='suhaas')
+    following_artists.process_spotify_data(os.getenv('USER_NAME'))
 
 
 if __name__ == "__main__":

@@ -50,7 +50,7 @@ class CreateGenresTable():
 
 
 def run_get_genre_table():
-    ob = CreateGenresTable("suhaas", \
+    ob = CreateGenresTable(os.getenv('USER_NAME'), \
                                 TOPIC_CONFIG["related_artists"]["topic"], \
                                 "raw", \
                                 "processed")

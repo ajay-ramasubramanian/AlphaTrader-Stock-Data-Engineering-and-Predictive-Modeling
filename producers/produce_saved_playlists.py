@@ -69,7 +69,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
 
 def run_producer_saved_playlist():
     saved_tracks = SavedTracksProducer()
-    saved_tracks.process_spotify_data(user_id='suhaas')
+    saved_tracks.process_spotify_data(os.getenv('USER_NAME'))
 
 if __name__ == "__main__":
     # Start the data processing for a specific user

@@ -55,7 +55,7 @@ class ArtistGenreBridge():
             
 
 def run_get_artist_genre_bridge():
-    ob = ArtistGenreBridge("suhaas", \
+    ob = ArtistGenreBridge(os.getenv('USER_NAME'), \
                                 TOPIC_CONFIG["related_artists"]["topic"], \
                                 "spotify_genres_table", \
                                 "processed", \

@@ -56,7 +56,7 @@ class TopArtistsProducer(SpotifyKafkaProducer):
 
 def run_producer_top_artist():
     top_artists = TopArtistsProducer()
-    top_artists.process_spotify_data('suhaas')
+    top_artists.process_spotify_data(os.getenv('USER_NAME'))
 
 if __name__ == "__main__":
     run_producer_top_artist()

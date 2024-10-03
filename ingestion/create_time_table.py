@@ -72,7 +72,7 @@ class CreateTimeTable():
             print(f"Encountered an exception here!!: {e}")
 
 def run_create_time_table():
-    ob = CreateTimeTable("suhaas", \
+    ob = CreateTimeTable(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["liked_songs"]["topic"], \
                             "processed", \
                             "presentation")

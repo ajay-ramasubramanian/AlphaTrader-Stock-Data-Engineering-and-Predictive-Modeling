@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import pandas as pd
 from spotipy import Spotify
-
+import time
 import spotipy
 from dotenv import load_dotenv
 from kafka import KafkaProducer
@@ -15,7 +15,7 @@ from base_producer import SpotifyKafkaProducer
 from utils import scope
 
 # Load environment variables from .env file (if needed)
-# load_dotenv()
+load_dotenv()
 # clientID = os.getenv("SPOTIPY_CLIENT_ID")
 # clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 # redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
@@ -74,6 +74,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
             while True:
                 # Fetch the current user's saved tracks with pagination support
                 result = self.sp.current_user_saved_tracks(limit=limit, offset=offset)
+                time.sleep(0.2)
                 # print(f'results: {result}')
                 # break
                 
@@ -105,10 +106,10 @@ class SavedTracksProducer(SpotifyKafkaProducer):
                     print(f"Message sent to {record_metadata.topic} partition {record_metadata.partition} offset {record_metadata.offset}")
                 except Exception as e:
                     print(f"Failed to send message: {e}")
-            print(f'artist id :{artist_ids}')
+            # print(f'artist id :{artist_ids}')
             if artist_ids:   # artist_ids is a list
-                self.send_ids_to_related_artists_producer(user_id, artist_ids)
                 self.send_ids_to_artist_albums_producer(user_id, artist_ids)
+                # self.send_ids_to_related_artists_producer(user_id, artist_ids)
 
         finally:
             # Close the producer to release resources
@@ -117,7 +118,7 @@ class SavedTracksProducer(SpotifyKafkaProducer):
 
 def run_producer_liked_songs():
     saved_tracks_producer = SavedTracksProducer()
-    saved_tracks_producer.process_spotify_data('suhaas')
+    saved_tracks_producer.process_spotify_data(os.getenv('USER_NAME'))
 
 
 if __name__ == "__main__":

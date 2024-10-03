@@ -66,7 +66,7 @@ class RetrieveAllTracks():
 
 
 def run_retrieve_all_tracks():
-    ob = RetrieveAllTracks("suhaas", \
+    ob = RetrieveAllTracks(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["liked_songs"]["topic"], \
                             "raw", \
                             "processed")

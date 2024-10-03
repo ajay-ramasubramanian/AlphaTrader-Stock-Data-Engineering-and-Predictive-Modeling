@@ -12,7 +12,7 @@ from base_producer import SpotifyKafkaProducer
 from utils import scope
 
 # Load environment variables from .env file (if needed)
-# load_dotenv()
+load_dotenv()
 # clientID = os.getenv("SPOTIPY_CLIENT_ID")
 # clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 # redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
@@ -34,7 +34,7 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
     def get_related_artists(self, artist_id):
         try:
             related = self.sp.artist_related_artists(artist_id)
-            print('3')
+            time.sleep(0.2)
 
             return related['artists']
         except spotipy.SpotifyException as e:
@@ -129,4 +129,4 @@ class RelatedArtistsProducer(SpotifyKafkaProducer):
 if __name__ == "__main__":
     # Start the data processing for a specific user
     related_artists_producer = RelatedArtistsProducer()
-    related_artists_producer.process_spotify_data('suhaas')
+    related_artists_producer.process_spotify_data(os.getenv('USER_NAME'))

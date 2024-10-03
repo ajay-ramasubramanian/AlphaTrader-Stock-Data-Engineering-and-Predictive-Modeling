@@ -67,7 +67,7 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
 
 def run_producer_recent_plays():
     recent_plays = RecentlyPlayedProducer()
-    recent_plays.process_spotify_data('suhaas')
+    recent_plays.process_spotify_data(os.getenv('USER_NAME'))
 
 
 if __name__ == "__main__":

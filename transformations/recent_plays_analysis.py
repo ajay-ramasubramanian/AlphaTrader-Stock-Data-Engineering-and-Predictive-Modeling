@@ -6,7 +6,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dotenv import load_dotenv
 import pandas as pd
-from transformations.utils import TOPIC_CONFIG, MinioRetriever, MinioUploader
+from common_utility_functions.utils import TOPIC_CONFIG
+from transformations.utils import MinioRetriever, MinioUploader
 
 load_dotenv()
 
@@ -129,7 +130,7 @@ class RecentPlaysAnalysis:
 
 
 def recent_plays_analysis():
-    transformed = RecentPlaysAnalysis(user='suhaas',table_1_topic=TOPIC_CONFIG['recent_plays']['topic'], \
+    transformed = RecentPlaysAnalysis(user=os.getenv('USER_NAME'),table_1_topic=TOPIC_CONFIG['recent_plays']['topic'], \
                                                 table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
                                                 table_3_topic=TOPIC_CONFIG['recent_plays_analysis']['topic'],)
     

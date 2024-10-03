@@ -10,7 +10,9 @@ import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
+from dotenv import load_dotenv
 
+load_dotenv()
 class RetrieveRecentPlays():
 
     def __init__(self, user, topic, raw, processed) -> None:
@@ -74,7 +76,7 @@ class RetrieveRecentPlays():
 
     
 def run_retrieve_recent_plays():
-    ob = RetrieveRecentPlays("suhaas", \
+    ob = RetrieveRecentPlays(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["recent_plays"]["topic"], \
                             "raw", \
                             "processed")

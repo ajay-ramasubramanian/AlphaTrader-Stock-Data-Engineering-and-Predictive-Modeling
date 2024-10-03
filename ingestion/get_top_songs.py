@@ -8,7 +8,9 @@ import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
+from dotenv import load_dotenv
 
+load_dotenv()
 class RetrieveTopSongs():
 
     def __init__(self,user, topic, raw, processed) -> None:
@@ -55,7 +57,7 @@ class RetrieveTopSongs():
 
 
 def run_retrieve_top_songs():
-    obj= RetrieveTopSongs("suhaas", \
+    obj= RetrieveTopSongs(os.getenv('USER_NAME'), \
                     TOPIC_CONFIG["top_songs"]["topic"], \
                     "raw", \
                     "processed")

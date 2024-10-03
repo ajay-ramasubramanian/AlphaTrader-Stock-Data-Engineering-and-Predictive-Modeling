@@ -10,7 +10,9 @@ import pandas as pd
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
 
+from dotenv import load_dotenv
 
+load_dotenv()
 class RetrieveLikedSongs(LoggingMixin):
 
     def __init__(self,user, topic,raw, processed) -> None:
@@ -68,7 +70,7 @@ class RetrieveLikedSongs(LoggingMixin):
 def run_retrieve_liked_songs(**context):
     task_instance = context['task_instance']
     task_instance.log.info("Starting retrieve_liked_songs task")
-    ob = RetrieveLikedSongs("suhaas", \
+    ob = RetrieveLikedSongs(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["liked_songs"]["topic"], \
                             "raw", \
                             "processed")

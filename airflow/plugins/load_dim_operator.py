@@ -73,6 +73,7 @@ class LoadDimOperator(BaseOperator):
             # Retrieve data from Minio
             minio_retriever = MinioRetriever('suhaas', self.topic, 'presentation', self.minio_conn_id)
             df = minio_retriever.retrieve_object()
+            table = self.table_name.split('.')[1]
             
             # Prepare data for Postgres
             output = StringIO()
@@ -88,7 +89,7 @@ class LoadDimOperator(BaseOperator):
                         cur.execute(f"TRUNCATE TABLE {self.table_name}")
                     
                     self.log.info(f"Copying data to table {self.table_name}")
-                    cur.copy_from(output, self.table_name, null="")
+                    cur.copy_from(output, table, null="")
                     
                 conn.commit()
 
@@ -97,3 +98,4 @@ class LoadDimOperator(BaseOperator):
         except Exception as e:
             self.log.error(f"An error occurred while loading data: {str(e)}")
             raise
+

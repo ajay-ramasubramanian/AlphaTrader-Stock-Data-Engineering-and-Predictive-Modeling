@@ -124,11 +124,23 @@ def genre_table_expectation_suite():
         kwargs={"value": 2}
     )
 
+    expectation_config_genre_id_type = ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "genre_id", "type_": "int64"}
+    )
+
+    expectation_config_genre_type = ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "genre", "type_": "str"}
+    )
+
     suite.add_expectation(expectation_config_non_null_genre_id)
     suite.add_expectation(expectation_config_non_null_genre)
     suite.add_expectation(expectation_config_unique_genre_id)
     suite.add_expectation(expectation_config_unique_genre)
     suite.add_expectation(expectation_config_column_count)
+    suite.add_expectation(expectation_config_genre_id_type)
+    suite.add_expectation(expectation_config_genre_type)
 
     context.save_expectation_suite(suite)
     print(f"Added {suite_name} to context!!")
@@ -575,7 +587,7 @@ def top_songs_expectation_suite():
 
 
 # Run the function to create the expectation suites
-def create_expectation_suites():
+def create_ingestion_expectation_suites():
     artist_genre_bridge_expectation_suite()
     genre_table_expectation_suite()
     time_table_expectation_suite()
@@ -590,4 +602,4 @@ def create_expectation_suites():
     top_songs_expectation_suite()
 
 
-create_expectation_suites()
+create_ingestion_expectation_suites()

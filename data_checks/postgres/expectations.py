@@ -66,7 +66,7 @@ def dim_artist_expectation_suite():
     expectation_config_check_format = [
     ExpectationConfiguration(
         expectation_type="expect_column_values_to_be_of_type",
-        kwargs={"column": "artist_followers", "type_": "int64"}
+        kwargs={"column": "artist_followers", "type_": "INTEGER"}
     )
 ]
     
@@ -79,6 +79,54 @@ def dim_artist_expectation_suite():
     suite.add_expectation(expectation_config_unique_played_at)
     suite.add_expectation(expectation_config_valid_popularity)
 
+    context.save_expectation_suite(suite)
+    print(f"Added {suite_name} to context!!")
+
+
+def dim_artist_genre_bridge_expectation_suite():
+    
+    # Suite name for the time table
+    suite_name = "dim_artist_genre_bridge_suite"
+    
+    # Create or extend the base suite
+    suite, context = create_base_expectation_suite(suite_name)
+
+    # Check for non-null values for genre_id
+    expectation_config_non_null_artist = ExpectationConfiguration(
+    expectation_type="expect_column_values_to_not_be_null",
+    kwargs={"column": "artist_id"}  
+    )
+
+    # Check for non-null values for genre_id
+    expectation_config_non_null_genre = ExpectationConfiguration(
+        expectation_type="expect_column_values_to_not_be_null",
+        kwargs={"column": "genre_id"}
+    )
+
+    # Check for artist_id datatype
+    expectation_config_artist_format = ExpectationConfiguration(
+    expectation_type="expect_column_values_to_be_of_type",
+    kwargs={"column": "artist_id", "type_": "VARCHAR"}
+    )
+
+    # Check for genre_id datatype
+    expectation_config_genre_type = ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "genre_id", "type_": "INTEGER"}
+    )
+
+    # Expect the table to have exactly 2 columns
+    expectation_config_column_count = ExpectationConfiguration(
+        expectation_type="expect_table_column_count_to_equal",
+        kwargs={"value": 2}
+    )
+
+    suite.add_expectation(expectation_config_non_null_artist)
+    suite.add_expectation(expectation_config_non_null_genre)
+    suite.add_expectation(expectation_config_artist_format)
+    suite.add_expectation(expectation_config_genre_type)
+    suite.add_expectation(expectation_config_column_count)
+    
     context.save_expectation_suite(suite)
     print(f"Added {suite_name} to context!!")
 
@@ -492,6 +540,7 @@ def create_postgres_expectation_suites():
     dim_album_expectation_suite()
     dim_time_expectation_suite()
     dim_track_expectation_suite()
+    dim_artist_genre_bridge_expectation_suite()
     dim_genre_expectation_suite()
     fact_liked_songs_expectation_suite()
     fact_recently_played_expectation_suite()

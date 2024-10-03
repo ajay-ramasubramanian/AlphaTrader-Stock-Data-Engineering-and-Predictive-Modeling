@@ -57,16 +57,23 @@ def processed_to_presentation_all_tracks():
                             TOPIC_CONFIG["all_tracks"]["topic"]
                             )
     
+    results = all_tracks.retrieve()
+    all_tracks.upload(results)
+
+    
 
 def processed_to_presentation_artist_albums():
     artist_albums = SourceTables("suhaas", \
                             TOPIC_CONFIG["artist_albums"]["topic"]
                             )
     
+    results = artist_albums.retrieve()
+    artist_albums.upload(results)
+
+    
 
 def processed_to_presentation_genres_table():
     genres_table = SourceTables("suhaas", "spotify_genres_table"
-                            # TOPIC_CONFIG["genres_table"]["topic"]
                             )
     
     results = genres_table.retrieve()

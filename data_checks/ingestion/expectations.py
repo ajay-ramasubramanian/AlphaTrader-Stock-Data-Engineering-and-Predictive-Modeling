@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join('..', 'expectation')))
 
 def create_base_expectation_suite(suite_name):
 
-    context = get_context(project_root_dir=".")
+    context = get_context(project_root_dir="/opt/airflow/projects")
 
     # Create a base suite with common checks
     suite = context.add_or_update_expectation_suite(expectation_suite_name=suite_name)

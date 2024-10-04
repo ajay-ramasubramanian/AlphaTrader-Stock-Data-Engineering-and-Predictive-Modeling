@@ -96,6 +96,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./:/opt/airflow/project
+      # - ./gx:/opt/airflow/gx
       - ./requirements.txt:/requirements.txt
     ports:
       - "8080:8080"
@@ -134,6 +135,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./:/opt/airflow/project
+      # - ./gx:/opt/airflow/gx
       - ./requirements.txt:/requirements.txt
     command: >
       bash -c "

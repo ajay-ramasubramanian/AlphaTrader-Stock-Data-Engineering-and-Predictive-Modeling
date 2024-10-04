@@ -28,7 +28,7 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-schema = "spotify"
+schema = "public"
 
 def get_configs():
     from utils import (independent_ingestion_task_configs, dependent_ingestion_task_configs,
@@ -60,10 +60,10 @@ def spotify_pipeline():
     task_id='create_schema',
     postgres_conn_id='postgres-warehouse',
     sql=f"""
-        CREATE SCHEMA IF NOT EXISTS {schema};
-        SET search_path TO {schema}, public;
+        SET search_path TO public;
         """
 )
+    # CREATE SCHEMA IF NOT EXISTS {schema};
 
     @task (task_id='create_expectation_suites')
     def initialize_expectation_suites():
@@ -175,7 +175,7 @@ def spotify_pipeline():
     def create_data_quality_check(table_name: str):
         return GreatExpectationsOperator(
             conn_id=os.environ.get('POSTGRES_CONN_ID'),
-            schema=f"spotify",
+            schema=f"public",
             data_asset_name=f"{schema}.{table_name}",
             task_id=f"validate_{table_name}",
             data_context_root_dir="/opt/airflow/projects/gx",

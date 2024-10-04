@@ -49,7 +49,6 @@ class ProcessTopAritstBasedOnGenres:
         new_artists_df = related_artists[~related_artists['artist_id'].isin(liked_artists)]
         new_artists_df = new_artists_df.sort_values('artist_popularity', ascending=False)
         new_artists_df.drop(columns=['genres', 'ingested_on'], inplace=True)
-        print(new_artists_df.columns)
 
         # Popularity Analysis
         popularity_df = merged_df[['artist_name_x', 'artist_popularity']].drop_duplicates()

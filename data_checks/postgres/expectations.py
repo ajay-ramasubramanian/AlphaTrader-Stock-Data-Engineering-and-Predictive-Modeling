@@ -535,6 +535,20 @@ def fact_recently_played_expectation_suite():
     return suite
 
 
+def top_songs_expectation_suite():
+    
+    # Suite name for the time table
+    suite_name = "dim_top_songs_suite"
+    
+    # Create or extend the base suite
+    suite, context = create_base_expectation_suite(suite_name)
+
+    context.save_expectation_suite(suite)
+    print(f"Added {suite_name} to context!!")
+
+    print(f"Context: {context}")
+
+
 def create_postgres_expectation_suites():
     dim_artist_expectation_suite()
     dim_album_expectation_suite()
@@ -544,6 +558,7 @@ def create_postgres_expectation_suites():
     dim_genre_expectation_suite()
     fact_liked_songs_expectation_suite()
     fact_recently_played_expectation_suite()
+    top_songs_expectation_suite()
 
 
 create_postgres_expectation_suites()

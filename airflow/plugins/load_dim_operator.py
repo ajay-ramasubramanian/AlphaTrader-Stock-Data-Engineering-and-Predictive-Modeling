@@ -1,47 +1,3 @@
-# from airflow.models import BaseOperator
-# from airflow.utils.decorators import apply_defaults
-
-# from transformations.utils import MinioRetriever
-# import psycopg2
-# from io import StringIO
-
-# class LoadDimOperator(BaseOperator):
-
-#     @apply_defaults
-#     def __init__(self, topic, table_name, append=True, *args, **kwargs):
-#         super(LoadDimOperator, self).__init__(*args, **kwargs)
-
-#         # self.df = MinioRetriever('suhaas', topic, 'presentation', 'minio').retrieve_object()
-#         self.conn = psycopg2.connect("dbname=spotify_db user=spotify password=spotify_pass host=postgres-warehouse")
-#         self.cur = self.conn.cursor()
-#         self.table_name = table_name
-#         self.append = append
-#         self.topic = topic
-
-
-#     def execute(self, context):
-#         try:
-#             output = StringIO()
-#             # if self.topic == 'spotify-artist-albums':
-#             #     print(self.df[self.df['album_id'] == "1ntEaMBOvQQID1xN6HbZ2K"].T)
-#             df = MinioRetriever('suhaas',self.topic,'presentation','minio').retrieve_object()
-#             df.to_csv(output, sep='\t', header=False, index=False)
-#             output.seek(0)
-
-#             if not self.append:
-#                 self.cur.execute(f"TRUNCATE TABLE {self.table_name}")
-                
-#             self.cur.copy_from(output, self.table_name, null="")
-
-#         except Exception as e:
-#             print(f"Ohh no!! An exception has occured: {e}")
-
-#         finally:
-#             self.conn.commit()
-#             self.cur.close()
-#             self.conn.close()
-
-
 from airflow.models import BaseOperator
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.utils.decorators import apply_defaults  # Remove if using Airflow 2.0+
@@ -51,7 +7,7 @@ from io import StringIO
 
 class LoadDimOperator(BaseOperator):
 
-    @apply_defaults  # Remove if using Airflow 2.0+
+    # @apply_defaults  # Remove if using Airflow 2.0+
     def __init__(self, 
                 topic, 
                 table_name, 
@@ -73,7 +29,6 @@ class LoadDimOperator(BaseOperator):
             # Retrieve data from Minio
             minio_retriever = MinioRetriever('suhaas', self.topic, 'presentation', self.minio_conn_id)
             df = minio_retriever.retrieve_object()
-            table = self.table_name.split('.')[1]
             
             # Prepare data for Postgres
             output = StringIO()
@@ -89,7 +44,7 @@ class LoadDimOperator(BaseOperator):
                         cur.execute(f"TRUNCATE TABLE {self.table_name}")
                     
                     self.log.info(f"Copying data to table {self.table_name}")
-                    cur.copy_from(output, table, null="")
+                    cur.copy_from(output, self.table_name, null="")
                     
                 conn.commit()
 

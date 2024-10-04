@@ -8,7 +8,6 @@ from minio import Minio
 
 # os.environ['PYSPARK_PYTHON'] = sys.executable
 # os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-
 class MinioRetriever:
     def __init__(self, user, topic, container, host) -> None:
         self.container = container #raw
@@ -188,6 +187,9 @@ TOPIC_CONFIG = {
     
     'genres_table':{
         'topic': 'spotify_genres_table'
+    },
+    'user_details':{
+        "topic": 'spotify_user_details'
     }
 
 }

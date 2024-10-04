@@ -49,6 +49,16 @@ CREATE TABLE IF NOT EXISTS spotify.dim_track (
 )
 """
 
+create_user_details_table = """
+CREATE TABLE IF NOT EXISTS user_details(
+    user_id VARCHAR(255) PRIMARY KEY,
+    display_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    country VARCHAR(255),
+    product VARCHAR(22)
+)
+"""
+
 create_genres_table = """
 CREATE TABLE IF NOT EXISTS spotify.dim_genre (
     genre_id INTEGER PRIMARY KEY,
@@ -61,6 +71,24 @@ CREATE TABLE IF NOT EXISTS spotify.dim_artist_genre_bridge (
     artist_id VARCHAR(255),
     genre_id INTEGER,
     PRIMARY KEY (genre_id, artist_id)
+)
+"""
+create_top_songs ="""
+CREATE TABLE IF NOT EXISTS spotify.dim_top_songs(
+    rank BIGINT,
+    track_name VARCHAR(255),
+    track_id VARCHAR(255),
+    track_uri VARCHAR(255),
+    artist_name VARCHAR(255),
+    artist_id VARCHAR(255),
+    album_name VARCHAR(255),
+    album_id VARCHAR(255),
+    albun_release_date VARCHAR(255),
+    duration_ms BIGINT,
+    popularity SMALLINT,
+    explicit BOOLEAN,
+    external_url VARCHAR(255),
+    ingested_on VARCHAR(255)
 )
 """
 
@@ -150,6 +178,8 @@ CREATE TABLE IF NOT EXISTS spotify.song_details(
     added_at TIMESTAMP
 )
 """
+
+
 
 
 # Recent plays analysis

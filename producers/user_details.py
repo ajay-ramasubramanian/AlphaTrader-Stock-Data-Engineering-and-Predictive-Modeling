@@ -5,8 +5,8 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 import pandas as pd
-from transformations.utils import MinioRetriever,MinioUploader, TOPIC_CONFIG
-from common_utility_functions.utils import  scope
+from transformations.utils import MinioRetriever,MinioUploader
+from common_utility_functions.utils import  scope, TOPIC_CONFIG
 
 
 load_dotenv()

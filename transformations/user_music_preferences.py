@@ -1,14 +1,18 @@
 
-import os,site,sys
+import os
+import site
+import sys
+
 import numpy as np
 
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
 import pandas as pd
-from transformations.utils import TOPIC_CONFIG, MinioRetriever, MinioUploader
+from dotenv import load_dotenv
 
+from transformations.utils import  MinioRetriever, MinioUploader
+from common_utility_functions.utils import TOPIC_CONFIG, scope
 load_dotenv()
 
 class ProcessTopAritstBasedOnGenres:
@@ -41,8 +45,9 @@ class ProcessTopAritstBasedOnGenres:
             .groupby('genres')
             .size()
             .sort_values(ascending=False)
-            .reset_index(name='genre_count')
+            .reset_index(names=['genre_name','genre_count'])
         )
+        
 
         # Artist Discovery
         liked_artists = set(liked_songs['artist_id'])

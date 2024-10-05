@@ -100,6 +100,9 @@ TOPIC_CONFIG = {
     },
     'all_tracks':{
         'topic': 'spotify_all_tracks'
+    },
+    'user_details':{
+        'topic': 'spotify_user_details'
     }
 }
 

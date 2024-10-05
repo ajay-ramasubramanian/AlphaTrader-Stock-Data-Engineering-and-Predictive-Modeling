@@ -11,7 +11,7 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 # import sys
 # import os
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+load_dotenv()
 class FollowingArtistsProducer(SpotifyKafkaProducer):
     def __init__(self, ):
         super().__init__()

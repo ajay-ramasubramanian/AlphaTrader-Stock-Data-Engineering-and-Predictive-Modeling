@@ -7,7 +7,7 @@ import pandas as pd
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
-
+load_dotenv()
 class TopArtistsProducer(SpotifyKafkaProducer):
     def __init__(self):
         super().__init__()

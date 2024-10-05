@@ -1,10 +1,7 @@
 import os
 import subprocess
-
 import sys
-from common_utility_functions.config import user
 def run_python_files(directory):
-    user()
     for root, dirs, files in os.walk(directory):
         for file in files:
             if file.endswith(".py"):

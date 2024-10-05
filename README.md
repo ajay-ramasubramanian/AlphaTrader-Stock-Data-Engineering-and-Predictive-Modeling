@@ -35,7 +35,7 @@ The system is designed for high scalability, capable of serving millions of conc
 
 ## Spotify Insight Dashboard using PowerBI
 
-![powerBI dashboard](images/dashboard.png)
+![powerBI dashboard](images/powerBI_dashboard.png)
 You can find this dashboard under the dashboard folder.
 
 ## Technologies and Challenges

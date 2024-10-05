@@ -11,6 +11,7 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from datetime import datetime
 import calendar
 
+load_dotenv()
 
 class RecentlyPlayedProducer(SpotifyKafkaProducer):
     def __init__(self):

@@ -13,7 +13,7 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 # clientID = os.getenv("SPOTIPY_CLIENT_ID")
 # clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
 # redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
-
+load_dotenv()
 class SavedTracksProducer(SpotifyKafkaProducer):
     def __init__(self):
         super().__init__()

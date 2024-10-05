@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 load_dotenv()
 class LoadTransformationOperator(BaseOperator):
     template_fields = ('topic', 'table_name', 'key')
-    # @apply_defaults  # Remove if using Airflow 2.0+
     def __init__(
         self,
         topic,

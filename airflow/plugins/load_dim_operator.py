@@ -1,5 +1,6 @@
 from airflow.models import BaseOperator
 from airflow.hooks.postgres_hook import PostgresHook
+
 from airflow.utils.decorators import apply_defaults  # Remove if using Airflow 2.0+
 
 from transformations.utils import MinioRetriever
@@ -55,3 +56,4 @@ class LoadDimOperator(BaseOperator):
         except Exception as e:
             self.log.error(f"An error occurred while loading data: {str(e)}")
             raise
+

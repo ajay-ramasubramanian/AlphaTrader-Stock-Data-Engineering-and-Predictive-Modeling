@@ -4,6 +4,7 @@ import site
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from data_checks.validate_expectations import validate_expectations
 from transformations.utils import MinioRetriever, MinioUploader
 import pandas as pd
 from ingestion.utils import TOPIC_CONFIG
@@ -21,6 +22,8 @@ class ArtistGenreBridge():
         self.retrieve_artists = MinioRetriever(user, artist_table, processed, os.getenv('HOST'))
         self.retrieve_genres = MinioRetriever(user, genre_table, processed, os.getenv('HOST'))
         self.uploader = MinioUploader(user, self.TOPIC, presentation, os.getenv('HOST'))
+
+        self.expectations_suite_name = 'artist_genre_bridge_suite'
 
         self.dtype_dict = {
             'artist_id': str,
@@ -45,13 +48,15 @@ class ArtistGenreBridge():
 
             bridge_df.astype(self.dtype_dict)
             bridge_df.reset_index(drop=True, inplace=True)
+
+            # Run Great Expectations data quality checks
+            validate_expectations(bridge_df, self.expectations_suite_name)
             
             self.uploader.upload_files(data=bridge_df)
             print(f"Successfully uploaded to '{self.presentation}' container!!")
 
         except ValueError as e:
             print(f"Encountered a value error here!!: {e}")
-
             
 
 def run_get_artist_genre_bridge():

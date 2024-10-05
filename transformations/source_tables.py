@@ -35,8 +35,6 @@ def processed_to_presentation_liked_songs():
                             )
     
     results = liked_songs.retrieve()
-    # Assuming df is your DataFrame
-    results['added_at'] = results['added_at'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S%z').astimezone(pytz.UTC))
     liked_songs.upload(results)
 
 def processed_to_presentation_related_artists():

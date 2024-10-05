@@ -4,6 +4,7 @@ import site
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from data_checks.validate_expectations import validate_expectations
 import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
@@ -18,6 +19,7 @@ class RetrieveTopSongs():
         self.retriever = MinioRetriever(user, topic, raw)
         self.uploader = MinioUploader(user,topic, processed)
         self.processed = processed
+        self.expectations_suite_name = 'top_songs_suite'
 
 
     def get_user_top_songs(self):
@@ -48,6 +50,9 @@ class RetrieveTopSongs():
             
             df_songs.drop_duplicates(['track_id'], inplace=True)
             df_songs = df_songs.reset_index(drop=True)
+
+            # Run Great Expectations data quality checks
+            validate_expectations(df_songs, self.expectations_suite_name)
 
             self.uploader.upload_files(data=df_songs)
             print(f"Successfully uploaded to '{self.processed}' container!!")

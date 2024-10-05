@@ -23,6 +23,9 @@ from transformations.source_tables import (
     processed_to_presentation_top_songs
     )
 from transformations.user_music_preferences import user_music_preferences
+from data_checks.ingestion.expectations import create_ingestion_expectation_suites
+from data_checks.postgres.expectations import create_postgres_expectation_suites
+
 
 independent_ingestion_task_configs = {
         'following_artists': run_retrieve_following_artists,
@@ -84,6 +87,11 @@ create_table_task_configs = {
     }
 
 
+create_data_checks_task_configs = {
+    'ingestion_expectation_suites': create_ingestion_expectation_suites, 
+    'final_expectation_suites': create_postgres_expectation_suites
+}
+
 insert_to_transformation_table_task_configs = {
         'daily_plays': {'topic':'spotify-recent-plays-analysis',
                         'key': 'daily-plays'},
@@ -126,3 +134,4 @@ insert_to_fact_table_task_configs = {
         'fact_recently_played': 'spotify-recent-plays',
         'user_details': 'spotify-user-details'
     }
+

@@ -2,7 +2,7 @@
 
 ## Dimension tables
 create_artist_table = """
-CREATE TABLE IF NOT EXISTS dim_artist (
+CREATE TABLE IF NOT EXISTS public.dim_artist (
     artist_id VARCHAR(255) PRIMARY KEY,
     artist_name VARCHAR(255) NOT NULL,
     artist_popularity SMALLINT,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS dim_artist (
 """
 
 create_time_table = """
-CREATE TABLE IF NOT EXISTS dim_time (
+CREATE TABLE IF NOT EXISTS public.dim_time (
     date_id VARCHAR(255) PRIMARY KEY,
     year SMALLINT  NOT NULL,
     month SMALLINT  NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS dim_time (
 """
 
 create_albums_table = """
-CREATE TABLE IF NOT EXISTS dim_album (
+CREATE TABLE IF NOT EXISTS public.dim_album (
     album_id VARCHAR(255) PRIMARY KEY,
     album_name VARCHAR(255) NOT NULL,
     album_type VARCHAR(255),
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS dim_album (
 """
 
 create_all_tracks_table = """
-CREATE TABLE IF NOT EXISTS dim_track (
+CREATE TABLE IF NOT EXISTS public.dim_track (
     track_id VARCHAR(255) PRIMARY KEY,
     track_name VARCHAR(255) NOT NULL,
     duration_ms INTEGER,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS dim_track (
 """
 
 create_user_details_table = """
-CREATE TABLE IF NOT EXISTS user_details(
+CREATE TABLE IF NOT EXISTS public.user_details(
     user_id VARCHAR(255) PRIMARY KEY,
     display_name VARCHAR(255) NOT NULL,
     email VARCHAR(255),
@@ -60,21 +60,21 @@ CREATE TABLE IF NOT EXISTS user_details(
 """
 
 create_genres_table = """
-CREATE TABLE IF NOT EXISTS dim_genre (
-    genre_id VARCHAR(255) PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS public.dim_genre (
+    genre_id INTEGER PRIMARY KEY,
     genre VARCHAR(255)
 )
 """
 
 create_artist_genre_bridge = """
-CREATE TABLE IF NOT EXISTS dim_artist_genre_bridge (
-    genre_id VARCHAR(255),
+CREATE TABLE IF NOT EXISTS public.dim_artist_genre_bridge (
     artist_id VARCHAR(255),
+    genre_id INTEGER,
     PRIMARY KEY (genre_id, artist_id)
 )
 """
 create_top_songs ="""
-CREATE TABLE IF NOT EXISTS dim_top_songs(
+CREATE TABLE IF NOT EXISTS public.dim_top_songs(
     rank BIGINT,
     track_name VARCHAR(255),
     track_id VARCHAR(255),
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS dim_top_songs(
 
 ## Fact tables
 create_liked_songs_table = """
-CREATE TABLE IF NOT EXISTS fact_liked_songs (
+CREATE TABLE IF NOT EXISTS public.fact_liked_songs (
     like_id SMALLINT PRIMARY KEY,
     artist_id VARCHAR(255) NOT NULL,
     album_id VARCHAR(255),
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS fact_liked_songs (
 """
 
 create_recently_played_table = """
-CREATE TABLE IF NOT EXISTS fact_recently_played (
+CREATE TABLE IF NOT EXISTS public.fact_recently_played (
     recents_id SMALLINT PRIMARY KEY,
     track_id VARCHAR(255) NOT NULL,
     track_name VARCHAR(255) NOT NULL,
@@ -128,31 +128,30 @@ CREATE TABLE IF NOT EXISTS fact_recently_played (
 
 # User music preferences
 create_artist_discovery = """
-CREATE TABLE IF NOT EXISTS artist_discovery (
-    artist_name VARCHAR(255) NOT NULL,
+CREATE TABLE IF NOT EXISTS public.artist_discovery (
     artist_id VARCHAR(255) PRIMARY KEY NOT NULL,
+    artist_name VARCHAR(255) NOT NULL,
     artist_populartiy SMALLINT,
-    artist_followers BIGINT,
-    ingested_on VARCHAR(255)
+    artist_followers BIGINT
 )
 """
 
 create_artist_frequency = """
-CREATE TABLE IF NOT EXISTS artist_frequency(
+CREATE TABLE IF NOT EXISTS public.artist_frequency(
     artist_name VARCHAR(255) NOT NULL,
     like_count SMALLINT
 )
 """
 
 create_genre_analysis = """
-CREATE TABLE IF NOT EXISTS genre_analysis(
+CREATE TABLE IF NOT EXISTS public.genre_analysis(
     genres VARCHAR(255) NOT NULL,
     genre_count SMALLINT
 )
 """
 
 create_monthly_genre_trend = """
-CREATE TABLE IF NOT EXISTS monthly_genre_trend(
+CREATE TABLE IF NOT EXISTS public.monthly_genre_trend(
     month_year VARCHAR(7) NOT NULL
             CHECK (month_year ~ '^\d{4}-\d{2}$'),
     genres VARCHAR(255) NOT NULL,
@@ -162,7 +161,7 @@ CREATE TABLE IF NOT EXISTS monthly_genre_trend(
 
 
 create_monthly_likes = """
-CREATE TABLE IF NOT EXISTS monthly_likes(
+CREATE TABLE IF NOT EXISTS public.monthly_likes(
     month_year VARCHAR(7) NOT NULL
             CHECK (month_year ~ '^\d{4}-\d{2}$'),
     monthly_like_count SMALLINT
@@ -170,7 +169,7 @@ CREATE TABLE IF NOT EXISTS monthly_likes(
 """
 
 create_song_details = """
-CREATE TABLE IF NOT EXISTS song_details(
+CREATE TABLE IF NOT EXISTS public.song_details(
     track_name VARCHAR(255) NOT NULL,
     artist_name VARCHAR(255),
     album_name VARCHAR(255),
@@ -186,35 +185,35 @@ CREATE TABLE IF NOT EXISTS song_details(
 # Recent plays analysis
 
 create_recent_tracks_by_popularity =  """
-CREATE TABLE IF NOT EXISTS recent_tracks_by_popularity(
+CREATE TABLE IF NOT EXISTS public.recent_tracks_by_popularity(
     track_name VARCHAR(255) NOT NULL,
     artist_name VARCHAR(255) NOT NULL,
     popularity SMALLINT
 )
 """
 create_daily_plays =  """
-CREATE TABLE IF NOT EXISTS daily_plays(
+CREATE TABLE IF NOT EXISTS public.daily_plays(
     date DATE NOT NULL,
     play_count SMALLINT
 )
 """
 
 create_recent_play_genre_analysis = """
-CREATE TABLE IF NOT EXISTS recent_plays_genre_analysis(
+CREATE TABLE IF NOT EXISTS public.recent_plays_genre_analysis(
     genres VARCHAR(255) NOT NULL,
     count SMALLINT
 )
 """
 
 create_recent_play_summary = """
-CREATE TABLE IF NOT EXISTS recent_plays_summary(
+CREATE TABLE IF NOT EXISTS public.recent_plays_summary(
     metric VARCHAR(255) NOT NULL,
     value DOUBLE PRECISION
 )
 """
 
 create_recent_play_top_artists = """
-CREATE TABLE IF NOT EXISTS recent_plays_top_artists(
+CREATE TABLE IF NOT EXISTS public.recent_plays_top_artists(
     artist_name VARCHAR(255) NOT NULL,
     play_count SMALLINT,
     artist_popularity SMALLINT

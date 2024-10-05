@@ -4,8 +4,8 @@ import site
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from data_checks.validate_expectations import validate_expectations
 from datetime import datetime
-import pytz
 import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
@@ -20,6 +20,7 @@ class RetrieveRecentPlays():
         self.retriever = MinioRetriever(user, topic, raw)
         self.uploader = MinioUploader(user, topic, processed)
         self.processed = processed
+        self.expectations_suite_name = 'recent_plays_suite'
 
         self.dtype_dict = {
             'recents_id': 'int64',
@@ -67,6 +68,9 @@ class RetrieveRecentPlays():
             df_recent_plays = df_recent_plays.astype(self.dtype_dict)
             df_recent_plays.drop_duplicates(['played_at'], inplace=True)
             df_recent_plays = df_recent_plays.reset_index(drop=True)
+
+            # Run Great Expectations data quality checks
+            validate_expectations(df_recent_plays, self.expectations_suite_name)
 
             self.uploader.upload_files(data=df_recent_plays)
             print(f"Successfully uploaded to '{self.processed}' container!!")

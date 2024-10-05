@@ -4,6 +4,7 @@ import site
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from data_checks.validate_expectations import validate_expectations
 from datetime import datetime
 import pandas as pd
 from ingestion.utils import TOPIC_CONFIG
@@ -18,6 +19,7 @@ class RetrieveFollowingArtists():
         self.retriever = MinioRetriever(user, topic, raw)
         self.uploader = MinioUploader(user, topic, processed)
         self.processed = processed
+        self.expectations_suite_name = 'following_artists_suite'
 
         self.dtype_dict = {
             'follow_id': 'int64',
@@ -43,15 +45,17 @@ class RetrieveFollowingArtists():
             df_following_artist['ingested_on'] = datetime.now().strftime("%Y%m%d%H%M%S")
             
             df_following_artist = df_following_artist.astype(self.dtype_dict)
-            df_following_artist.drop_duplicates(inplace=True)
+            df_following_artist.drop_duplicates(subset=['artist_id'], inplace=True)
             df_following_artist = df_following_artist.reset_index(drop=True)
             
+            # Run Great Expectations data quality checks
+            validate_expectations(df_following_artist, self.expectations_suite_name)
+
             self.uploader.upload_files(data=df_following_artist)
             print(f"Successfully uploaded to '{self.processed}' container!!")
         
         except Exception as e:
             print(f"Encountered an exception here!!: {e}")
-
     
 
 def run_retrieve_following_artists():

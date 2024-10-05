@@ -177,6 +177,5 @@ cython_debug/
 # Ignore Gradle build output directory
 build
 
-
 #airflow
 airflow/logs/

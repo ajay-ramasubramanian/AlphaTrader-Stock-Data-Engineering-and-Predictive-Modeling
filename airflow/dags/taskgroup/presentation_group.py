@@ -10,5 +10,5 @@ from dags.utils import process_to_presentation_task_configs
 def move_to_presentation_group(dag):
     with TaskGroup('move_to_presentation_group') as group:
             move_to_presentation_tasks = [initialize_python_operator(
-                'ingestion',dag, name, config) for name, config in process_to_presentation_task_configs.items()]
+                dag, 'ingestion', name, config) for name, config in process_to_presentation_task_configs.items()]
     return group

@@ -9,5 +9,5 @@ from dags.utils import transformation_task_configs
 def transformation_group(dag):
     with TaskGroup('transformation_group') as group:
         transformation_tasks = [initialize_python_operator(
-            'transformation', dag, name, config) for name, config in transformation_task_configs.items()]
+            dag, 'transformation', name, config) for name, config in transformation_task_configs.items()]
     return group

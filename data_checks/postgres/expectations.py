@@ -8,7 +8,7 @@ import site
 
 def create_base_expectation_suite(suite_name):
 
-    context = get_context(project_root_dir=".")
+    context = get_context(project_root_dir="/opt/airflow/projects")
 
     # Create a base suite with common checks
     suite = context.add_or_update_expectation_suite(expectation_suite_name=suite_name)
@@ -549,6 +549,20 @@ def top_songs_expectation_suite():
     print(f"Context: {context}")
 
 
+def user_details_expectation_suite():
+    
+    # Suite name for the time table
+    suite_name = "user_details_suite"
+    
+    # Create or extend the base suite
+    suite, context = create_base_expectation_suite(suite_name)
+
+    context.save_expectation_suite(suite)
+    print(f"Added {suite_name} to context!!")
+
+    print(f"Context: {context}")
+
+
 def create_postgres_expectation_suites():
     dim_artist_expectation_suite()
     dim_album_expectation_suite()
@@ -559,6 +573,7 @@ def create_postgres_expectation_suites():
     fact_liked_songs_expectation_suite()
     fact_recently_played_expectation_suite()
     top_songs_expectation_suite()
+    user_details_expectation_suite()
 
 
 create_postgres_expectation_suites()

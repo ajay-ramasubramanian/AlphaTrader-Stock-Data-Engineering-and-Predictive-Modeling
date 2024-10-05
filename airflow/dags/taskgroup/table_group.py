@@ -1,4 +1,5 @@
 from  pathlib import Path
+import os
 import sys
 project_root = Path(__file__).parents[2]
 sys.path.append(str(project_root))
@@ -13,15 +14,12 @@ from dags.utils import create_table_task_configs, insert_to_dim_table_task_confi
 
 def create_database_schema(dag, schema):
     task_id = 'create_schema'
-    conn_id = 'postgres-warehouse'
-    sql_query = f"""
-        CREATE SCHEMA IF NOT EXISTS {schema};
-        SET search_path TO {schema}, public;
-        """ 
+    conn_id = os.environ.get('POSTGRES_CONN_ID')
+    sql_query=f"""
+        SET search_path TO {schema};
+        """
     
     return initialize_postgres_operator(dag, task_id, conn_id, sql_query)
-
-
 
 
 

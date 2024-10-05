@@ -59,10 +59,10 @@ def initialize_load_transformation_operator(dag, topic, table_name, key):
 def initialize_data_quality_operator(table_name: str, schema):
         return GreatExpectationsOperator(
             conn_id=os.environ.get('POSTGRES_CONN_ID'),
-            schema=schema,
+            schema="public",
             data_asset_name=f"{schema}.{table_name}",
             task_id=f"validate_{table_name}",
-            data_context_root_dir="gx",
+            data_context_root_dir="/opt/airflow/projects/gx",
             expectation_suite_name=f"{table_name}_suite",
             return_json_dict=True,
             fail_task_on_validation_failure=True

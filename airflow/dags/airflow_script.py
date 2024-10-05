@@ -37,7 +37,7 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-schema = "spotify"
+schema = "public"
 
 # def get_configs():
 #     from utils import (independent_ingestion_task_configs, dependent_ingestion_task_configs,
@@ -192,8 +192,6 @@ with DAG(
     load_fact >> fact_checks \
     >> load_transformation >> end_operator
 
-
-# dag = spotify_pipeline()
     
     
 

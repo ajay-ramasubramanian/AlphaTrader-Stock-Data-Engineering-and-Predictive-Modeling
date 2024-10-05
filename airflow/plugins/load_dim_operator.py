@@ -1,5 +1,6 @@
 from airflow.models import BaseOperator
 from airflow.hooks.postgres_hook import PostgresHook
+
 from airflow.utils.decorators import apply_defaults  # Remove if using Airflow 2.0+
 
 from transformations.utils import MinioRetriever

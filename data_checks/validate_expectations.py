@@ -9,7 +9,7 @@ def validate_expectations(df: pd.DataFrame, expectation_suite_name):
     ## run only the first time to make a gx directory.
     # context = FileDataContext.create(project_root_dir=".")
 
-    context = get_context(project_root_dir=".")
+    context = get_context(project_root_dir="/opt/airflow/projects")
 
     # Convert the pandas DataFrame to a Great Expectations PandasDataset
     ge_df = PandasDataset(df)

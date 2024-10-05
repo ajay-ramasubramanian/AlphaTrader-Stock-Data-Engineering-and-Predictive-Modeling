@@ -32,6 +32,7 @@ For warehouse:
 # Have a clear idea about the outputs before starting the project. 
 
 # To open database:
+docker-compose exec postgres-warehouse bash
 psql -U spotify -d spotify_db
 \c spotify_db
 

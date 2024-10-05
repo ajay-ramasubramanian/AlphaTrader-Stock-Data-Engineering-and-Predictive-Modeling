@@ -71,9 +71,15 @@ class RetrieveAllTracks():
 
 
 def run_retrieve_all_tracks():
+<<<<<<< HEAD
     ob = RetrieveAllTracks("suhaas", 
                             TOPIC_CONFIG["liked_songs"]["topic"], 
                             "raw", 
+=======
+    ob = RetrieveAllTracks(os.getenv('USER_NAME'), \
+                            TOPIC_CONFIG["liked_songs"]["topic"], \
+                            "raw", \
+>>>>>>> 3aaf78443a224b23d3d599a20ac5fd54667d62c5
                             "processed")
     ob.get_all_tracks()
 

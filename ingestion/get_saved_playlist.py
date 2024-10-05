@@ -9,6 +9,8 @@ import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
+from dotenv import load_dotenv
+load_dotenv()
 
 class RetrieveSavedPlaylist():
 
@@ -70,7 +72,7 @@ class RetrieveSavedPlaylist():
     
 
 def run_retrieve_saved_playlist():
-    ob = RetrieveSavedPlaylist("suhaas", \
+    ob = RetrieveSavedPlaylist(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["saved_playlists"]["topic"],\
                             "raw", \
                             "processed")

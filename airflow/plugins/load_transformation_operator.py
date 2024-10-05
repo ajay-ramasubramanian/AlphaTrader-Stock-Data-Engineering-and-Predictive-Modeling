@@ -4,7 +4,10 @@ from airflow.hooks.postgres_hook import PostgresHook
 
 from transformations.utils import MinioRetriever
 from io import StringIO
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 class LoadTransformationOperator(BaseOperator):
     template_fields = ('topic', 'table_name', 'key')
     def __init__(
@@ -30,7 +33,7 @@ class LoadTransformationOperator(BaseOperator):
         
         try:
             # Retrieve data from Minio
-            minio_retriever = MinioRetriever('suhaas', self.topic, 'presentation', self.minio_conn_id)
+            minio_retriever = MinioRetriever(os.getenv('USER_NAME'), self.topic, 'presentation', self.minio_conn_id)
             df = minio_retriever.retrieve_object(key=self.key)
             
             # Prepare data for Postgres

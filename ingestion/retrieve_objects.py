@@ -1,15 +1,17 @@
-import sys
 import site
+import sys
+
 sys.path.extend(site.getsitepackages())
 import io
 import json
 import os
+
 import pandas as pd
 import s3fs
-from minio import Minio
 from dotenv import load_dotenv
+from minio import Minio
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 class MinioRetriever:
@@ -22,18 +24,18 @@ class MinioRetriever:
         try:
             # Set up S3 filesystem (MinIO uses S3 protocol)
             fs = s3fs.S3FileSystem(
-                endpoint_url=f"http://{os.environ.get('HOST')}:9000",
+                endpoint_url=f"http://{os.getenv('HOST')}:9000",
                 key="minioadmin",
                 secret="minioadmin",
                 client_kwargs={
-                    'endpoint_url': f"http://{os.environ.get('HOST')}:9000"
+                    'endpoint_url': f"http://{os.getenv('HOST')}:9000"
     }
                 
             )
 
             print(self.topic)
 
-            print(os.environ.get('HOST'))
+            print(os.getenv('HOST'))
             # List all objects in the specified subfolder
             if fs.exists(f"{self.ret_container}"):
                 print(f"Folder Path :{self.ret_container} exists")
@@ -95,8 +97,8 @@ class MinioUploader:
             fs = s3fs.S3FileSystem(
                     key="minioadmin",
                     secret="minioadmin",
-                    endpoint_url=f"http://{os.environ.get('HOST')}:9000",  # Explicitly set the endpoint URL
-                    client_kwargs={'endpoint_url': f"http://{os.environ.get('HOST')}:9000"},
+                    endpoint_url=f"http://{os.getenv('HOST')}:9000",  # Explicitly set the endpoint URL
+                    client_kwargs={'endpoint_url': f"http://{os.getenv('HOST')}:9000"},
                     use_ssl=False  # Set to False for localhost without HTTPS
                 )
 

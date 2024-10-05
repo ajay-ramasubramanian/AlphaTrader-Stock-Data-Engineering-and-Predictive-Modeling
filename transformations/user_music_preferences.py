@@ -1,14 +1,18 @@
 
-import os,site,sys
+import os
+import site
+import sys
+
 import numpy as np
 
 sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
 import pandas as pd
-from transformations.utils import TOPIC_CONFIG, MinioRetriever, MinioUploader
+from dotenv import load_dotenv
 
+from transformations.utils import  MinioRetriever, MinioUploader
+from common_utility_functions.utils import TOPIC_CONFIG, scope
 load_dotenv()
 
 class ProcessTopAritstBasedOnGenres:
@@ -41,8 +45,9 @@ class ProcessTopAritstBasedOnGenres:
             .groupby('genres')
             .size()
             .sort_values(ascending=False)
-            .reset_index(name='genre_count')
+            .reset_index(names=['genre_name','genre_count'])
         )
+        
 
         # Artist Discovery
         liked_artists = set(liked_songs['artist_id'])
@@ -93,7 +98,7 @@ class ProcessTopAritstBasedOnGenres:
         self.uploader.upload_files(df,key)
 # Usage
 def user_music_preferences():   
-    transformed = ProcessTopAritstBasedOnGenres(user='suhaas',table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \
+    transformed = ProcessTopAritstBasedOnGenres(user=os.getenv('USER_NAME'),table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \
                                                     table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
                                                     table_3_topic=TOPIC_CONFIG['all_tracks']['topic'], \
                                                     table_4_topic=TOPIC_CONFIG['user_music_preferences']['topic'],)
@@ -105,15 +110,5 @@ def user_music_preferences():
 
 
 if __name__ == "__main__":
-    transformed = ProcessTopAritstBasedOnGenres(user='suhaas',table_1_topic=TOPIC_CONFIG['liked_songs']['topic'], \
-                                                table_2_topic=TOPIC_CONFIG['related_artists']['topic'], \
-                                                table_3_topic=TOPIC_CONFIG['all_tracks']['topic'], \
-                                                table_4_topic=TOPIC_CONFIG['user_music_preferences']['topic'],)
-    
-    liked_songs, related_artists, all_tracks= transformed.retriever()
-    user_music_preferences = transformed.transform_liked_songs_related_artists(liked_songs, related_artists, all_tracks)
-
-    for key in user_music_preferences:
-        transformed.write_to_parquet(user_music_preferences[key], key)
-    
+    user_music_preferences()
     

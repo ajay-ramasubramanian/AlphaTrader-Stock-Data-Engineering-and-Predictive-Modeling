@@ -8,8 +8,8 @@ sys.path.extend(site.getsitepackages())
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 import pandas as pd
-from transformations.utils import MinioRetriever,MinioUploader, TOPIC_CONFIG
-# from common_utility_functions.utils import USER_INFO, scope
+from transformations.utils import MinioRetriever,MinioUploader
+from common_utility_functions.utils import TOPIC_CONFIG, scope
 
 load_dotenv()
 
@@ -30,7 +30,7 @@ class SourceTables:
 
 
 def processed_to_presentation_liked_songs():
-    liked_songs = SourceTables("suhaas", \
+    liked_songs = SourceTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["liked_songs"]["topic"]
                             )
     
@@ -38,7 +38,7 @@ def processed_to_presentation_liked_songs():
     liked_songs.upload(results)
 
 def processed_to_presentation_related_artists():
-    related_artists = SourceTables("suhaas", \
+    related_artists = SourceTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["related_artists"]["topic"]
                             )
     
@@ -47,7 +47,7 @@ def processed_to_presentation_related_artists():
     related_artists.upload(results)
 
 def processed_to_presentation_recent_plays():
-    recent_plays = SourceTables("suhaas", \
+    recent_plays = SourceTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["recent_plays"]["topic"]
                             )
     
@@ -56,21 +56,21 @@ def processed_to_presentation_recent_plays():
     
 
 def processed_to_presentation_all_tracks():
-    all_tracks = SourceTables("suhaas", \
+    all_tracks = SourceTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["all_tracks"]["topic"]
                             )
     results = all_tracks.retrieve()
     all_tracks.upload(results)
 
 def processed_to_presentation_artist_albums():
-    artist_albums = SourceTables("suhaas", \
+    artist_albums = SourceTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["artist_albums"]["topic"]
                             )
     results = artist_albums.retrieve()
     artist_albums.upload(results)
 
 def processed_to_presentation_top_songs():
-    top_songs = SourceTables("suhaas", \
+    top_songs = SourceTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["top_songs"]["topic"]
                             )
     results = top_songs.retrieve()
@@ -79,7 +79,8 @@ def processed_to_presentation_top_songs():
     top_songs.upload(results)
 
 def processed_to_presentation_genres_table():
-    genres_table = SourceTables("suhaas", "spotify_genres_table"
+    genres_table = SourceTables(os.getenv('USER_NAME'), "spotify_genres_table"
+                            # TOPIC_CONFIG["genres_table"]["topic"]
                             )
     
     results = genres_table.retrieve()

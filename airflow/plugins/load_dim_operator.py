@@ -5,7 +5,9 @@ from airflow.utils.decorators import apply_defaults  # Remove if using Airflow 2
 
 from transformations.utils import MinioRetriever
 from io import StringIO
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 class LoadDimOperator(BaseOperator):
 
     # @apply_defaults  # Remove if using Airflow 2.0+
@@ -28,7 +30,7 @@ class LoadDimOperator(BaseOperator):
         
         try:
             # Retrieve data from Minio
-            minio_retriever = MinioRetriever('suhaas', self.topic, 'presentation', self.minio_conn_id)
+            minio_retriever = MinioRetriever(os.getenv('USER_NAME'), self.topic, 'presentation', self.minio_conn_id)
             df = minio_retriever.retrieve_object()
             
             # Prepare data for Postgres

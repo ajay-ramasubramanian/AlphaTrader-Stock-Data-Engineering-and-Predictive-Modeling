@@ -5,8 +5,8 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 import pandas as pd
-from transformations.utils import MinioRetriever,MinioUploader, TOPIC_CONFIG
-from common_utility_functions.utils import  scope
+from transformations.utils import MinioRetriever,MinioUploader
+from common_utility_functions.utils import  scope, TOPIC_CONFIG
 
 
 load_dotenv()
@@ -47,7 +47,7 @@ def process_user_details():
 
 def processed_to_presentation_user_details():
 
-    user_details =UserDetailsTables("suhaas", \
+    user_details =UserDetailsTables(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["user_details"]['topic'],host='localhost')
     user_details_df = process_user_details()
 

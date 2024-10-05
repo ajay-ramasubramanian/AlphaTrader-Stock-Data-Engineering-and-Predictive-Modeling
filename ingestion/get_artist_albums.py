@@ -9,6 +9,9 @@ from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 import pandas as pd
 from ingestion.utils import TOPIC_CONFIG
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
 
@@ -94,7 +97,7 @@ class RetrieveArtistAlbums(MinioRetriever, MinioUploader):
 
     
 def run_get_user_artist_albums():
-    ob = RetrieveArtistAlbums("suhaas", \
+    ob = RetrieveArtistAlbums(os.getenv('USER_NAME'), \
                                 TOPIC_CONFIG["artist_albums"]["topic"], \
                                 "raw", \
                                 "processed")

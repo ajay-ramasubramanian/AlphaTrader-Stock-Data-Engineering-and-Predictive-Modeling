@@ -7,7 +7,7 @@ import pandas as pd
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
-
+load_dotenv()
 class TopTracksProducer(SpotifyKafkaProducer):
     def __init__(self):
         super().__init__()
@@ -54,7 +54,7 @@ class TopTracksProducer(SpotifyKafkaProducer):
 
 def run_producer_top_tracks():
     top_tracks = TopTracksProducer()
-    top_tracks.process_spotify_data('suhaas')
+    top_tracks.process_spotify_data(os.getenv('USER_NAME'))
 
 if __name__ == "__main__":
     run_producer_top_tracks()

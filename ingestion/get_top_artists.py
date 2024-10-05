@@ -9,7 +9,9 @@ import pandas as pd
 from datetime import datetime
 from ingestion.retrieve_objects import MinioRetriever,MinioUploader
 from ingestion.utils import TOPIC_CONFIG
+from dotenv import load_dotenv
 
+load_dotenv()
 class RetrieveTopArtists():
 
     def __init__(self,user, topic,raw, processed) -> None:
@@ -67,7 +69,7 @@ class RetrieveTopArtists():
     
 
 def run_retrieve_top_artists():
-    ob = RetrieveTopArtists("suhaas", \
+    ob = RetrieveTopArtists(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["top_artists"]["topic"],\
                             "raw",\
                             "processed")

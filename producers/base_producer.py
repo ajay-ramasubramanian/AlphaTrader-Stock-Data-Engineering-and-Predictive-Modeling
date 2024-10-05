@@ -9,7 +9,9 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from utils import scope
 
-
+import os 
+from dotenv import load_dotenv
+load_dotenv(override=True)
 # Kafka broker address
 KAFKA_BOOTSTRAP_SERVERS = ['localhost:9093']
 
@@ -30,7 +32,7 @@ class SpotifyKafkaProducer:
             compression_type='gzip'  # Compress messages using gzip to save bandwidth
         )
         
-        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.getenv('SPOTIPY_CLIENT_ID'), client_secret = os.getenv('SPOTIPY_CLIENT_SECRET'), redirect_uri = os.getenv('SPOTIPY_REDIRECT_URI'), scope=scope))
 
         # Set up a thread pool executor for asynchronous processing with a maximum of 5 worker threads
         self.executor = ThreadPoolExecutor(max_workers=5)  # Adjust based on your concurrency needs

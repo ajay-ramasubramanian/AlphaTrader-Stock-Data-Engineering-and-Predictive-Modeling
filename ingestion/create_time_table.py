@@ -66,19 +66,10 @@ class CreateTimeTable():
 
 
 def run_create_time_table():
-<<<<<<< HEAD
-    ob = CreateTimeTable(
-        "suhaas", 
-        TOPIC_CONFIG["liked_songs"]["topic"], 
-        "processed", 
-        "presentation"
-    )
-=======
     ob = CreateTimeTable(os.getenv('USER_NAME'), \
                             TOPIC_CONFIG["liked_songs"]["topic"], \
                             "processed", \
                             "presentation")
->>>>>>> 3aaf78443a224b23d3d599a20ac5fd54667d62c5
     ob.create_time_table()
 
 if __name__ == "__main__":

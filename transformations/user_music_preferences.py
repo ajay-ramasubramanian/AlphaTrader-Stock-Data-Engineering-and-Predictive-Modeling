@@ -36,14 +36,19 @@ class ProcessTopAritstBasedOnGenres:
 
     def transform_liked_songs_related_artists(self, liked_songs, related_artists, all_tracks):
     # Merge dataframes
-        all_tracks_merged = liked_songs.merge(all_tracks, on='track_id', how='left')
-        # print(all_tracks_merged.columns)
-        merged_df = all_tracks_merged.merge(related_artists, on='artist_id', how='inner')
-        # print(merged_df.to_string())
-        # print(merged_df.columns)
+        
+        liked_songs.drop_duplicates(subset=['track_id'],inplace =True)
+
+        all_tracks_merged = liked_songs.merge(all_tracks, on='track_id', how='inner')
+
+        merged_df = all_tracks_merged.merge(related_artists, on='artist_id', how='left')
+
+
         # Genre Analysis
+        genre_all_tracks_merged = liked_songs.merge(all_tracks, on='track_id',how='left')
+        genre_merged_df = genre_all_tracks_merged.merge(related_artists, on='artist_id',how='inner')
         genre_df = (
-            merged_df.explode('genres')
+            genre_merged_df.explode('genres')
             .groupby('genres')
             .size()
             .sort_values(ascending=False)
@@ -55,7 +60,7 @@ class ProcessTopAritstBasedOnGenres:
         liked_artists = set(liked_songs['artist_id'])
         new_artists_df = related_artists[~related_artists['artist_id'].isin(liked_artists)]
         new_artists_df = new_artists_df.sort_values('artist_popularity', ascending=False)
-        new_artists_df.drop(columns=['genres', 'ingested_on'], inplace=True)
+        new_artists_df.drop(columns=['genres'], inplace=True)
 
         # Popularity Analysis
         popularity_df = merged_df[['artist_name_x', 'artist_popularity']].drop_duplicates()
@@ -66,9 +71,17 @@ class ProcessTopAritstBasedOnGenres:
         monthly_likes_df = liked_songs.groupby('month_year').size().reset_index(name='monthly_like_count')
         monthly_likes_df['month_year'] = monthly_likes_df['month_year'].astype(str)
 
+
         # Artist Frequency Analysis
-        artist_frequency_df = merged_df['artist_name_x'].value_counts().reset_index()
-        artist_frequency_df.columns = ['artist_name', 'like_count']
+        # Merge likedsongs with related_artists to get artist names
+        artist_frequency_merged_df = liked_songs.merge(related_artists[['artist_id', 'artist_name']], on='artist_id', how='left')
+        artist_frequency_merged_df=artist_frequency_merged_df.drop_duplicates(subset='track_id', keep='first')
+        # Count songs for each artist
+        artist_frequency_df = artist_frequency_merged_df.groupby(['artist_id', 'artist_name']).size().reset_index(name='like_count')
+        # Sort by song count in descending order
+        artist_frequency_df = artist_frequency_df.sort_values('like_count', ascending=False)
+        artist_frequency_df.drop(columns=['artist_id'], inplace=True)
+
 
         # Song Details
         song_details_df = merged_df[['track_name', 'artist_name_x', 'album_name', 'duration_ms', 'artist_popularity', 'added_at']]

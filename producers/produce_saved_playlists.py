@@ -1,19 +1,13 @@
-from kafka import KafkaProducer
 from base_producer import SpotifyKafkaProducer
 import os
-from datetime import datetime
-from utils import scope
-import pandas as pd
+import time
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
 # Load environment variables from .env file (if needed)
-# load_dotenv()
-# clientID = os.getenv("SPOTIPY_CLIENT_ID")
-# clientSecret = os.getenv("SPOTIPY_CLIENT_SECRET")
-# redirect_uri = os.getenv("SPOTIPY_REDIRECT_URI")
 load_dotenv()
+
 class SavedTracksProducer(SpotifyKafkaProducer):
     def __init__(self):
         super().__init__()
@@ -31,12 +25,12 @@ class SavedTracksProducer(SpotifyKafkaProducer):
         try:
             offset = 0  # Offset for pagination in Spotify API
             limit = 1  # Limit for number of items to fetch per request (can be adjusted)
-
+            print("Sending data to Kafka\n")
             while True:
+                
                 # Fetch the current user's saved tracks with pagination support
                 result = self.sp.current_user_playlists(limit=limit, offset=offset)
-                # print(f"result: {result}")
-                # print("..")  # Optional debug print
+                time.sleep(0.2)
 
                 # Break the loop if no items are returned
                 if not result['items']:

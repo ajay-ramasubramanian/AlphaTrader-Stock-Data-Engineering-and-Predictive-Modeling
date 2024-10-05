@@ -45,7 +45,7 @@ class ProcessTopAritstBasedOnGenres:
             .groupby('genres')
             .size()
             .sort_values(ascending=False)
-            .reset_index(names=['genre_name','genre_count'])
+            .reset_index(name='genre_count')
         )
         
 

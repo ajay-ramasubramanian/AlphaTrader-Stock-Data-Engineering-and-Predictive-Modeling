@@ -70,7 +70,7 @@ create_artist_genre_bridge = """
 CREATE TABLE IF NOT EXISTS public.dim_artist_genre_bridge (
     artist_id VARCHAR(255),
     genre_id INTEGER,
-    PRIMARY KEY (genre_id, artist_id)
+    PRIMARY KEY (artist_id, genre_id)
 )
 """
 create_top_songs ="""

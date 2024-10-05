@@ -9,7 +9,7 @@ from dags.operators import initialize_data_quality_operator
 from dags.utils import insert_to_dim_table_task_configs, insert_to_fact_table_task_configs, create_data_checks_task_configs
 from dags.operators import initialize_python_operator
 
-schema = 'spotify'
+schema = 'public'
 
 def initialize_expectation_suites(dag):
 
@@ -20,14 +20,14 @@ def initialize_expectation_suites(dag):
 
     return group
 
-def dimension_check_group():
+def dimension_check_group(dag):
     with TaskGroup('dimension_table_checks') as group:
         dim_tables = list(insert_to_dim_table_task_configs.keys())
         dim_tasks = [initialize_data_quality_operator(table, schema) for table in dim_tables]
 
     return group
 
-def fact_check_group():
+def fact_check_group(dag):
     with TaskGroup('fact_table_checks') as group:
         fact_tables = list(insert_to_fact_table_task_configs.keys())
         fact_tasks = [initialize_data_quality_operator(table, schema) for table in fact_tables]

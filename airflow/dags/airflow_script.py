@@ -179,8 +179,8 @@ with DAG(
     load_dimension = load_dimension_group(dag)
     load_fact = load_fact_group(dag)
     load_transformation = load_transformation_group(dag)
-    dimension_checks = dimension_check_group()
-    fact_checks = fact_check_group()
+    dimension_checks = dimension_check_group(dag)
+    fact_checks = fact_check_group(dag)
 
 
     start_operator >> \

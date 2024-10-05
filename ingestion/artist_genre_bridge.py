@@ -40,7 +40,7 @@ class ArtistGenreBridge:
         self.retrieve_genres = MinioRetriever(user, genre_table, processed, os.getenv('HOST'))
         # Initialize MinIO uploader for uploading the processed data.
         self.uploader = MinioUploader(user, self.TOPIC, presentation, os.getenv('HOST'))
-
+        self.presentation=presentation
         # Set the name of the Great Expectations validation suite for this data.
         self.expectations_suite_name = 'artist_genre_bridge_suite'
 
@@ -75,9 +75,11 @@ class ArtistGenreBridge:
             bridge_df = artists_genre_df.merge(genres_df, how="inner", on="genre")
             bridge_df = bridge_df[['artist_id', 'genre_id']]  # Select only the necessary columns.
             bridge_df.drop_duplicates(inplace=True)  # Remove duplicate rows.
+            bridge_df = bridge_df.dropna()
 
             # Convert the DataFrame to the correct data types and reset the index.
             bridge_df.astype(self.dtype_dict)
+            # bridge_df['genre_id'].astype(int)
             bridge_df.reset_index(drop=True, inplace=True)
 
             # Run Great Expectations data quality checks on the DataFrame.

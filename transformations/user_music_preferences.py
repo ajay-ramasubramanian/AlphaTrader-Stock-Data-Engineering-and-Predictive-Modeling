@@ -36,16 +36,18 @@ class ProcessTopAritstBasedOnGenres:
 
     def transform_liked_songs_related_artists(self, liked_songs, related_artists, all_tracks):
     # Merge dataframes
-        all_tracks_merged = liked_songs.merge(all_tracks, on='track_id', how='inner')
-        merged_df = all_tracks_merged.merge(related_artists, on='artist_id', how='left')
-
+        all_tracks_merged = liked_songs.merge(all_tracks, on='track_id', how='left')
+        # print(all_tracks_merged.columns)
+        merged_df = all_tracks_merged.merge(related_artists, on='artist_id', how='inner')
+        # print(merged_df.to_string())
+        # print(merged_df.columns)
         # Genre Analysis
         genre_df = (
             merged_df.explode('genres')
             .groupby('genres')
             .size()
             .sort_values(ascending=False)
-            .reset_index(names=['genre_name','genre_count'])
+            .reset_index(name='genre_count')
         )
         
 

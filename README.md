@@ -88,32 +88,45 @@ This section details the specific technologies used in our pipeline and the chal
   - **Security and Access Control**: Ensuring proper security measures and access controls in a multi-user environment was challenging. We implemented MinIO's Identity and Access Management (IAM) policies to provide fine-grained access control, and integrated with our existing authentication systems to maintain a secure data lake environment.
 
 ### Orchestration: Apache Airflow
-- **Usage**: [Brief description of how you used Airflow]
+
+- **Usage**: We utilized Apache Airflow to orchestrate and automate our entire Spotify data pipeline. We created a DAG (Directed Acyclic Graph) that defined the workflow, including tasks for data extraction from the Spotify API, data processing with Pandas and SQL, data quality checks with Great Expectations, and data loading into our MinIO data lake and PostgreSQL data warehouse. To handle various aspects of our pipeline, we implemented six custom operators:
+  - Python Operator
+  - PostgreSQL Operator
+  - LoadDimOperator (for dimensional tables)
+  - LoadFactOperator (for fact tables)
+  - LoadTransformationOperator (for transformation tables like user_music_preferences and recent_plays_analysis)
+  - LoadGreatExpectationsOperator (for data quality checks)
+  
 - **Challenges**: 
-  1. [Challenge 1]
-  2. [Challenge 2]
-  3. [Challenge 3]
+  - **Complex Workflow Management**: Designing an efficient DAG that accurately represented our complex data pipeline was challenging. As our DAG's complexity grew, we encountered DagBag Parsing timeout errors. To address this, we had to deconstruct our DAG into separate files, reducing parsing time and improving overall performance.
+  - **Custom Operator Development**: Creating and maintaining six custom operators required significant effort. We had to ensure these operators were robust, efficient, and compatible with Airflow's execution model while also integrating smoothly with our external services and data quality checks.
+  - **Docker Integration**: Setting up the Airflow service in our Docker Compose environment was tedious. We had to mount our entire project inside the Airflow service and install all required Python packages within the Airflow container. This process required careful configuration management and testing to ensure consistency across development and production environments.
 
 ### Data Warehouse: PostgreSQL
-- **Usage**: [Brief description of how you used PostgreSQL]
-- **Challenges**: 
-  1. [Challenge 1]
-  2. [Challenge 2]
-  3. [Challenge 3]
+
+- **Usage**:
+   We implemented PostgreSQL as our data warehouse solution to store and manage the processed data from our Spotify data engineering pipeline. We utilized PostgreSQL's robust features to create a structured data model with fact and dimension tables. The database was designed to handle analytical workloads, storing user activity data, song metadata, and derived insights from our data transformations.
 
 ### Visualization: PowerBI
-- **Usage**: [Brief description of how you used PowerBI]
-- **Challenges**: 
-  1. [Challenge 1]
-  2. [Challenge 2]
-  3. [Challenge 3]
+
+- **Usage**:
+   We utilized PowerBI as our primary data visualization tool to create interactive dashboards and reports from our processed Spotify data. We leveraged PowerBI's rich set of visualization options, including custom visuals, to create compelling and insightful representations. For instance, users can view their genre analysis, top songs based on their listening habits etc. 
+
 
 ### Containerization: Docker
-- **Usage**: [Brief description of how you used Docker]
-- **Challenges**: 
-  1. [Challenge 1]
-  2. [Challenge 2]
-  3. [Challenge 3]
+
+- **Usage**:
+  We utilized Docker to containerize and orchestrate our entire Spotify data pipeline infrastructure. Our docker-compose file defines and manages multiple services including:
+  - Apache Kafka and Zookeeper for message queuing
+  - MinIO for S3-compatible object storage
+  - PostgreSQL databases for Airflow metadata and our data warehouse
+  - Apache Airflow services (webserver, scheduler, and init)
+  Docker allowed us to create a consistent and reproducible environment across development and production, ensuring all components of our pipeline work together seamlessly.
+
+- **Challenges**:
+  - **Complex Service Dependencies**: Managing the interdependencies between services, especially ensuring proper startup order for Kafka, Zookeeper, and the databases, required careful configuration of the depends_on directives and health checks.
+  - **Environment Variable Management**: Securely managing environment variables across multiple services, particularly for sensitive information like database credentials and Airflow's Fernet key, necessitated the use of .env files and careful consideration of variable scoping.
+  - **Volume Management and Data Persistence**: Configuring volumes for data persistence, especially for MinIO and PostgreSQL, while ensuring proper permissions and data integrity across container restarts, required careful planning and testing.
 
 ## Setup and Installation ( Stage 1 in development)
 

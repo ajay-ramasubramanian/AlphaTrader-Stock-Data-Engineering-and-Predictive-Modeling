@@ -1,13 +1,10 @@
-from kafka import KafkaProducer
 from base_producer import SpotifyKafkaProducer
 import os
-from datetime import datetime
-from utils import scope
-import pandas as pd
+import time
 from dotenv import load_dotenv
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
+
 load_dotenv()
+
 class TopTracksProducer(SpotifyKafkaProducer):
     def __init__(self):
         super().__init__()
@@ -26,12 +23,14 @@ class TopTracksProducer(SpotifyKafkaProducer):
             offset = 0
             time_range = "short_term"
             limit = 1
-
+            print("Sending data to Kafka\n")
             while True:
+                
                 result = self.sp.current_user_top_tracks(time_range=time_range, limit=limit, offset=offset)
-                # print(result)
+                time.sleep(0.2)
                 if not result['items']:
                     break
+                
                 # Send to Kafka as soon as we have the data
                 future = self.produce_top_songs(user_id, result)
                 futures.append(future)

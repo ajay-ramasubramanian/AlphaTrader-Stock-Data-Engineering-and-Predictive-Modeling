@@ -4,13 +4,12 @@ import os
 from datetime import datetime
 from utils import scope
 import pandas as pd
+import time
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
-# import sys
-# import os
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 load_dotenv()
 class FollowingArtistsProducer(SpotifyKafkaProducer):
     def __init__(self, ):
@@ -32,9 +31,10 @@ class FollowingArtistsProducer(SpotifyKafkaProducer):
             limit = 1  # Limit for number of items to fetch per request (can be adjusted)
 
             while True:
+                print("Sending data to Kafka\n")
                 # Fetch the current user's followed artists with pagination support
                 result = self.sp.current_user_followed_artists(limit=limit, after=after)
-                
+                time.sleep(0.2)
                 # Send the data to Kafka as soon as it is retrieved
                 future = self.produce_following_artists(user_id, result)
                 futures.append(future)

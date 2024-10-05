@@ -30,7 +30,6 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
 
         return milliseconds
 
-        
 
     def process_spotify_data(self, user_id):
         """
@@ -42,17 +41,15 @@ class RecentlyPlayedProducer(SpotifyKafkaProducer):
         """
         futures = []
         try:
-            after =None
+            print("Sending data to Kafka\n")
             limit = 50
-            track_count = 50
-            max_tracks = 100
 
             result = self.sp.current_user_recently_played(limit=limit)
-            # print(result)
+            time.sleep(0.2)
+
             # Send to Kafka as soon as we have the data
             future = self.produce_recent_plays(user_id, result)
             futures.append(future)
-            # print(f"Sent {track_count} tracks")
 
             # Wait for all messages to be sent
             for future in futures:

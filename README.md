@@ -167,11 +167,12 @@ Next, a .env file needs to be created in the root of the project directory. Two 
 
 ### Step 3: **Start the project**
 
-First, Docker services need to be started by typing `docker-compose up -d` in the terminal. This command will initiate all services required for the project to function.
-Next, execute python `run_all_consumer.py`, then open another terminal and run `python run_all_producers.py`. This action will start Kafka producers and consumers that fetch data from the Spotify Web API and send it to their respective Kafka topics. A Kafka consumer will subscribe to these topics to receive necessary data and write it to an object store.
-To view the received data, open a web browser and navigate to `localhost:9000`. This action will display a login page for MinIO object store. The username and password are both `minioadmin`. The data will be written in the raw bucket.
-Then, open another tab in the browser and go to `localhost:8080` to access Apache Airflow's login page. The username is `admin` and the password is `admin_password`. Upon logging in, a DAG named Spotify_pipeline_dag will be visible. Clicking on the trigger play button in the rightmost corner will initiate pipeline execution.
-Finally, to check transformed tables in the PostgreSQL data warehouse, follow these additional steps.
+- First, Docker services need to be started by typing `docker-compose up -d` in the terminal. This command will initiate all services required for the project to function.
+- Next, execute python `run_all_consumer.py`, then open another terminal and run `python run_all_producers.py`. This action will start Kafka producers and consumers that fetch data from the Spotify Web API and send it to their respective Kafka topics. A Kafka consumer will subscribe to these topics to receive necessary data and write it to an object store.
+- To view the received data, open a web browser and navigate to `localhost:9000`. This action will display a login page for MinIO object store. The username and password are both `minioadmin`. The data will be written in the raw bucket.
+- Then, open another tab in the browser and go to `localhost:8080` to access Apache Airflow's login page. The username is `admin` and the password is `admin_password`. Upon logging in, a DAG named Spotify_pipeline_dag will be visible.
+- Clicking on the trigger play button in the rightmost corner will initiate pipeline execution.
+- Finally, to check transformed tables in the PostgreSQL data warehouse, follow these additional steps.
   
 ### Step 4: **View the transformed data from Postgres data warehouse**
 

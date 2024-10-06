@@ -395,43 +395,6 @@ def fact_liked_songs_expectation_suite():
     for expectation in expectation_config_unique:
         suite.add_expectation(expectation)
 
-    # expectation_config_referential_integrity = [
-    #     ExpectationConfiguration(
-    #         expectation_type="expect_column_values_to_be_in_set",
-    #         kwargs={
-    #             "column": "artist_id",
-    #             "value_set": {"query": "SELECT DISTINCT artist_id FROM dim_artist"},
-    #             "result_format": "COMPLETE"
-    #         }
-    #     ),
-    #     ExpectationConfiguration(
-    #         expectation_type="expect_column_values_to_be_in_set",
-    #         kwargs={
-    #             "column": "album_id",
-    #             "value_set": {"query": "SELECT DISTINCT album_id FROM dim_album"},
-    #             "result_format": "COMPLETE"
-    #         }
-    #     ),
-    #     ExpectationConfiguration(
-    #         expectation_type="expect_column_values_to_be_in_set",
-    #         kwargs={
-    #             "column": "track_id",
-    #             "value_set": {"query": "SELECT DISTINCT track_id FROM dim_track"},
-    #             "result_format": "COMPLETE"
-    #         }
-    #     ),
-    #     ExpectationConfiguration(
-    #         expectation_type="expect_column_values_to_be_in_set",
-    #         kwargs={
-    #             "column": "time_id",
-    #             "value_set": {"query": "SELECT DISTINCT date_id FROM dim_time"},
-    #             "result_format": "COMPLETE"
-    #         }
-    #     )
-    # ]
-    
-    # for expectation in expectation_config_referential_integrity:
-    #     suite.add_expectation(expectation)
     
     context.save_expectation_suite(suite)
     print(f"Added {suite_name} to context!!")
@@ -498,36 +461,6 @@ def fact_recently_played_expectation_suite():
     
     suite.add_expectation(expectation_config_valid_popularity)
     suite.add_expectation(expectation_config_valid_ingested_format)
-
-    # expectation_config_referential_integrity = [
-    #     ExpectationConfiguration(
-    #         expectation_type="expect_column_values_to_be_in_set",
-    #         kwargs={
-    #             "column": "artist_id",
-    #             "value_set": {"query": "SELECT DISTINCT artist_id FROM dim_artist"},
-    #             "result_format": "COMPLETE"
-    #         }
-    #     ),
-    #     ExpectationConfiguration(
-    #         expectation_type="expect_column_values_to_be_in_set",
-    #         kwargs={
-    #             "column": "album_id",
-    #             "value_set": {"query": "SELECT DISTINCT album_id FROM dim_album"},
-    #             "result_format": "COMPLETE"
-    #         }
-    #     ),
-    #     ExpectationConfiguration(
-    #         expectation_type="expect_column_values_to_be_in_set",
-    #         kwargs={
-    #             "column": "track_id",
-    #             "value_set": {"query": "SELECT DISTINCT track_id FROM dim_track"},
-    #             "result_format": "COMPLETE"
-    #         }
-    #     )
-    # ]
-    
-    # for expectation in expectation_config_referential_integrity:
-    #     suite.add_expectation(expectation)
     
     context.save_expectation_suite(suite)
     print(f"Added {suite_name} to context!!")
@@ -577,3 +510,4 @@ def create_postgres_expectation_suites():
 
 
 create_postgres_expectation_suites()
+

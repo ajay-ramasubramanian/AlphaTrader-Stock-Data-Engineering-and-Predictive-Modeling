@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project creates an end-to-end data pipeline that tries replicates Spotify Wrapped functionality with PowerBI dashboard, allowing users to view their personalized music insights at any time. The pipeline extracts data from the Spotify Web API, processes it using modern data engineering technologies, and presents user-friendly visualizations.
+This project creates an end-to-end data pipeline that tries to replicate Spotify Wrapped functionality with a PowerBI dashboard, allowing users to view their personalized music insights at any time. The pipeline extracts data from the Spotify Web API, processes it using modern data engineering technologies, and presents user-friendly visualizations.
 
 ## Architecture Diagram
 

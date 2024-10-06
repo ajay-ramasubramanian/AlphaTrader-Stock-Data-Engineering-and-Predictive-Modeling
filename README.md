@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project creates an end-to-end data pipeline that tries replicates Spotify Wrapped functionality with PowerBI dashboard, allowing users to view their personalized music insights at any time. The pipeline extracts data from the Spotify Web API, processes it using modern data engineering technologies, and presents user-friendly visualizations.
+This project implements a comprehensive data pipeline that emulates Spotify Wrapped's functionality, offering users real-time access to personalized music insights through a PowerBI dashboard. The system leverages the Spotify Web API to extract user data, employs cutting-edge data engineering technologies for processing, and delivers engaging visualizations. This pipeline enables users to explore their music listening habits and preferences on demand, providing a year-round alternative to Spotify's annual Wrapped feature.
 
 ## Architecture Diagram
 
@@ -12,10 +12,10 @@ This project creates an end-to-end data pipeline that tries replicates Spotify W
 
 - **Data Extraction**: Spotify Web API
 - **Message Broker/Event Streaming**: Apache Kafka
-- **Data Processing**: Pandas,SQL
-- **Data Lake**: MinIO( S3 compatible Object Store )
-- **Orchestration**: Apache Airflow
-- **Data Warehouse**: Postgres Data Warehouse
+- **Data Processing**: Pandas, SQL
+- **Data Lake**: MinIO (S3 compatible Object Store)
+- **Data Orchestration**: Apache Airflow
+- **Data Warehouse**: PostgreSQL
 - **Visualization**: PowerBI
 - **Containerization**: Docker
 
@@ -45,7 +45,7 @@ This section details the specific technologies used in our pipeline and the chal
 ### Data Extraction: Spotify Web API
 
 - **Usage**: 
-   We utilized the Spotify Web API to extract user data including liked songs, recently played tracks, saved playlists, and other user-specific information. We implemented 8 Kafka producers to interact with different endpoints of the Spotify API, each responsible for retrieving specific types of data
+   We utilized the Spotify Web API to extract user data including liked songs, recently played tracks, saved playlists, and other user-specific information. We implemented 8 Kafka producers to interact with different endpoints of the Spotify API, each responsible for retrieving specific types of data.
 - **Challenges faced**: 
   - **Rate Limiting**: The Spotify API has rate limits that restrict the number of requests that can be made within a certain timeframe. We had to implement a robust rate limiting strategy to ensure our application didn't exceed these limits while still retrieving all necessary data.
   - **Data Consistency**: As user data on Spotify can change frequently, ensuring data consistency across multiple API calls and maintaining an up-to-date representation of the user's Spotify activity was challenging. We implemented checks to detect and handle data discrepancies.
@@ -53,12 +53,13 @@ This section details the specific technologies used in our pipeline and the chal
 ### Message Broker/Event Streaming: Apache Kafka
 
 - **Usage**:
-  We implemented Apache Kafka as the core message broker and event streaming platform in our data pipeline. We created 8 Kafka producers, each responsible for extracting specific types of data from the Spotify API (e.g., liked songs, recent plays, saved playlists). These producers send data to 8 corresponding Kafka topics. We also developed 8 Kafka consumers that read from these topics and write the data to MinIO, our S3-compatible object store. To ensure data integrity and schema evolution, we implemented Avro schemas along with Avro serializers and deserializers for data validation during the producer-to-consumer data transfer.
+  We implemented Apache Kafka as the core message broker and event streaming platform in our data pipeline. We created 8 Kafka producers, each responsible for extracting specific types of data from the Spotify API (e.g., liked songs, recent plays, saved playlists). These producers send data to 8 corresponding Kafka topics. We also developed 8 Kafka consumers that read from these topics and write the data to MinIO, our S3-compatible open-source object store. To ensure data integrity and schema evolution, we implemented Avro schemas along with Avro serialization for data validation during the producer-to-consumer data transfer.
 
-- **Challenges faced**: 
-  - **Schema Evolution and Compatibility**: Implementing Avro schemas for data serialization and deserialization presented challenges when the Spotify API response structure occasionally changed. We had to develop a robust schema evolution strategy to handle these changes without breaking our pipeline, ensuring backward and forward compatibility.
-  - **Data Validation and Error Handling**: With Avro schemas in place, we needed to implement comprehensive error handling mechanisms to deal with instances where incoming data didn't match the expected schema
+- **Challenges faced**:
+  - **Schema Evolution and Compatibility**: Implementing Avro schemas for data serialization and deserialization presented challenges when the Spotify API response structure occasionally changed. We had to develop a robust schema evolution strategy to handle these changes without breaking our pipeline, ensuring backward and forward compatibility. This frequent encounter underlined the importance of Avro schemas for data integrity.
+  - **Data Validation and Error Handling**: With Avro schemas in place, we needed to implement comprehensive error handling mechanisms to deal with instances where incoming data didn't match the expected schema.
   - **Performance Optimization**: Balancing the benefits of schema validation with the need for high-throughput data processing required careful tuning. We had to optimize our Avro serialization and deserialization processes to minimize their impact on overall system performance.
+  - **Producer-Consumer designing**: Significant effort was invested in designing an efficient data flow architecture using Kafka. We experimented with various configurations of producers, consumers, and topics to enhance scalability and optimize data throughput. This iterative process allowed us to fine-tune the system for improved performance and adaptability to changing data volumes.
   
 ### Data Processing: Pandas, SQL
 
@@ -72,7 +73,7 @@ This section details the specific technologies used in our pipeline and the chal
 ### Data Checks: Apache Great Expectations
 
 - **Usage**: 
-  We integrated Apache Great Expectations into our data pipeline to ensure data quality and consistency throughout the ETL process. We implemented data quality checks at multiple stages: after initial data extraction from the Spotify API, during the transformation phase, and before loading data into the PostgreSQL data warehouse. We used Great Expectations to define and enforce data schemas, validate data types, check for null values.
+  We integrated Apache Great Expectations into our data pipeline to ensure data quality and consistency throughout the ETL process. We implemented data quality checks at multiple stages: after initial data extraction from the Spotify API, during the transformation phase, and a final check after loading into the PostgreSQL data warehouse. We used Great Expectations to define and enforce data schemas, validate data types, check for null values.
 
 - **Challenges**:
   - **Integration with Apache Airflow**: Incorporating Great Expectations into our Airflow-orchestrated pipeline required careful configuration. We had to implement custom Airflow operators to run Great Expectations checkpoints within our DAGs, ensuring that data quality checks were seamlessly integrated into our workflow without impacting performance.

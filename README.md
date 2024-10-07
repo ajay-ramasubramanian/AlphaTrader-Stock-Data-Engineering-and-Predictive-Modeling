@@ -89,7 +89,7 @@ This section details the specific technologies used in our pipeline and the chal
 
 ### Orchestration: Apache Airflow
 
-- **Usage**: We utilized Apache Airflow to orchestrate and automate our entire Spotify data pipeline. We created a DAG (Directed Acyclic Graph) that defined the workflow, including tasks for data extraction from the Spotify API, data processing with Pandas and SQL, data quality checks with Great Expectations, and data loading into our MinIO data lake and PostgreSQL data warehouse. To handle various aspects of our pipeline, we implemented six custom operators:
+- **Usage**: We utilized Apache Airflow to orchestrate and automate our entire Spotify data pipeline. We created a DAG (Directed Acyclic Graph) that defined the workflow, including tasks for data extraction from the Spotify API, data processing with Pandas and SQL, data quality checks with Great Expectations, and data loading into our MinIO data lake and PostgreSQL data warehouse. To handle various aspects of our pipeline, we implemented four custom operators and 2 build in operators:
   - Python Operator
   - PostgreSQL Operator
   - LoadDimOperator (for dimensional tables)

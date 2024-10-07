@@ -128,12 +128,11 @@ This section details the specific technologies used in our pipeline and the chal
   - **Environment Variable Management**: Securely managing environment variables across multiple services, particularly for sensitive information like database credentials and Airflow's Fernet key, necessitated the use of .env files and careful consideration of variable scoping.
   - **Volume Management and Data Persistence**: Configuring volumes for data persistence, especially for MinIO and PostgreSQL, while ensuring proper permissions and data integrity across container restarts, required careful planning and testing.
 
-## Setup and Installation ( Stage 1 in development)
+## Setup and Installation
 
-### Step 1: **Setup Spotify Web API**
+### Step 1: **Setup Spotify Web API** :rocket:
 
-Before cloning the repository, it is necessary to set up the Spotify Web API by signing into the [Spotify Web API website](https://developer.spotify.com/). After signing in, the username in the top right corner should be clicked, followed by selecting the dashboard. The Create App button must be clicked, and the following details should be entered:
-- Before cloning the repository, you must setup your spotify web api by siging into this website: 
+- Before cloning the repository, you must setup your spotify web api by siging into this website:[Spotify Web API website](https://developer.spotify.com/).
 - After signing in, click on the username in top right corner. Proceed by clicking on dashboard.
 - Here, you need to click on **create app** button and proceed to enter the details as follows.
 - **App name** : This can be named as desired.
@@ -143,10 +142,15 @@ Before cloning the repository, it is necessary to set up the Spotify Web API by 
 - Under **Which API/SDKs are you planning to use**, choose **Web API**.
 The terms of service must be accepted, and then the Save button should be clicked.
 
-### Step 2: **Clone the repository** 🚀
+### Step 2: **Clone the repository** 🤗
 
-- The project's clone URL should be copied, and navigation to the local directory where the repository will be cloned is required using Git Bash or CMD. The repository can then be cloned by executing: git clone <paste the url>. It is recommended to create a virtual environment for this project to avoid package conflicts. Once cloned, the required dependencies must be installed using: pip install -r requirements.txt.
-Next, a .env file needs to be created in the root of the project directory. Two keys for Apache Airflow must be generated: AIRFLOW_SECRET_KEY and AIRFLOW_FERNET_KEY. This can be done by typing the following commands in the terminal:
+- The project's clone URL should be copied, and navigation to the local directory where the repository will be cloned is required using Git Bash or CMD. 
+- The repository can then be cloned by executing: `git clone <paste the url>`.
+- It is recommended to create a virtual environment for this project to avoid package conflicts.
+- Once cloned, the required dependencies must be installed using: `pip install -r requirements.txt`.
+- Next, a `.env` file needs to be created in the root of the project directory.
+- Two keys for Apache Airflow must be generated: `AIRFLOW_SECRET_KEY` and `AIRFLOW_FERNET_KEY`. This can be done by typing the following commands in the terminal:
+-  
   This is for Airflow webserver secret key
   - `python3 -c 'import secrets; print(secrets.token_hex(16))'`
 
@@ -154,7 +158,7 @@ Next, a .env file needs to be created in the root of the project directory. Two 
   - `python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'`
 - Inside the `.env` file, set up environment variables as follows:
 
-  ```
+  ```text
   SPOTIPY_CLIENT_ID= '<copy your client ID from spotify's dashboard>'
   SPOTIPY_CLIENT_SECRET='<copy your client Secret from spotify's dashboard>'
   SPOTIPY_REDIRECT_URI='<copy your Redirect URI from spotify's dashboard>'
@@ -165,7 +169,7 @@ Next, a .env file needs to be created in the root of the project directory. Two 
   USER_NAME ='<type your name>'
   ```
 
-### Step 3: **Start the project**
+### Step 3: **Start the project**🤘
 
 - First, Docker services need to be started by typing `docker-compose up -d` in the terminal. This command will initiate all services required for the project to function.
 - Next, execute python `run_all_consumer.py`, then open another terminal and run `python run_all_producers.py`. This action will start Kafka producers and consumers that fetch data from the Spotify Web API and send it to their respective Kafka topics. A Kafka consumer will subscribe to these topics to receive necessary data and write it to an object store.
@@ -177,13 +181,14 @@ Next, a .env file needs to be created in the root of the project directory. Two 
 ### Step 4: **View the transformed data from Postgres data warehouse**
 
 - Using Power BI Desktop:
-Open Power BI Desktop (if not installed, it should be installed first). In the home ribbon, click on Get Data, then proceed with more options where a Postgres SQL connector can be found. Upon clicking this connector, a window will appear prompting for server and database names. In the server field, type: `localhost:5434`, and in the database field type: spotify_db. If this is the first time logging into PostgreSQL, another window will prompt for database username and password. The database username is `spotify`, and the password is `spotify_pass`. All tables in the database will now be accessible along with their contents.
+Open Power BI Desktop (if not installed, it should be installed first).
+- In the home ribbon, click on Get Data, then proceed with more options where a Postgres SQL connector can be found.
+- Upon clicking this connector, a window will appear prompting for server and database names. In the server field, type: `localhost:5434`, and in the database field type: `spotify_db`.
+- If this is the first time logging into PostgreSQL, another window will prompt for database username and password. The database username is `spotify`, and the password is `spotify_pass`. 
+- All tables in the database will now be accessible along with their contents.
 - Using Docker Compose Exec Command:
-Open a terminal and type `docker-compose exec postgres-warehouse bash`. This command opens a bash terminal inside the PostgreSQL warehouse container. Next, type `psql -U spotify -d spotify_db` to connect to the database. To view all tables in this database, type `\d` in the terminal. Traditional SQL commands like `SELECT * FROM <TABLE_NAME>;` can be used to explore table contents.
-
-### Scaling Considerations
-
-### Future Enhancements
+  Open a terminal and type `docker-compose exec postgres-warehouse bash`. This command opens a bash terminal inside the PostgreSQL warehouse container.
+- Next, type `psql -U spotify -d spotify_db` to connect to the database. To view all tables in this database, type `\d` in the terminal. Traditional SQL commands like `SELECT * FROM <TABLE_NAME>;` can be used to explore table contents.
 
 ### License
 This project is licensed under the MIT License.

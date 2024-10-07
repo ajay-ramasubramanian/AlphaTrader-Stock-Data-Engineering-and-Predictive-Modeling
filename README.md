@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project creates an end-to-end data pipeline that tries replicates Spotify Wrapped functionality with PowerBI dashboard, allowing users to view their personalized music insights at any time. The pipeline extracts data from the Spotify Web API, processes it using modern data engineering technologies, and presents user-friendly visualizations.
+This project creates an end-to-end data pipeline that tries to replicate Spotify Wrapped functionality with a PowerBI dashboard, allowing users to view their personalized music insights at any time. The pipeline extracts data from the Spotify Web API, processes it using modern data engineering technologies, and presents user-friendly visualizations.
 
 ## Architecture Diagram
 
@@ -132,29 +132,27 @@ This section details the specific technologies used in our pipeline and the chal
 
 ### Step 1: **Setup Spotify Web API**
 
-- Before cloning the repository, you must setup your spotify web api by siging into this website: [Spotify Web API website](https://developer.spotify.com/)
+Before cloning the repository, it is necessary to set up the Spotify Web API by signing into the [Spotify Web API website](https://developer.spotify.com/). After signing in, the username in the top right corner should be clicked, followed by selecting the dashboard. The Create App button must be clicked, and the following details should be entered:
+- Before cloning the repository, you must setup your spotify web api by siging into this website: 
 - After signing in, click on the username in top right corner. Proceed by clicking on dashboard.
 - Here, you need to click on **create app** button and proceed to enter the details as follows.
-- **App name** : you can name it whatever you want.
+- **App name** : This can be named as desired.
 - **App description** : End to End Data Pipeline.
 - Leave the **Website**: Blank.
 - **Redirect URIs**: `http://localhost:8080`.
-- Under **Which API/SDKs are you planning** to use choose **Web API**.
-- Accept the terms of service and click on the **save button**.
+- Under **Which API/SDKs are you planning to use**, choose **Web API**.
+The terms of service must be accepted, and then the Save button should be clicked.
 
 ### Step 2: **Clone the repository** 🚀
 
-- Copy the project's clone web url and navigate your local directory where you want to clone this repo with git bash or cmd.
-- Proceed to clone the repo by typing: `git clone <paste the url>`
-- Once you clone the repository you need to install required dependencies:`pip install -r requirements.txt`
-- Then the next step is to create a `.env` file in the root of the project directory.
-- You need to create two keys for apache airflow namely, AIRFLOW_SECRET_KEY and AIRFLOW_FERNET_KEY. To do that go to your terminal and type these commands:
+- The project's clone URL should be copied, and navigation to the local directory where the repository will be cloned is required using Git Bash or CMD. The repository can then be cloned by executing: git clone <paste the url>. It is recommended to create a virtual environment for this project to avoid package conflicts. Once cloned, the required dependencies must be installed using: pip install -r requirements.txt.
+Next, a .env file needs to be created in the root of the project directory. Two keys for Apache Airflow must be generated: AIRFLOW_SECRET_KEY and AIRFLOW_FERNET_KEY. This can be done by typing the following commands in the terminal:
   This is for Airflow webserver secret key
   - `python3 -c 'import secrets; print(secrets.token_hex(16))'`
 
   This is for fernet key:
   - `python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'`
-- Inside the `.env` file, You need to set up couple of environment variable as follows:
+- Inside the `.env` file, set up environment variables as follows:
 
   ```
   SPOTIPY_CLIENT_ID= '<copy your client ID from spotify's dashboard>'
@@ -167,37 +165,21 @@ This section details the specific technologies used in our pipeline and the chal
   USER_NAME ='<type your name>'
   ```
 
-### Step 3:**Start the project**
+### Step 3: **Start the project**
 
-- Firstly, we need to start our docker services, in order to do that, in your terminal type: `docker-compose up -d` .
-  This will start all the services required for the project to function.
-
-- Secondly, Now you can run `python run_all_consumer.py`, then proceed to open another terminal and run `python run_all_producers.py`.
--  This will start our kafka producers and consumers to fetch the data from spotify web api and send to respective kafka topic.
- A kafka consumer would subcribe to the respective topic to receive necessary data and write it to an object store.
+- First, Docker services need to be started by typing `docker-compose up -d` in the terminal. This command will initiate all services required for the project to function.
+- Next, execute python `run_all_consumer.py`, then open another terminal and run `python run_all_producers.py`. This action will start Kafka producers and consumers that fetch data from the Spotify Web API and send it to their respective Kafka topics. A Kafka consumer will subscribe to these topics to receive necessary data and write it to an object store.
+- To view the received data, open a web browser and navigate to `localhost:9000`. This action will display a login page for MinIO object store. The username and password are both `minioadmin`. The data will be written in the raw bucket.
+- Then, open another tab in the browser and go to `localhost:8080` to access Apache Airflow's login page. The username is `admin` and the password is `admin_password`. Upon logging in, a DAG named Spotify_pipeline_dag will be visible.
+- Clicking on the trigger play button in the rightmost corner will initiate pipeline execution.
+- Finally, to check transformed tables in the PostgreSQL data warehouse, follow these additional steps.
   
-- In order to view the received data, open your web browser and type - `localhost:9000`. This would open a login page for MinIO object store. The username and password is `minioadmin` and `minioadmin` respectively.
-- The data would be written in the `raw` bucket.
-- Moving on, Now open up another tab and type - `localhost:8080`. This will open up **Apache Airflow's** login page.
-- The username and password is `admin` and `admin_password` respectively.
-- Once you have logged in, you will be able to see a DAG named `Spotify_pipeline_dag`.
-- Now all that's left is to click the trigger play button on the rightmost corner. After triggering, the pipeline will start executing.
-- Finally to checkout your transformed tables in our postgres data warehouse, you just need to follow a couple more steps.
-  
-### Step 4: View the transformed data from Postgres data warehouse
+### Step 4: **View the transformed data from Postgres data warehouse**
 
-- First way is to open PowerBI desktop,if not install PowerBI desktop.
-- In the home ribon, click on the button `Get Data`, proceed with more options. Here you can find a Postgres SQL    connector.
-- Once you click on the connector, a window will pop up prompting you to enter the server and database name. In the server field type: `localhost:5434` and in the database field type:`spotify_db`.
-- Then depending on whether its your first time logging into your postgres, another window will pop up prompting you to end ther database username and password.
-- The database user name is `spotify` and password is `spotify_pass`.
-- Now, you will be able to see all the tables in your database and see its contents.
-- The second way is to user `docker-compose exec` command.
-- For this method, open a terminal and type `docker-compose exec postgres-warehouse bash`.
-- This will open a bash terminal inside the postgres-warehouse container.
-- Then proceed by typing `psql -U spotify -d spotify_db`. This will connect you to the database.
-- Inorder to view all the tables in this database, type `\d` in the terminal. This is show your a list of all the tables in the database.
-- You can explore the contents of the tables using traditional SQL commands like `SELECT * FROM <TABLE_NAME>;`.
+- Using Power BI Desktop:
+Open Power BI Desktop (if not installed, it should be installed first). In the home ribbon, click on Get Data, then proceed with more options where a Postgres SQL connector can be found. Upon clicking this connector, a window will appear prompting for server and database names. In the server field, type: `localhost:5434`, and in the database field type: spotify_db. If this is the first time logging into PostgreSQL, another window will prompt for database username and password. The database username is `spotify`, and the password is `spotify_pass`. All tables in the database will now be accessible along with their contents.
+- Using Docker Compose Exec Command:
+Open a terminal and type `docker-compose exec postgres-warehouse bash`. This command opens a bash terminal inside the PostgreSQL warehouse container. Next, type `psql -U spotify -d spotify_db` to connect to the database. To view all tables in this database, type `\d` in the terminal. Traditional SQL commands like `SELECT * FROM <TABLE_NAME>;` can be used to explore table contents.
 
 ### Scaling Considerations
 
